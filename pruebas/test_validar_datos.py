@@ -79,7 +79,7 @@ class TestValidador(unittest.TestCase):
 
     def test_noticia_con_norma_inexistente(self):
         (self.dir / "noticias.csv").write_text(
-            "fecha,titulo,medio,enlace,resumen,etiquetas,proyecto_relacionado,norma_relacionada,revision\n"
+            "fecha,titulo,medio,enlace,resumen,etiquetas,proyecto_relacionado,norma_relacionada,publicacion\n"
             "2026-10-01,T,M,https://a.co,,,,CREG-X,Pendiente\n", encoding="utf-8")
         errores, avisos = self.proyectos(ENC_PROY + fila_proyecto())
         self.assertEqual(errores, [])

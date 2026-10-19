@@ -9,8 +9,8 @@ description: Busca noticias recientes de almacenamiento de energía (SAEB/BESS) 
    y los nombres de proyectos de `datos/proyectos.csv`.
 3. Prioriza fuentes primarias (CREG, MME, UPME, XM, CNO, empresas) y medios
    especializados. Descarta notas sin fecha o que solo repiten un comunicado ya incluido.
-4. Agrega cada noticia con `revision` = `Pendiente`, un `resumen` propio de 1–2 frases
+4. Agrega cada noticia con `publicacion` = `Pendiente`, un `resumen` propio de 1–2 frases
    (sin copiar el texto del medio), `etiquetas` separadas por `;` y, si aplica,
    `proyecto_relacionado` o `norma_relacionada` con los valores exactos de los otros CSV.
-5. Presenta al usuario la lista para que marque `Aprobada` o `Descartada`. Solo las
-   `Aprobada` se publican.
+5. Presenta al usuario la lista para que marque `Aprobado` o `Rechazado`. Solo las que tienen
+   `publicacion = Aprobado` se publican.

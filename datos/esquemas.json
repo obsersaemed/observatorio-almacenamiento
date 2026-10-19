@@ -1,5 +1,5 @@
 {
-  "_nota": "Esquema de los CSV de datos/. Lo usa scripts/validar_datos.py. El orden de 'columnas' es el orden obligatorio en el CSV (las páginas leen por posición). Tipos: texto, numero, fecha (AAAA-MM-DD), urls (uno o varios enlaces separados por espacio), correo, enum. Un esquema con \"archivo\": null vive solo en la base de datos. Lo usan también web/src/lib/esquemas.ts (zod) y la migración SQL.",
+  "_nota": "Esquema de los CSV de datos/. Lo usa scripts/validar_datos.py. El orden de 'columnas' es el orden obligatorio en el CSV (las páginas leen por posición). Tipos: texto, numero, fecha (AAAA-MM-DD), urls (uno o varios enlaces separados por espacio), correo, enum. Un esquema con \"archivo\": null vive solo en la base de datos. Lo usan también web/src/lib/esquemas.ts (zod) y la migración SQL. \"tabla\" es el nombre en Supabase; las columnas se nombran con columna_sql() de validar_datos.py. Una columna con \"privado\": true va a la tabla aportantes.",
   "_mensajes": {
     "obligatorio": "'{columna}' es obligatorio",
     "valores": "'{columna}' = '{valor}' no está entre los valores permitidos: {valores}",
@@ -11,6 +11,7 @@
   },
   "proyectos": {
     "archivo": "proyectos.csv",
+    "tabla": "proyectos",
     "descripcion": "Inventario de SAEB en Colombia. Copia de la Hoja 1 de 'Base de datos SAEB'.",
     "clave": "Nombre",
     "columnas": [
@@ -143,6 +144,7 @@
   },
   "normativa": {
     "archivo": "normativa.csv",
+    "tabla": "normas",
     "descripcion": "Línea de tiempo normativa del almacenamiento (CREG, MME, CNO, UPME, XM).",
     "clave": "id",
     "columnas": [
@@ -233,7 +235,8 @@
   },
   "noticias": {
     "archivo": "noticias.csv",
-    "descripcion": "Noticias curadas sobre almacenamiento. Solo se publican las 'Aprobada'.",
+    "tabla": "noticias",
+    "descripcion": "Noticias curadas sobre almacenamiento. Solo se publican las que tienen publicacion = Aprobado.",
     "clave": "enlace",
     "columnas": [
       {
@@ -276,19 +279,20 @@
         "_nota": "id en normativa.csv"
       },
       {
-        "nombre": "revision",
+        "nombre": "publicacion",
         "tipo": "enum",
         "obligatorio": true,
         "valores": [
           "Pendiente",
-          "Aprobada",
-          "Descartada"
+          "Aprobado",
+          "Rechazado"
         ]
       }
     ]
   },
   "aportes": {
     "archivo": null,
+    "tabla": "aportes",
     "descripcion": "Cola de moderación: aportes de usuarios, agentes y editores. Todo entra como Pendiente. El correo se guarda aparte (tabla aportantes) y nunca se publica.",
     "clave": "id",
     "columnas": [
@@ -322,7 +326,8 @@
         "nombre": "correo",
         "tipo": "correo",
         "obligatorio": true,
-        "_nota": "Privado: va a la tabla aportantes"
+        "_nota": "Privado: va a la tabla aportantes",
+        "privado": true
       },
       {
         "nombre": "origen",

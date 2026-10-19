@@ -3,12 +3,10 @@
   "configurations": [
     {
       "name": "web",
-      "runtimeExecutable": "C:\\Program Files\\nodejs\\npm.cmd",
+      "runtimeExecutable": "cmd.exe",
       "runtimeArgs": [
-        "--prefix",
-        "web",
-        "run",
-        "dev"
+        "/c",
+        "C:\\dev\\Observatorio\\.claude\\dev-web.cmd"
       ],
       "port": 3000
     },

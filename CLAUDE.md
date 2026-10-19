@@ -52,7 +52,7 @@ resolución que habilita el proyecto y tipo de uso o conexión.
 **Evolución normativa**: línea de tiempo. Cada norma se *condensa* (`resumen`) y se
 *explica* (`explicacion`). Emisores: CREG, MME y CNO (y UPME o XM cuando aplique).
 
-**Noticias**: curadas. Solo se publican las que tienen `revision = Aprobada`.
+**Noticias**: curadas. Solo se publican las que tienen `publicacion = Aprobado`.
 
 ## Método: desarrollo guiado por especificaciones (SDD)
 

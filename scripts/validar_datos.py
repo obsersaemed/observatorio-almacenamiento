@@ -11,6 +11,7 @@ import argparse
 import csv
 import json
 import re
+import unicodedata
 import sys
 from datetime import date
 from pathlib import Path
@@ -18,6 +19,13 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 URL = re.compile(r"^https?://\S+$")
 CORREO = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+def columna_sql(nombre):
+    """Nombre de columna en la base de datos: minúsculas, sin tildes ni símbolos.
+    'Potencia nominal [MW]' -> 'potencia_nominal_mw'. La web usa la misma regla."""
+    sin_tildes = unicodedata.normalize("NFKD", nombre).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "_", sin_tildes.lower()).strip("_")
 
 
 def normalizar(s):
