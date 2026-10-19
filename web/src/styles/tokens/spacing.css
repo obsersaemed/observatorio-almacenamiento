@@ -1,0 +1,36 @@
+/* Copia de sitio/assets/ds/tokens (design system TEJ). Cambios: --ring se renombró a --focus-ring
+   para no chocar con shadcn, y Raleway se carga con next/font (--font-raleway). */
+/* Observatorio TEJ — Spacing, radii, shadows, layout */
+:root {
+  /* Spacing scale — 4px base */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* Radii — cards are generously rounded; header/KPI pills fully round */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;   /* KPI + chart cards */
+  --radius-xl: 22px;   /* header title pill */
+  --radius-pill: 999px;
+
+  /* Elevation — soft, low-contrast shadows on white cards */
+  --shadow-sm: 0 1px 2px rgba(27,50,54,0.06);
+  --shadow-card: 0 2px 10px rgba(27,50,54,0.08);
+  --shadow-pop: 0 8px 28px rgba(27,50,54,0.14);
+  --shadow-brand: 0 4px 14px rgba(58,63,66,0.28); /* soft gray lift under KPI pills */
+
+  /* Layout */
+  --page-max: 1240px;
+  --header-h: 92px;
+  --gap-grid: var(--sp-5);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(107,114,118,0.4);
+}

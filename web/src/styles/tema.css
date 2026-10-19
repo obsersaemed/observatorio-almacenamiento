@@ -1,0 +1,40 @@
+/* Tema TEJ para shadcn/ui: cada variable de shadcn apunta a un token semántico del
+   design system. Aquí no se escriben colores; los valores viven en ./tokens/. */
+@import "./tokens/colors.css";
+@import "./tokens/spacing.css";
+@import "./tokens/typography.css";
+
+:root {
+  --background: var(--surface-page);
+  --foreground: var(--text-body);
+  --card: var(--surface-card);
+  --card-foreground: var(--text-body);
+  --popover: var(--surface-card);
+  --popover-foreground: var(--text-body);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-contrast);
+  --secondary: var(--surface-tint);
+  --secondary-foreground: var(--text-heading);
+  --muted: var(--surface-tint);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--surface-tint);
+  --accent-foreground: var(--text-heading);
+  --destructive: var(--status-susp);
+  --border: var(--border-card);
+  --input: var(--border-strong);
+  --ring: var(--brand-ink);
+  --chart-1: var(--series-1);
+  --chart-2: var(--series-2);
+  --chart-3: var(--series-3);
+  --chart-4: var(--series-4);
+  --chart-5: var(--brand);
+  --radius: var(--radius-md);
+  --sidebar: var(--surface-card);
+  --sidebar-foreground: var(--text-body);
+  --sidebar-primary: var(--brand);
+  --sidebar-primary-foreground: var(--brand-contrast);
+  --sidebar-accent: var(--surface-tint);
+  --sidebar-accent-foreground: var(--text-heading);
+  --sidebar-border: var(--border-card);
+  --sidebar-ring: var(--brand-ink);
+}

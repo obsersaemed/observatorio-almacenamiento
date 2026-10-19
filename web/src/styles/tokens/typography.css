@@ -1,0 +1,35 @@
+/* Copia de sitio/assets/ds/tokens (design system TEJ). Cambios: --ring se renombró a --focus-ring
+   para no chocar con shadcn, y Raleway se carga con next/font (--font-raleway). */
+/* Observatorio TEJ — Typography tokens
+   Raleway everywhere; system sans as fallback (Arial was the PDF fallback). */
+:root {
+  --font-sans: var(--font-raleway), Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  --font-display: var(--font-raleway), Arial, sans-serif; /* headings, brand title */
+  --font-data: var(--font-raleway), Arial, sans-serif;    /* KPI numbers, chart labels */
+
+  /* Weights */
+  --fw-regular: 400;   /* @kind font */
+  --fw-medium: 500;    /* @kind font */
+  --fw-semibold: 600;  /* @kind font */
+  --fw-bold: 700;      /* @kind font */
+  --fw-extrabold: 800; /* @kind font */
+
+  /* Type scale (px) */
+  --fs-display: 44px;  /* hero brand title */
+  --fs-h1: 32px;       /* page / section title */
+  --fs-h2: 24px;       /* panel + section headings */
+  --fs-h3: 18px;       /* card titles, nav */
+  --fs-body: 16px;
+  --fs-small: 14px;
+  --fs-caption: 12px;
+  --fs-kpi: 40px;      /* big KPI stat number */
+
+  /* Line heights */
+  --lh-tight: 1.1;    /* @kind font */
+  --lh-heading: 1.2;  /* @kind font */
+  --lh-body: 1.55;    /* @kind font */
+
+  /* Letter spacing */
+  --ls-caps: 0.02em;   /* uppercase labels/headers */
+  --ls-tight: -0.01em;
+}

@@ -80,7 +80,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): `npm test` pasa; `npm run build` compila; `.env.example` documenta las variables sin valores
   - Depende de: —
   - Archivos: `web/` (generado), `web/src/app/page.tsx`, `.gitignore`
-- [ ] **T02 · S** · Tema TEJ: tokens → variables de Tailwind y shadcn; inicializar shadcn/ui
+- [x] **T02 · S** · Tema TEJ: tokens → variables de Tailwind y shadcn; inicializar shadcn/ui
   - Cubre: RNF-05
   - Prueba primero (RED): `web/src/styles/tema.test.ts` lee `tema.css` y espera que `--primary` y `--background` se definan con `var(--brand)` y `var(--surface-page)`, y que no haya colores hexadecimales fuera de los tokens (falla: no existe)
   - Hecho cuando (GREEN): la prueba pasa y un `Button` de shadcn se ve con el color de marca
@@ -251,6 +251,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | Fecha | Tarea | RED (falló como se esperaba) | GREEN | Refactor / desviación |
 |---|---|---|---|---|
 | 2026-10-19 | T01 | Sí: no existía el h1 del observatorio (página por defecto) | 1/1 pruebas; build OK | @types/node 20→24 por conflicto con Vitest 5; lang es-CO y metadatos; .env.example; 5 vulnerabilidades altas solo en dependencias de desarrollo (eslint), 0 en producción |
+| 2026-10-19 | T02 | Sí: no existían el botón de shadcn ni el tema | 6/6 pruebas; build OK | shadcn/ui (estilo base-nova, Base UI, paquete cn); tokens copiados en web/src/styles/tokens con --ring→--focus-ring; Raleway con next/font; sin modo oscuro (el DS no lo define). Revisión visual pendiente |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
