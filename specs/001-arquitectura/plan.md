@@ -86,7 +86,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): la prueba pasa y un `Button` de shadcn se ve con el color de marca
   - Depende de: T01
   - Archivos: `web/src/styles/tema.css`, `web/src/app/layout.tsx`, `web/components.json`
-- [ ] **T03 · XS** · Formato es-CO: número, MW, MWh y fecha `dd/mm/aaaa`
+- [x] **T03 · XS** · Formato es-CO: número, MW, MWh y fecha `dd/mm/aaaa`
   - Cubre: RNF-04
   - Prueba primero (RED): `web/src/lib/formato.test.ts` espera `formatoMW(67) === "67,0 MW"`, `formatoMWh(57.8) === "57,8 MWh"` y `formatoFecha("2026-10-19") === "19/10/2026"`
   - Hecho cuando (GREEN): pruebas en verde
@@ -252,6 +252,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 |---|---|---|---|---|
 | 2026-10-19 | T01 | Sí: no existía el h1 del observatorio (página por defecto) | 1/1 pruebas; build OK | @types/node 20→24 por conflicto con Vitest 5; lang es-CO y metadatos; .env.example; 5 vulnerabilidades altas solo en dependencias de desarrollo (eslint), 0 en producción |
 | 2026-10-19 | T02 | Sí: no existían el botón de shadcn ni el tema | 6/6 pruebas; build OK | shadcn/ui (estilo base-nova, Base UI, paquete cn); tokens copiados en web/src/styles/tokens con --ring→--focus-ring; Raleway con next/font; sin modo oscuro (el DS no lo define). Revisión visual pendiente |
+| 2026-10-19 | T03 | Sí: no existía formato.ts | 5/5 pruebas | Intl es-CO con useGrouping always para que 1.500 lleve punto de miles; valores vacíos se muestran como — |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
