@@ -46,3 +46,6 @@ next-env.d.ts
 /blob-report/
 # Plantilla de variables (sí se sube)
 !.env.example
+
+# Copias generadas desde datos/ (ver scripts/sincronizar-esquemas.mjs)
+/src/generado/

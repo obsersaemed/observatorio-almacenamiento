@@ -17,6 +17,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 URL = re.compile(r"^https?://\S+$")
+CORREO = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 def normalizar(s):
@@ -40,7 +41,39 @@ def leer_csv(ruta):
         return list(csv.reader(f))
 
 
-def validar_tabla(nombre, esquema, ruta):
+def limite(x):
+    """Escribe los límites como JavaScript (-82, no -82.0) para que el mensaje sea idéntico en la web."""
+    return int(x) if isinstance(x, float) and x.is_integer() else x
+
+
+def validar_valor(c, v, mensajes):
+    """Mensaje de error para el valor v de la columna c, o None si es válido.
+    Las plantillas vienen de esquemas.json (_mensajes) y las comparte la web."""
+    m = lambda clave, **kw: mensajes[clave].format(columna=c["nombre"], valor=v, **kw)
+    if v == "":
+        return m("obligatorio") if c.get("obligatorio") else None
+    t = c["tipo"]
+    if t == "numero":
+        x = numero(v)
+        if x is None:
+            return m("numero")
+        if ("min" in c and x < c["min"]) or ("max" in c and x > c["max"]):
+            return m("rango", min=limite(c.get("min", "-inf")), max=limite(c.get("max", "inf")))
+    elif t == "enum" and v not in c["valores"]:
+        return m("valores", valores=", ".join(c["valores"]))
+    elif t == "fecha":
+        try:
+            date.fromisoformat(v)
+        except ValueError:
+            return m("fecha")
+    elif t == "urls" and not all(URL.match(u) for u in v.split()):
+        return m("urls")
+    elif t == "correo" and not CORREO.match(v):
+        return m("correo")
+    return None
+
+
+def validar_tabla(nombre, esquema, ruta, mensajes):
     """Devuelve (errores, avisos, filas como dicts)."""
     errores, avisos = [], []
     if not ruta.exists():
@@ -71,29 +104,13 @@ def validar_tabla(nombre, esquema, ruta):
 
         for c in cols:
             v = reg[c["nombre"]]
-            if v == "":
-                if c.get("obligatorio"):
-                    errores.append(f"{donde}: '{c['nombre']}' es obligatorio")
-                elif c.get("aviso_si_vacio"):
+            if v == "" and not c.get("obligatorio"):
+                if c.get("aviso_si_vacio"):
                     avisos.append(f"{donde}: '{c['nombre']}' vacío, {c['aviso_si_vacio']}")
                 continue
-            t = c["tipo"]
-            if t == "numero":
-                x = numero(v)
-                if x is None:
-                    errores.append(f"{donde}: '{c['nombre']}' = '{v}' no es un número")
-                elif ("min" in c and x < c["min"]) or ("max" in c and x > c["max"]):
-                    errores.append(f"{donde}: '{c['nombre']}' = {v} fuera de rango "
-                                   f"[{c.get('min', '-inf')}, {c.get('max', 'inf')}]")
-            elif t == "enum" and v not in c["valores"]:
-                errores.append(f"{donde}: '{c['nombre']}' = '{v}' no está en {c['valores']}")
-            elif t == "fecha":
-                try:
-                    date.fromisoformat(v)
-                except ValueError:
-                    errores.append(f"{donde}: '{c['nombre']}' = '{v}' no es fecha AAAA-MM-DD")
-            elif t == "urls" and not all(URL.match(u) for u in v.split()):
-                errores.append(f"{donde}: '{c['nombre']}' tiene algo que no es un enlace http(s)")
+            problema = validar_valor(c, v, mensajes)
+            if problema:
+                errores.append(f"{donde}: {problema}")
 
         clave = reg.get(esquema.get("clave", ""))
         if clave:
@@ -108,9 +125,9 @@ def validar(dir_datos=RAIZ / "datos"):
     esquemas = json.loads((dir_datos / "esquemas.json").read_text(encoding="utf-8"))
     errores, avisos, tablas = [], [], {}
     for nombre, esq in esquemas.items():
-        if nombre.startswith("_"):
-            continue
-        e, a, regs = validar_tabla(nombre, esq, dir_datos / esq["archivo"])
+        if nombre.startswith("_") or not esq.get("archivo"):
+            continue  # metadatos o esquemas que viven solo en la base de datos
+        e, a, regs = validar_tabla(nombre, esq, dir_datos / esq["archivo"], esquemas["_mensajes"])
         errores += e
         avisos += a
         tablas[nombre] = regs

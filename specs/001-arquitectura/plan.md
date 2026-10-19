@@ -92,7 +92,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde
   - Depende de: T01
   - Archivos: `web/src/lib/formato.ts`
-- [ ] **T04 · S** · Esquemas zod construidos desde `datos/esquemas.json`, más el esquema de `aportes`
+- [x] **T04 · S** · Esquemas zod construidos desde `datos/esquemas.json`, más el esquema de `aportes`
   - Cubre: RF-03, RF-16 · CA-03.1, CA-03.2, CA-16.1
   - Prueba primero (RED): `web/src/lib/esquemas.test.ts` rechaza `Estado = "Planeado"`, latitud `49.653`, aporte sin fuente y aporte sin correo, con el mismo mensaje que usa el validador Python
   - Hecho cuando (GREEN): pruebas en verde; `python -m unittest discover pruebas` sigue en verde con el esquema de `aportes` agregado
@@ -253,6 +253,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T01 | Sí: no existía el h1 del observatorio (página por defecto) | 1/1 pruebas; build OK | @types/node 20→24 por conflicto con Vitest 5; lang es-CO y metadatos; .env.example; 5 vulnerabilidades altas solo en dependencias de desarrollo (eslint), 0 en producción |
 | 2026-10-19 | T02 | Sí: no existían el botón de shadcn ni el tema | 6/6 pruebas; build OK | shadcn/ui (estilo base-nova, Base UI, paquete cn); tokens copiados en web/src/styles/tokens con --ring→--focus-ring; Raleway con next/font; sin modo oscuro (el DS no lo define). Revisión visual pendiente |
 | 2026-10-19 | T03 | Sí: no existía formato.ts | 5/5 pruebas | Intl es-CO con useGrouping always para que 1.500 lleve punto de miles; valores vacíos se muestran como — |
+| 2026-10-19 | T04 | Sí: no existían esquemas.ts ni las plantillas _mensajes en el JSON | 18/18 web, 11/11 Python; build, tsc y eslint OK | Desviación: mensajes compartidos vía _mensajes en esquemas.json y validar_datos.py refactorizado (validar_valor, tipo correo, esquemas sin archivo); Turbopack no lee fuera de web/, así que scripts/sincronizar-esquemas.mjs copia el JSON a src/generado/ en predev/prebuild/pretest (en lugar de ampliar turbopack.root a todo el repo) |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).

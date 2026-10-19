@@ -1,4 +1,5 @@
 """Pruebas del validador. Correr con: python -m unittest discover pruebas"""
+import json
 import shutil
 import sys
 import tempfile
@@ -61,6 +62,20 @@ class TestValidador(unittest.TestCase):
         errores, avisos = self.proyectos(ENC_PROY + fila_proyecto(lat="", lon=""))
         self.assertEqual(errores, [])
         self.assertTrue(any("Latitud" in a for a in avisos))
+
+    def test_mensajes_salen_de_las_plantillas(self):
+        # La web (zod) usa las mismas plantillas: el mensaje es idéntico en ambas vías.
+        esquemas = json.loads((self.dir / "esquemas.json").read_text(encoding="utf-8"))
+        plantilla = esquemas["_mensajes"]["valores"]
+        valores = next(c for c in esquemas["proyectos"]["columnas"] if c["nombre"] == "Estado")["valores"]
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto(estado="Planeado"))
+        esperado = plantilla.format(columna="Estado", valor="Planeado", valores=", ".join(valores))
+        self.assertTrue(any(e.endswith(esperado) for e in errores), errores)
+
+    def test_esquemas_sin_archivo_no_se_validan_como_csv(self):
+        # 'aportes' vive solo en la base de datos: no hay CSV que exigir.
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto())
+        self.assertFalse(any("aportes" in e for e in errores), errores)
 
     def test_noticia_con_norma_inexistente(self):
         (self.dir / "noticias.csv").write_text(
