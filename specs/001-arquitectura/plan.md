@@ -1,6 +1,6 @@
 # 001 · Arquitectura y plataforma base — Plan
 
-Estado: Aprobado (2026-10-19)
+Estado: En curso
 Fecha: 2026-10-19
 Spec: [spec.md](spec.md)
 
@@ -74,7 +74,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
 
 ## Tareas
 
-- [ ] **T01 · M** · Crear la app Next.js en `web/` con TypeScript, Tailwind, Vitest, Testing Library y Playwright
+- [x] **T01 · M** · Crear la app Next.js en `web/` con TypeScript, Tailwind, Vitest, Testing Library y Playwright
   - Cubre: base de todos los RF · RNF-09
   - Prueba primero (RED): `web/src/app/page.test.tsx` renderiza el inicio y espera el título "Observatorio de Almacenamiento de Energía" (falla: no existe la app)
   - Hecho cuando (GREEN): `npm test` pasa; `npm run build` compila; `.env.example` documenta las variables sin valores
@@ -250,6 +250,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 ## Registro de implementación
 | Fecha | Tarea | RED (falló como se esperaba) | GREEN | Refactor / desviación |
 |---|---|---|---|---|
+| 2026-10-19 | T01 | Sí: no existía el h1 del observatorio (página por defecto) | 1/1 pruebas; build OK | @types/node 20→24 por conflicto con Vitest 5; lang es-CO y metadatos; .env.example; 5 vulnerabilidades altas solo en dependencias de desarrollo (eslint), 0 en producción |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
