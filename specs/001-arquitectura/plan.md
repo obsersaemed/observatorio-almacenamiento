@@ -104,7 +104,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): migración aplicada en **pruebas** (`npx supabase db push`) y pruebas en verde
   - Depende de: T04, P1, P2
   - Archivos: `supabase/migrations/0001_base.sql`, `pruebas/test_sql_esquemas.py`, `web/tests/integracion/rls.test.ts`
-- [ ] **T06 · S** · Importación inicial con rechazo de registros inválidos
+- [x] **T06 · S** · Importación inicial con rechazo de registros inválidos
   - Cubre: RF-15, RF-16 · CA-15.1, CA-16.1
   - Prueba primero (RED): `pruebas/test_importar.py` con un servidor REST simulado: el CSV actual rechaza los 7 proyectos por coordenadas y no envía nada; un CSV válido envía los registros con `publicacion = Aprobado` y fuente
   - Hecho cuando (GREEN): pruebas en verde; `python scripts/importar.py --entorno pruebas` reporta los rechazos
@@ -255,6 +255,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T03 | Sí: no existía formato.ts | 5/5 pruebas | Intl es-CO con useGrouping always para que 1.500 lleve punto de miles; valores vacíos se muestran como — |
 | 2026-10-19 | T04 | Sí: no existían esquemas.ts ni las plantillas _mensajes en el JSON | 18/18 web, 11/11 Python; build, tsc y eslint OK | Desviación: mensajes compartidos vía _mensajes en esquemas.json y validar_datos.py refactorizado (validar_valor, tipo correo, esquemas sin archivo); Turbopack no lee fuera de web/, así que scripts/sincronizar-esquemas.mjs copia el JSON a src/generado/ en predev/prebuild/pretest (en lugar de ampliar turbopack.root a todo el repo) |
 | 2026-10-19 | T05 | Sí: primero faltaban las variables y luego las tablas (PGRST205); la prueba SQL fallaba sin columna_sql ni migración | SQL↔JSON 7/7, Python 18/18, RLS 8/8 contra pruebas | Desviaciones: noticias.revision→publicacion (Pendiente/Aprobado/Rechazado), tabla vehiculos pasa a la spec 003, nombres SQL con columna_sql(). La migración se aplicó en el SQL Editor porque db push falló al conectar por el pooler (puertos abiertos); falta registrarla con supabase migration repair cuando la CLI conecte |
+| 2026-10-19 | T06 | Sí: no existían importar.py ni supabase_rest.py | Python 20/20; real contra pruebas: CSV actual rechazado (14 errores, nada enviado) y fila válida importada, visible y borrada | Importación todo o nada; upsert por nombre; cliente REST con llaves sb_ (apikey + Bearer). Prueba corregida: cabeceras HTTP sin distinguir mayúsculas |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
