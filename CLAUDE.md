@@ -136,7 +136,13 @@ Servidor local: `sitio` (puerto 8768) en `.claude/launch.json`.
 
 App web (cuando exista `web/`, se define en la spec 001): `npm test` (Vitest, unitarias
 y de componentes), `npx playwright test` (E2E) y `npm run dev` (servidor local).
-**Requisito pendiente:** Node.js LTS no está instalado en este equipo (2026-10-19).
+Entorno local (2026-10-19): Node.js 24.20.0 LTS, npm 11.19.0, GitHub CLI 2.102.0,
+Git, Python 3.12.10 con las dependencias de `Vehiculos/requirements.txt` y Chromium de
+Playwright. Supabase y Vercel se usan con `npx supabase …` y `npx vercel …`, sin
+instalación global. **No hay Docker** y el equipo tiene 3,4 GB de RAM, así que Supabase
+local no es viable: las pruebas usan el segundo proyecto gratuito de Supabase ("pruebas").
+Los navegadores de Playwright para la app web se instalan con
+`npx playwright install chromium` cuando exista `web/`.
 
 Skills del proyecto:
 - Flujo SDD: `brainstorm`, `specdefinition`, `planwriting`, `implementation`.
@@ -185,13 +191,14 @@ Claude los recibe y debe resolverlos o reportarlos.
 | Fecha | Entregable | Estado |
 |---|---|---|
 | 10-19 | Arnés: CLAUDE.md, datos, validador, hook, skills, esqueleto del sitio | Hecho |
-| 10-20 | Corregir coordenadas en la fuente; migrar el mapa a `sitio/mapa/` | |
-| 10-21 | Filtros y KPI de implementación | |
-| 10-22 | Migrar vehículos a `sitio/vehiculos/` | |
-| 10-23 | Normativa: primeras fichas + línea de tiempo | |
-| 10-24 | Noticias: búsqueda inicial + página | |
-| 10-26 | Revisión completa, móvil, validación | |
-| 10-27 | Publicación | |
+| 10-20 | Plataforma base 001: T01–T09 (app, tema, formato, esquemas, base de datos, importación, inicio, aportes) | |
+| 10-21 | Plataforma base 001: T10–T17 + E2E limpio | |
+| 10-22 | 002 · Implementación en el país (mapa, filtros, KPI) | |
+| 10-23 | 003 · Vehículos eléctricos | |
+| 10-24 | 004 · Evolución normativa | |
+| 10-25 | 005 · Noticias | |
+| 10-26 | Revisión completa, móvil, E2E de todo el sitio | |
+| 10-27 | Publicación (con confirmación del usuario) | |
 
 ## Decisiones abiertas
 

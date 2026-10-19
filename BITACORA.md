@@ -28,6 +28,12 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
   El mapa actual (`Mapa/`) ubica mal los puntos. Corregir en la `Base de datos SAEB`
   (formato de celda) y volver a exportar.
 
+### Entorno local
+- Se instalaron con winget **Node.js 24.20.0 LTS** (npm 11.19.0) y **GitHub CLI 2.102.0**.
+- Ya estaban instaladas las dependencias de Python de `Vehiculos/` y Chromium de Playwright.
+- Sin Docker y con 3,4 GB de RAM: Supabase local descartado; se usará un proyecto
+  "pruebas" en el plan gratuito.
+
 ### Pendiente
 - Respuestas a las preguntas 5–20 de la sesión anterior.
 - Foto de la pizarra 3.
