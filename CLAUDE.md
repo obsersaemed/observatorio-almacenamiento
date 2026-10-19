@@ -39,9 +39,29 @@ resolución que habilita el proyecto y tipo de uso o conexión.
 
 **Noticias**: curadas. Solo se publican las que tienen `revision = Aprobada`.
 
+## Método: desarrollo guiado por especificaciones (SDD)
+
+Toda funcionalidad del MVP pasa por cuatro fases, cada una con su skill y su documento
+en `specs/NNN-nombre/`. **No se avanza de fase sin la aprobación del usuario.**
+
+| Fase | Skill | Documento | Pregunta que responde |
+|---|---|---|---|
+| 1 | `brainstorm` | `brainstorm.md` | ¿Qué problema resolvemos y con qué enfoque? |
+| 2 | `specdefinition` | `spec.md` | ¿Qué debe hacer y cómo se comprueba? (RF, criterios Dado/Cuando/Entonces) |
+| 3 | `planwriting` | `plan.md` | ¿Cómo se construye? (archivos, tareas T01…, trazabilidad) |
+| 4 | `implementation` | `plan.md` (tareas marcadas + registro) | Construir y verificar tarea por tarea |
+
+- La spec es la fuente de verdad. Si un requisito cambia, se edita primero `spec.md` y
+  después el código.
+- Cada tarea cita los RF que cubre y su forma de verificación. Una tarea con
+  verificación fallida no se marca como hecha.
+- Los arreglos pequeños (una errata, un color, una fila de datos) no requieren el flujo
+  completo; basta con anotarlos en `BITACORA.md`.
+
 ## Estructura
 
 ```
+specs/            Una carpeta por funcionalidad: brainstorm.md, spec.md, plan.md
 datos/            Fuente única de verdad del sitio (CSV + esquemas.json)
 sitio/            Sitio estático publicable (GitHub Pages); assets/ds = design system TEJ
 scripts/          validar_datos.py (validador) y hook_validar.py (hook de Claude Code)
@@ -73,7 +93,9 @@ python -m unittest discover pruebas       # pruebas del validador
 
 Servidor local: `sitio` (puerto 8768) en `.claude/launch.json`.
 
-Skills del proyecto: `validar`, `ficha-normativa`, `buscar-noticias`, `cierre-sesion`.
+Skills del proyecto:
+- Flujo SDD: `brainstorm`, `specdefinition`, `planwriting`, `implementation`.
+- Apoyo: `validar`, `ficha-normativa`, `buscar-noticias`, `cierre-sesion`.
 
 Hook: después de cada Edit/Write en `datos/`, se ejecuta el validador. Si hay errores,
 Claude los recibe y debe resolverlos o reportarlos.
