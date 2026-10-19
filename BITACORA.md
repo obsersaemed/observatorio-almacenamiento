@@ -34,6 +34,16 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - Sin Docker y con 3,4 GB de RAM: Supabase local descartado; se usará un proyecto
   "pruebas" en el plan gratuito.
 
+### Supabase (T05)
+- Proyecto `observatorio-pruebas` en la organización "Observatorio TEJ" (plan Free).
+  Llaves nuevas (`sb_publishable_`/`sb_secret_`) en `web/.env.local`, que no se sube.
+- La secret key se rotó el mismo día porque quedó expuesta en una salida de comandos.
+- `supabase db push` falló al conectar por el pooler (usuario temporal `cli_login_postgres`)
+  aunque los puertos 5432 y 6543 están abiertos. La migración `0001_base.sql` se aplicó en el
+  SQL Editor. **Pendiente:** `npx supabase migration repair --status applied 0001` cuando la
+  CLI conecte, para que Supabase registre la migración.
+- La rama por defecto de Supabase se llama "main · PRODUCTION" aunque el proyecto sea de pruebas.
+
 ### Pendiente
 - Respuestas a las preguntas 5–20 de la sesión anterior.
 - Foto de la pizarra 3.

@@ -38,6 +38,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await servicio.from("proyectos").delete().like("nombre", `${prefijo}%`);
   await servicio.from("aportes").delete().like("descripcion", `${prefijo}%`);
+  await servicio.from("historial").delete().like("registro", `${prefijo}%`);
 });
 
 describe("RLS para visitantes anónimos", () => {

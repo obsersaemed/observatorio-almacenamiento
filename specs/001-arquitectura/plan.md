@@ -98,7 +98,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde; `python -m unittest discover pruebas` sigue en verde con el esquema de `aportes` agregado
   - Depende de: T01
   - Archivos: `web/src/lib/esquemas.ts`, `datos/esquemas.json`
-- [ ] **T05 · M** · Migración Supabase: tablas, CHECK, RLS, `es_editor()` y disparador de historial
+- [x] **T05 · M** · Migración Supabase: tablas, CHECK, RLS, `es_editor()` y disparador de historial
   - Cubre: RF-01, RF-04, RF-11, RF-16 · RNF-07, RNF-10 · CA-01.1, CA-04.1, CA-11.1, CA-16.1
   - Prueba primero (RED): `pruebas/test_sql_esquemas.py` (consistencia JSON ↔ SQL) y `web/tests/integracion/rls.test.ts` contra **pruebas**: el anónimo no ve un proyecto `Pendiente`, sí inserta en `aportes`, no lee `aportes`, `aportantes` ni `historial`, y un `Estado` inválido se rechaza en la base
   - Hecho cuando (GREEN): migración aplicada en **pruebas** (`npx supabase db push`) y pruebas en verde
@@ -254,6 +254,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T02 | Sí: no existían el botón de shadcn ni el tema | 6/6 pruebas; build OK | shadcn/ui (estilo base-nova, Base UI, paquete cn); tokens copiados en web/src/styles/tokens con --ring→--focus-ring; Raleway con next/font; sin modo oscuro (el DS no lo define). Revisión visual pendiente |
 | 2026-10-19 | T03 | Sí: no existía formato.ts | 5/5 pruebas | Intl es-CO con useGrouping always para que 1.500 lleve punto de miles; valores vacíos se muestran como — |
 | 2026-10-19 | T04 | Sí: no existían esquemas.ts ni las plantillas _mensajes en el JSON | 18/18 web, 11/11 Python; build, tsc y eslint OK | Desviación: mensajes compartidos vía _mensajes en esquemas.json y validar_datos.py refactorizado (validar_valor, tipo correo, esquemas sin archivo); Turbopack no lee fuera de web/, así que scripts/sincronizar-esquemas.mjs copia el JSON a src/generado/ en predev/prebuild/pretest (en lugar de ampliar turbopack.root a todo el repo) |
+| 2026-10-19 | T05 | Sí: primero faltaban las variables y luego las tablas (PGRST205); la prueba SQL fallaba sin columna_sql ni migración | SQL↔JSON 7/7, Python 18/18, RLS 8/8 contra pruebas | Desviaciones: noticias.revision→publicacion (Pendiente/Aprobado/Rechazado), tabla vehiculos pasa a la spec 003, nombres SQL con columna_sql(). La migración se aplicó en el SQL Editor porque db push falló al conectar por el pooler (puertos abiertos); falta registrarla con supabase migration repair cuando la CLI conecte |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
