@@ -1,0 +1,13 @@
+# Versiones verificadas contra el entorno real (Windows 11 / Python 3.12.10)
+# Generado auditando lo instalado, no fijado a mano.
+pandas==3.0.6
+playwright==1.63.0
+requests==2.34.2
+beautifulsoup4==4.15.0
+lxml==6.1.1
+
+# Tras instalar: python -m playwright install chromium
+
+# Sink de Google Sheets (cuenta de servicio; ver README)
+gspread==6.2.1
+google-auth==2.58.0

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa BESS Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --texto: #3c4043;
+    --texto-suave: #6b7075;
+    --borde: #d9dcdf;
+    --fondo: #ffffff;
+    --fondo-panel: rgba(255, 255, 255, 0.96);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--fondo); font-family: 'Raleway', 'Segoe UI', Arial, sans-serif; color: var(--texto); }
+  #map { width: 100%; height: 100%; }
+
+  .panel {
+    background: var(--fondo-panel);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+  .leyenda h4 { margin: 0 0 6px; font-size: 13px; font-weight: 700; }
+  .leyenda .fila { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .leyenda .punto { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.2); flex-shrink: 0; }
+  .leyenda .nota { margin-top: 8px; font-size: 11px; color: var(--texto-suave); max-width: 190px; }
+
+  .leaflet-popup-content { font-family: 'Raleway', 'Segoe UI', Arial, sans-serif; margin: 12px 14px; }
+  .pop-titulo { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .pop-estado { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+  .pop-tabla { border-collapse: collapse; font-size: 12.5px; }
+  .pop-tabla td { padding: 2px 0; vertical-align: top; }
+  .pop-tabla td:first-child { color: var(--texto-suave); padding-right: 10px; white-space: nowrap; }
+  .pop-nota { margin-top: 8px; font-size: 11px; color: var(--texto-suave); }
+
+  .aviso {
+    position: absolute; inset: 0; z-index: 2000;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.92); padding: 24px; text-align: center; font-size: 14px;
+  }
+  .aviso.visible { display: flex; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="aviso" class="aviso"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+// ============================================================
+// FUENTE DE DATOS
+// La hoja "Base de datos SAEB" debe estar compartida como
+// "Cualquier persona con el enlace: Lector" para que esta URL responda.
+// Para pruebas locales: index.html?csv=ruta/al/archivo.csv
+// ============================================================
+const SHEET_ID = '1-XpWEXUFK8AOappezQaiXFFJldqgq50pkfijhBCdvTA';
+const HOJA = 'Hoja 1';
+const URL_DATOS = new URLSearchParams(location.search).get('csv')
+  || `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(HOJA)}`;
+
+// Colores por estado. Un estado nuevo en la hoja cae en "otro" hasta agregarlo aqui.
+const ESTADOS = [
+  { clave: 'operaci',  etiqueta: 'En operación',         color: '#2f9e5a' },
+  { clave: 'ejecuci',  etiqueta: 'En ejecución',         color: '#e0a030' },
+  { clave: 'subasta',  etiqueta: 'Asignado por subasta', color: '#2f63a8' },
+  { clave: 'suspend',  etiqueta: 'Suspendido',           color: '#a8323e' },
+];
+const OTRO = { etiqueta: 'Otro', color: '#9aa0a6' };
+
+function estadoDe(texto) {
+  const t = normalizar(texto);
+  return ESTADOS.find(e => t.includes(e.clave)) || OTRO;
+}
+
+// Encabezados de la hoja -> campos. Se comparan sin tildes, saltos de linea ni mayusculas,
+// por prefijo, para tolerar cambios menores como "Potencia nominal\n[MW]".
+const CAMPOS = {
+  nombre: 'nombre',
+  operador: 'operador',
+  estado: 'estado',
+  tecnologia: 'tecnologia',
+  fpo: 'fpo',
+  tipoUso: 'tipo uso',
+  puntoConexion: 'punto de conexion',
+  departamento: 'departamento',
+  municipio: 'municipio',
+  lat: 'latitud',
+  lon: 'longitud',
+  mw: 'potencia nominal',
+  mwh: 'capacidad maxima',
+};
+
+function normalizar(s) {
+  return String(s || '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+// Acepta "4,9653", "4.9653", "-73,9128" y "1.234,5" (formato colombiano).
+function numero(s) {
+  let t = String(s ?? '').trim();
+  if (!t) return null;
+  if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.');
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function fmt(n, dec = 1) {
+  return n == null ? '—' : n.toLocaleString('es-CO', { maximumFractionDigits: dec });
+}
+
+function aFilas(registros) {
+  const encabezados = Object.keys(registros[0] || {});
+  const columna = {};
+  for (const [campo, prefijo] of Object.entries(CAMPOS)) {
+    columna[campo] = encabezados.find(h => normalizar(h).startsWith(prefijo));
+  }
+  return registros.map(r => {
+    const v = campo => (columna[campo] ? String(r[columna[campo]] ?? '').trim() : '');
+    return {
+      nombre: v('nombre'),
+      operador: v('operador'),
+      estado: v('estado'),
+      tecnologia: v('tecnologia'),
+      fpo: v('fpo'),
+      tipoUso: v('tipoUso'),
+      puntoConexion: v('puntoConexion'),
+      departamento: v('departamento'),
+      municipio: v('municipio'),
+      lat: numero(v('lat')),
+      lon: numero(v('lon')),
+      mw: numero(v('mw')),
+      mwh: numero(v('mwh')),
+    };
+  }).filter(p => p.nombre);
+}
+
+// ============================================================
+// MAPA
+// ============================================================
+const map = L.map('map', { zoomControl: true }).setView([6.5, -74.3], 6);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+  maxZoom: 18,
+}).addTo(map);
+
+// Radio proporcional al area: un proyecto de 50 MW se ve mas grande que uno de 1 MW
+// sin que los grandes tapen el mapa.
+function radio(mw) {
+  return mw ? Math.max(6, Math.min(22, 4 + Math.sqrt(mw) * 2.4)) : 6;
+}
+
+function popup(p, est) {
+  const duracion = p.mw && p.mwh ? p.mwh / p.mw : null;
+  const filas = [
+    ['Operador', p.operador],
+    ['Tecnología', p.tecnologia],
+    ['Puesta en operación', p.fpo],
+    ['Uso / conexión', p.tipoUso],
+    ['Punto de conexión', p.puntoConexion ? `${p.puntoConexion} kV` : ''],
+    ['Ubicación', [p.municipio, p.departamento].filter(Boolean).join(', ')],
+    ['Potencia nominal', p.mw != null ? `${fmt(p.mw)} MW` : ''],
+    ['Capacidad máxima', p.mwh != null ? `${fmt(p.mwh)} MWh` : ''],
+    ['Duración', duracion != null ? `${fmt(duracion)} h` : ''],
+  ].filter(([, valor]) => valor);
+  return `
+    <div class="pop-titulo">${esc(p.nombre)}</div>
+    <div class="pop-estado" style="color:${est.color}">${esc(p.estado || est.etiqueta)}</div>
+    <table class="pop-tabla">${filas.map(([k, val]) => `<tr><td>${esc(k)}</td><td>${esc(val)}</td></tr>`).join('')}</table>
+    <div class="pop-nota">Ubicación aproximada (cabecera municipal).</div>`;
+}
+
+function leyenda(presentes) {
+  const ctrl = L.control({ position: 'bottomright' });
+  ctrl.onAdd = () => {
+    const div = L.DomUtil.create('div', 'panel leyenda');
+    const items = [...ESTADOS, OTRO].filter(e => presentes.has(e));
+    div.innerHTML = `<h4>Estado</h4>`
+      + items.map(e => `<div class="fila"><span class="punto" style="background:${e.color}"></span>${esc(e.etiqueta)}</div>`).join('')
+      + `<div class="nota">El tamaño del punto indica la potencia nominal (MW).</div>`;
+    return div;
+  };
+  ctrl.addTo(map);
+}
+
+function avisar(msg) {
+  const el = document.getElementById('aviso');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+Papa.parse(URL_DATOS, {
+  download: true,
+  header: true,
+  skipEmptyLines: true,
+  complete: res => {
+    const proyectos = aFilas(res.data);
+    const conCoords = proyectos.filter(p => p.lat != null && p.lon != null);
+    if (!conCoords.length) {
+      avisar('No se encontraron proyectos con coordenadas. Revise que la hoja esté compartida y tenga columnas Latitud y Longitud.');
+      return;
+    }
+    const presentes = new Set();
+    // Los mas grandes se dibujan primero para que los pequenos queden encima y sean clicables.
+    conCoords.sort((a, b) => (b.mw || 0) - (a.mw || 0)).forEach(p => {
+      const est = estadoDe(p.estado);
+      presentes.add(est);
+      L.circleMarker([p.lat, p.lon], {
+        radius: radio(p.mw),
+        fillColor: est.color,
+        color: '#ffffff',
+        weight: 2,
+        fillOpacity: 0.88,
+      }).bindPopup(popup(p, est), { maxWidth: 300, autoPanPadding: [20, 20] }).addTo(map);
+    });
+    leyenda(presentes);
+    // Looker Studio puede cambiar el tamano del inserto despues de cargar; se reencuadra
+    // hasta que el usuario mueva el mapa.
+    const limites = L.latLngBounds(conCoords.map(p => [p.lat, p.lon]));
+    const encuadrar = () => map.fitBounds(limites, { padding: [30, 30], maxZoom: 7 });
+    let movidoPorUsuario = false;
+    ['pointerdown', 'wheel', 'keydown'].forEach(ev =>
+      map.getContainer().addEventListener(ev, () => { movidoPorUsuario = true; }, { once: true }));
+    new ResizeObserver(() => {
+      map.invalidateSize();
+      if (!movidoPorUsuario) encuadrar();
+    }).observe(document.getElementById('map'));
+    encuadrar();
+  },
+  error: () => avisar('No fue posible leer la base de datos. Revise que la hoja esté compartida como "Cualquier persona con el enlace".'),
+});
+</script>
+</body>
+</html>

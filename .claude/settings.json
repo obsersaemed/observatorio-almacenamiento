@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/validar_datos.py*)",
+      "Bash(python -m unittest*)",
+      "Read(datos/**)",
+      "Read(sitio/**)",
+      "Edit(datos/**)",
+      "Edit(sitio/**)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/credenciales*.json)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/hook_validar.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

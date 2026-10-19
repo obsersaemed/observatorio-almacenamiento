@@ -1,0 +1,72 @@
+/* Observatorio TEJ — Color tokens
+   Primary palette sampled from the BESS storage-observatory dashboard;
+   peach accent + neutral grays from the TEJ site content wireframe. */
+:root {
+  /* Brand grayscale (from the PDF wireframe; header, KPI cards, primary series) */
+  --teal-50:  #f1f3f3;
+  --teal-100: #e4e7e8;
+  --teal-200: #cdd2d4;
+  --teal-300: #6b7276; /* signature brand gray */
+  --teal-400: #565d61;
+  --teal-500: #4a5155;
+  --teal-600: #3f4548; /* darker gray for text/contrast on light */
+  --teal-700: #33383b;
+
+  /* Secondary data series (neutral gray) */
+  --purple-100: #eceeef;
+  --purple-200: #a6adb1;
+  --purple-300: #8b9296;
+  --purple-400: #6b7276;
+
+  /* Warm accent (from site wireframe) — used sparingly for highlights/CTAs */
+  --peach-200: #f9d3b6;
+  --peach-300: #f4b183;
+  --peach-400: #e8935a;
+
+  /* Project-status colors (map markers, table states) */
+  --status-op:   #2e9b4e; /* En operación */
+  --status-op-marker: #419465;
+  --status-con:  #ef9f2e; /* En construcción */
+  --status-plan: #9aa0a6; /* Planeado / otro */
+  --status-susp: #e2413a; /* Suspendido */
+
+  /* Neutrals (ink + lines + surfaces) */
+  --ink-900: #2b2f31;
+  --ink-800: #3a3f42;
+  --ink-700: #595f63; /* body text */
+  --ink-500: #7f868a;
+  --ink-400: #a6adb1;
+  --line-300: #d9dee0;
+  --line-200: #e6eaec;
+  --line-100: #f0f3f4;
+  --white:    #ffffff;
+  --surface:  #ffffff;
+  --surface-alt: #f5f8f9; /* faint teal-gray page background */
+  --surface-tint: var(--teal-50);
+  --map-outline: #dfe6e6; /* faint Colombia-map watermark strokes */
+
+  /* ---- Semantic aliases ---- */
+  --brand:          var(--teal-300);
+  --brand-strong:   var(--teal-400);
+  --brand-ink:      var(--teal-600); /* teal that passes contrast on white */
+  --brand-contrast: var(--white);    /* text on brand fills */
+
+  --text-heading: var(--ink-900);
+  --text-body:    var(--ink-700);
+  --text-muted:   var(--ink-500);
+  --text-on-brand: var(--white);
+  --text-link:    var(--teal-600);
+  --text-link-hover: var(--teal-700);
+
+  --surface-card: var(--white);
+  --surface-page: var(--surface-alt);
+  --surface-header: var(--teal-300);
+
+  --border-card: var(--line-200);
+  --border-strong: var(--line-300);
+
+  --series-1: #565d61;
+  --series-2: #a6adb1;
+  --series-3: var(--peach-300);
+  --series-4: #33383b;
+}

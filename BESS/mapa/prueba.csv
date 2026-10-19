@@ -1,0 +1,11 @@
+"Nombre","Operador","Estado","Tecnologia","FPO","Tipo uso/conexión","Punto de conexión
+kV","Departamento","Municipio	","Latitud","Longitud","Potencia nominal
+[MW]","Capacidad máxima
+[MWh]"
+"BESS Termozipa","Enel-Emgesa","En operación","Li-ion","2021","Regulación primaria de frecuencia","13.8","Cundinamarca","Tocancipá","4,9653","-73,9128","7","3,9"
+"La Martina","Erco","En operación","Li-ion","2025","Inyección de energia por la noche","","Cundinamarca","Paratebueno","4,3750","-73,2136","9","6,9"
+"Celsia Solar Palmira 2","Celsia","En operación","Li-ion","2024","Inyección de energia por la noche","","Valle del Cauca","Palmira","3,5394","-76,3036","1","2"
+"Canadian solar","Air-e","Suspendido","Li-ion","2019","","","Atlantico","Barranquilla","10,9639","-74,7964","50","45"
+"Bosques Solares de los Llanos 8","Bosques Solares de los Llanos 8","Asignado por subasta","Li-ion","2030","Mercado regulado a través de los contratos de largo plazo","","Meta","Villavicencio","4,1420","-73,6266","50","195"
+"Parque solar andromeda","Celsia","Asignado por subasta","Li-ion","2030","Mercado regulado a través de los contratos de largo plazo","115","Sucre","Toluviejo","9,4497","-75,4392","50","195"
+"Pradera solar","Andina Solar- Erco -  Climate Fund Managers","En ejecución","Li-ion","2027","Mercado regulado a través de los contratos de largo plazo","115","Norte de Santander","La Esperanza","7,6397","-73,3283","18","25"

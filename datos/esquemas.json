@@ -1,0 +1,70 @@
+{
+  "_nota": "Esquema de los CSV de datos/. Lo usa scripts/validar_datos.py. El orden de 'columnas' es el orden obligatorio en el CSV (las páginas leen por posición). Tipos: texto, numero, fecha (AAAA-MM-DD), urls (uno o varios enlaces separados por espacio), enum.",
+  "proyectos": {
+    "archivo": "proyectos.csv",
+    "descripcion": "Inventario de SAEB en Colombia. Copia de la Hoja 1 de 'Base de datos SAEB'.",
+    "clave": "Nombre",
+    "columnas": [
+      {"nombre": "Nombre", "tipo": "texto", "obligatorio": true},
+      {"nombre": "Operador", "tipo": "texto"},
+      {"nombre": "Estado", "tipo": "enum", "obligatorio": true,
+       "valores": ["En operación", "En construcción", "Anunciado", "Inactivo"]},
+      {"nombre": "Tecnologia", "tipo": "texto"},
+      {"nombre": "FPO", "tipo": "texto"},
+      {"nombre": "Tipo uso/conexión", "tipo": "texto"},
+      {"nombre": "Punto de conexión kV", "tipo": "numero", "min": 0, "max": 500},
+      {"nombre": "Departamento", "tipo": "texto", "obligatorio": true},
+      {"nombre": "Municipio", "tipo": "texto", "obligatorio": true},
+      {"nombre": "Latitud", "tipo": "numero", "min": -4.3, "max": 13.5, "aviso_si_vacio": "sin coordenadas no aparece en el mapa"},
+      {"nombre": "Longitud", "tipo": "numero", "min": -82.0, "max": -66.8, "aviso_si_vacio": "sin coordenadas no aparece en el mapa"},
+      {"nombre": "Potencia nominal [MW]", "tipo": "numero", "min": 0},
+      {"nombre": "Capacidad máxima [MWh]", "tipo": "numero", "min": 0},
+      {"nombre": "Potencia máxima de descarga [MW]", "tipo": "numero", "min": 0},
+      {"nombre": "Potencia máxima de carga [MW]", "tipo": "numero", "min": 0},
+      {"nombre": "Estado de carga mínimo técnico [%]", "tipo": "numero", "min": 0, "max": 100},
+      {"nombre": "Eficiencia mínima [%]", "tipo": "numero", "min": 0, "max": 100},
+      {"nombre": "Eficiencia de carga [%]", "tipo": "numero", "min": 0, "max": 100},
+      {"nombre": "Eficiencia de descarga [%]", "tipo": "numero", "min": 0, "max": 100},
+      {"nombre": "Eficiencia de almacenamiento [%]", "tipo": "numero", "min": 0, "max": 100},
+      {"nombre": "Tiempo para aporte de máxima potencia [%]", "tipo": "texto"},
+      {"nombre": "Tipo de compensación adicional", "tipo": "texto"},
+      {"nombre": "Fuente", "tipo": "urls", "obligatorio": true}
+    ]
+  },
+  "normativa": {
+    "archivo": "normativa.csv",
+    "descripcion": "Línea de tiempo normativa del almacenamiento (CREG, MME, CNO, UPME, XM).",
+    "clave": "id",
+    "columnas": [
+      {"nombre": "id", "tipo": "texto", "obligatorio": true, "_ejemplo": "CREG-RES-098-2019"},
+      {"nombre": "fecha", "tipo": "fecha", "obligatorio": true},
+      {"nombre": "emisor", "tipo": "enum", "obligatorio": true, "valores": ["CREG", "MME", "CNO", "UPME", "XM", "Congreso"]},
+      {"nombre": "tipo", "tipo": "enum", "obligatorio": true,
+       "valores": ["Ley", "Decreto", "Resolución", "Proyecto de resolución", "Acuerdo", "Circular", "Documento"]},
+      {"nombre": "numero", "tipo": "texto", "obligatorio": true},
+      {"nombre": "titulo", "tipo": "texto", "obligatorio": true},
+      {"nombre": "estado", "tipo": "enum", "obligatorio": true, "valores": ["Vigente", "Modificada", "Derogada", "En consulta"]},
+      {"nombre": "resumen", "tipo": "texto", "aviso_si_vacio": "falta la versión condensada"},
+      {"nombre": "explicacion", "tipo": "texto", "aviso_si_vacio": "falta la explicación"},
+      {"nombre": "aplica_a", "tipo": "texto"},
+      {"nombre": "relacionada_con", "tipo": "texto", "_nota": "ids de otras normas separados por ';'"},
+      {"nombre": "enlace", "tipo": "urls", "obligatorio": true}
+    ]
+  },
+  "noticias": {
+    "archivo": "noticias.csv",
+    "descripcion": "Noticias curadas sobre almacenamiento. Solo se publican las 'Aprobada'.",
+    "clave": "enlace",
+    "columnas": [
+      {"nombre": "fecha", "tipo": "fecha", "obligatorio": true},
+      {"nombre": "titulo", "tipo": "texto", "obligatorio": true},
+      {"nombre": "medio", "tipo": "texto", "obligatorio": true},
+      {"nombre": "enlace", "tipo": "urls", "obligatorio": true},
+      {"nombre": "resumen", "tipo": "texto"},
+      {"nombre": "etiquetas", "tipo": "texto", "_nota": "separadas por ';'"},
+      {"nombre": "proyecto_relacionado", "tipo": "texto", "_nota": "Nombre en proyectos.csv"},
+      {"nombre": "norma_relacionada", "tipo": "texto", "_nota": "id en normativa.csv"},
+      {"nombre": "revision", "tipo": "enum", "obligatorio": true, "valores": ["Pendiente", "Aprobada", "Descartada"]}
+    ]
+  }
+}

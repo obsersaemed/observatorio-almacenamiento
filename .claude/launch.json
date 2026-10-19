@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sitio",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8768", "--directory", "sitio"],
+      "port": 8768
+    },
+    {
+      "name": "mapa-bess",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "BESS/mapa"],
+      "port": 8765
+    },
+    {
+      "name": "dashboard-ve",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8766", "--directory", "Vehiculos/dashboard"],
+      "port": 8766
+    },
+    {
+      "name": "mapa-saeb",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8767", "--directory", "Mapa"],
+      "port": 8767
+    }
+  ]
+}

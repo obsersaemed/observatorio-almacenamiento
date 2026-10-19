@@ -1,0 +1,6 @@
+/* Observatorio TEJ — Fonts
+   Brand typeface is Raleway (Bold + Regular in the source PDF).
+   Loaded from Google Fonts CDN — no TTFs were provided with the sources.
+   If you have licensed Raleway binaries, drop them in assets/fonts and
+   replace this @import with local @font-face rules. */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap');

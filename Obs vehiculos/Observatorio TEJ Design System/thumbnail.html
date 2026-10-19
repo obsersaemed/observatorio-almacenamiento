@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="styles.css">
+<style>
+  html,body{margin:0}
+  .tile{width:1280px;height:854px;display:flex;font-family:var(--font-display)}
+  .main{flex:1;background:#6b7276;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .main::before{content:"";position:absolute;inset:0;background:url("assets/colombia-map-watermark.png") center/contain no-repeat;opacity:.28;mix-blend-mode:screen}
+  .name{position:relative;color:#fff;text-align:center;font-weight:800;line-height:1.02;letter-spacing:-0.01em;padding:0 60px}
+  .name .big{font-size:220px;display:block}
+  .name .sub{font-size:62px;font-weight:700;letter-spacing:.04em;display:block;margin-top:18px}
+  .strip{width:300px;display:flex;flex-direction:column}
+  .strip>div{flex:1}
+</style></head>
+<body>
+  <div class="tile">
+    <div class="main"><div class="name"><span class="big">TEJ</span><span class="sub">OBSERVATORIO</span></div></div>
+    <div class="strip">
+      <div style="background:#f4b183"></div>
+      <div style="background:#a6adb1"></div>
+      <div style="background:#6b7276"></div>
+      <div style="background:#3f4548"></div>
+    </div>
+  </div>
+</body></html>
