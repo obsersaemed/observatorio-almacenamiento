@@ -15,6 +15,21 @@ archivo.
 - **Vehículos eléctricos** forma parte del MVP.
 - **Entrega del MVP: 2026-10-27.**
 
+## Arquitectura (aprobada el 2026-10-19, ver `specs/001-arquitectura/`)
+
+- **Frontend:** Next.js (React, TypeScript) + Tailwind CSS + shadcn/ui + Tremor, con el
+  tema de los tokens TEJ. Gráficas con Recharts (ECharts solo si una vista lo exige),
+  mapa con MapLibre GL sobre teselas basadas en OSM, tablas con TanStack Table,
+  animaciones con Motion y GSAP (respetando `prefers-reduced-motion`).
+- **Datos:** Supabase (Postgres + Auth + RLS) es la fuente de verdad después de la
+  importación inicial de la `Base de datos SAEB`. Respaldo diario a CSV en el repositorio.
+- **Hospedaje:** Vercel Hobby (proyecto no remunerado y no comercial), con el
+  repositorio en la cuenta personal de GitHub.
+- **Actualización:** usuarios (formulario) y agentes proponen cambios en una cola de
+  `aportes` con estado `Pendiente`; solo un editor aprueba. Nadie publica directamente.
+- **Agentes:** en el MVP se corren a mano desde Claude Code; programados después.
+- Límites de los planes gratuitos y riesgos: ver el brainstorm de la arquitectura.
+
 ## Público objetivo
 
 Empresas (desarrolladores, operadores), ingenieros (planeación, conexión, operación) y
@@ -44,24 +59,50 @@ resolución que habilita el proyecto y tipo de uso o conexión.
 Toda funcionalidad del MVP pasa por cuatro fases, cada una con su skill y su documento
 en `specs/NNN-nombre/`. **No se avanza de fase sin la aprobación del usuario.**
 
-| Fase | Skill | Documento | Pregunta que responde |
-|---|---|---|---|
-| 1 | `brainstorm` | `brainstorm.md` | ¿Qué problema resolvemos y con qué enfoque? |
-| 2 | `specdefinition` | `spec.md` | ¿Qué debe hacer y cómo se comprueba? (RF, criterios Dado/Cuando/Entonces) |
-| 3 | `planwriting` | `plan.md` | ¿Cómo se construye? (archivos, tareas T01…, trazabilidad) |
-| 4 | `implementation` | `plan.md` (tareas marcadas + registro) | Construir y verificar tarea por tarea |
+```
+brainstorm ──▶ specdefinition ──▶ planwriting ──▶ implementation ──▶ aprobación final
+(conversación)  (conversación)     (conversación)   /sdd-implementar    del usuario
+                 └ /sdd-revisar     └ /sdd-revisar   TDD por tarea + E2E limpio
+                   (opcional)         (opcional)
+```
+
+| Fase | Skill | Documento | Pregunta que responde | Puerta de salida |
+|---|---|---|---|---|
+| 1 | `brainstorm` | `brainstorm.md` | ¿Qué problema resolvemos y con qué enfoque? | `Estado: Aprobado` |
+| 2 | `specdefinition` | `spec.md` | ¿Qué debe hacer y cómo se comprueba? (RF, `CA-xx.n` Dado/Cuando/Entonces) | `Estado: Aprobada`, sin `[ACLARAR]` |
+| 3 | `planwriting` | `plan.md` | ¿Cómo se construye? Tareas XS/S/M con su prueba RED, dependencias y escenarios E2E | `Estado: Aprobado`, sin tareas L |
+| 4 | `implementation` | `plan.md` + `e2e-informe.md` | Construir con TDD y probar de punta a punta | E2E en verde y aprobación del usuario |
+
+**Workflows dinámicos** (`.claude/workflows/`). Las fases 1 a 3 necesitan
+conversación, y un workflow no admite preguntas a mitad de la corrida; por eso se
+quedan como skills. Dos pasos sí se ejecutan como workflow:
+- `/sdd-revisar {"documento": "specs/NNN-…/spec.md|plan.md"}`: revisión adversarial
+  en paralelo (cinco ángulos), verificación cruzada de cada hallazgo y una lista
+  consolidada. Solo lee.
+- `/sdd-implementar {"spec": "specs/NNN-…", "commit": false}`: por cada tarea, en
+  serie, un agente escribe la prueba y confirma que falla (RED), otro escribe el código
+  sin tocar la prueba (GREEN, máximo 2 intentos) y un revisor refactoriza y registra.
+  Al final corre el **agente E2E limpio** (`.claude/agents/e2e-limpio.md`), que prueba
+  los escenarios sin leer el código, y se verifica con huellas de archivos que no
+  modificó código de producción.
+
+Si los workflows no están disponibles, la skill `implementation` describe el mismo
+ciclo en modo manual.
 
 - La spec es la fuente de verdad. Si un requisito cambia, se edita primero `spec.md` y
   después el código.
-- Cada tarea cita los RF que cubre y su forma de verificación. Una tarea con
-  verificación fallida no se marca como hecha.
+- TDD obligatorio: ninguna línea de producción sin una prueba que haya fallado antes.
+  Una tarea con verificación fallida no se marca como hecha.
+- Cada falla del informe E2E se convierte en una tarea nueva con su prueba RED.
 - Los arreglos pequeños (una errata, un color, una fila de datos) no requieren el flujo
   completo; basta con anotarlos en `BITACORA.md`.
 
 ## Estructura
 
 ```
-specs/            Una carpeta por funcionalidad: brainstorm.md, spec.md, plan.md
+specs/            Una carpeta por funcionalidad: brainstorm.md, spec.md, plan.md, e2e-informe.md
+.claude/agents/   e2e-limpio.md (probador independiente)
+.claude/workflows/ sdd-implementar.js, sdd-revisar.js
 datos/            Fuente única de verdad del sitio (CSV + esquemas.json)
 sitio/            Sitio estático publicable (GitHub Pages); assets/ds = design system TEJ
 scripts/          validar_datos.py (validador) y hook_validar.py (hook de Claude Code)
@@ -93,6 +134,10 @@ python -m unittest discover pruebas       # pruebas del validador
 
 Servidor local: `sitio` (puerto 8768) en `.claude/launch.json`.
 
+App web (cuando exista `web/`, se define en la spec 001): `npm test` (Vitest, unitarias
+y de componentes), `npx playwright test` (E2E) y `npm run dev` (servidor local).
+**Requisito pendiente:** Node.js LTS no está instalado en este equipo (2026-10-19).
+
 Skills del proyecto:
 - Flujo SDD: `brainstorm`, `specdefinition`, `planwriting`, `implementation`.
 - Apoyo: `validar`, `ficha-normativa`, `buscar-noticias`, `cierre-sesion`.
@@ -115,10 +160,13 @@ Claude los recibe y debe resolverlos o reportarlos.
 - Visual: usar los tokens semánticos de `sitio/assets/ds/` (`--brand`, `--surface-header`,
   etc.; design system TEJ, Raleway), no colores escritos a mano.
   El mapa usa OpenStreetMap. No usar los datos de ejemplo del design system como reales.
-- Reutilizar lo existente antes de crear algo nuevo. No proponer otro stack sin que el
-  usuario lo pida: HTML, CSS y JS sin framework ni paso de compilación, y Python solo
-  con la biblioteca estándar en `scripts/`.
-- `sitio/` debe funcionar servido como carpeta estática, con rutas relativas.
+- Reutilizar lo existente antes de crear algo nuevo. No agregar librerías fuera del
+  stack aprobado en "Arquitectura" sin aprobación del usuario. Python solo con la
+  biblioteca estándar en `scripts/`.
+- Las llaves de servicio (Supabase service role, API de agentes) nunca llegan al
+  navegador ni al repositorio: van en variables de entorno o secretos.
+- Las mismas reglas de datos (enums, rangos, obligatorios) se aplican en el formulario,
+  en `/admin`, en la base de datos y en la importación.
 - Antes de publicar, el validador y las pruebas deben pasar y el usuario debe confirmar.
 - No subir credenciales ni datos personales del formulario.
 - Al cerrar cada sesión: skill `cierre-sesion`.
@@ -129,8 +177,8 @@ Claude los recibe y debe resolverlos o reportarlos.
   rangos (coordenadas dentro de Colombia, % entre 0 y 100), fechas, enlaces, claves
   duplicadas y referencias cruzadas. Además: revisar cada página en el navegador
   (consola sin errores, ancho de móvil).
-- **Despliegue**: GitHub Pages sirviendo `sitio/` (repositorio por crear). Pendiente de
-  confirmar con la pizarra 3.
+- **Despliegue**: Vercel Hobby conectado al repositorio personal de GitHub (por crear).
+  `sitio/` (HTML plano) queda como prototipo; la app Next.js lo reemplaza.
 
 ## Cronograma (MVP al 2026-10-27)
 

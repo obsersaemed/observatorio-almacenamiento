@@ -19,14 +19,14 @@ Qué se construye y para qué, en 3 frases como máximo.
 
 ## Criterios de aceptación
 **RF-01**
-- Dado ..., cuando ..., entonces ...
+- **CA-01.1** Dado ..., cuando ..., entonces ...
 
 ## Requisitos no funcionales
 | ID | Requisito |
 |---|---|
 | RNF-01 | Se usa sin desplazamiento horizontal a 375 px de ancho. |
 | RNF-02 | Las cifras usan formato es-CO (coma decimal) y unidades entre corchetes. |
-| RNF-03 | Funciona servido como carpeta estática, sin servidor de aplicación. |
+| RNF-03 | Con movimiento reducido activado no hay animaciones. |
 
 ## Datos
 | Archivo | Columna | Tipo | Obligatorio | Valores / rango | Fuente |

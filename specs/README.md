@@ -16,3 +16,4 @@ documento aprobado por el usuario.
 
 | # | Funcionalidad | Fase | Estado |
 |---|---|---|---|
+| 001 | [Arquitectura y plataforma base](001-arquitectura/) | 2. Spec | Borrador |
