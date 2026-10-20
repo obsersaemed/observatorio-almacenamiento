@@ -2,6 +2,7 @@
 Lo usan importar.py, proponer_aporte.py y respaldo.py. Las llaves se leen de
 web/.env.local (o del archivo que se indique) y nunca se imprimen."""
 import json
+import os
 import re
 import urllib.error
 import urllib.parse
@@ -26,9 +27,10 @@ def leer_env(ruta):
 
 
 def cliente_de_entorno(entorno, llave="SUPABASE_SERVICE_ROLE_KEY"):
-    """Cliente para un entorno con nombre ('pruebas') o la ruta de un archivo .env."""
-    ruta = ENTORNOS.get(entorno, entorno)
-    env = leer_env(ruta)
+    """Cliente para un entorno con nombre ('pruebas'), 'env' (variables de entorno, p. ej.
+    secretos de GitHub Actions) o la ruta de un archivo .env."""
+    ruta = "variables de entorno" if entorno == "env" else ENTORNOS.get(entorno, entorno)
+    env = dict(os.environ) if entorno == "env" else leer_env(ruta)
     url, valor = env.get("NEXT_PUBLIC_SUPABASE_URL"), env.get(llave)
     if not url or not valor:
         raise ErrorRest(f"Faltan NEXT_PUBLIC_SUPABASE_URL o {llave} en {ruta}")

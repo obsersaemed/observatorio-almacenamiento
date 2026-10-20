@@ -39,6 +39,16 @@ class ServidorFalso:
                 elif cuerpo is not None:
                     self.wfile.write(json.dumps(cuerpo).encode("utf-8"))
 
+            def do_GET(self):
+                falso.peticiones.append({"ruta": self.path, "cabeceras": {k.lower(): v for k, v in self.headers.items()}})
+                self.send_response(estado)
+                self.end_headers()
+                if estado >= 400:
+                    self.wfile.write(b'{"message":"falla simulada"}')
+                else:
+                    respuesta = cuerpo(self.path) if callable(cuerpo) else cuerpo
+                    self.wfile.write(json.dumps(respuesta if respuesta is not None else []).encode("utf-8"))
+
             def log_message(self, *args):
                 pass
 

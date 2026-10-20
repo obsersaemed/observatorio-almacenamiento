@@ -158,7 +158,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde; `buscar-noticias` y `ficha-normativa` usan el script en lugar de editar los CSV
   - Depende de: T05
   - Archivos: `scripts/proponer_aporte.py`, `pruebas/test_proponer_aporte.py`, dos `SKILL.md`
-- [ ] **T15 · S** · Respaldo diario a CSV en GitHub Actions
+- [x] **T15 · S** · Respaldo diario a CSV en GitHub Actions
   - Cubre: RF-13 · RNF-08 · CA-13.1
   - Prueba primero (RED): `pruebas/test_respaldo.py` con REST simulado: escribe un CSV por tabla publicada, sin correos, y devuelve error distinto de cero si la API falla
   - Hecho cuando (GREEN): pruebas en verde; `.github/workflows/respaldo.yml` diario (se activa al subir el repositorio en P4)
@@ -264,6 +264,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T12 | Sí: lib/decision.ts no existía; integración PGRST202 (sin funciones) hasta aplicar 0002; componente Decision probado RED tras escribirlo (apartado y restaurado) | 92/92 web, integración 24/24 en dos corridas; prueba manual del usuario: acceso con enlace a obsersae_med@unal.edu.co, lista de pendientes y dos rechazos con motivo guardados con revisado_por | Migración 0002 aplicada en el SQL Editor (falta registrarla con migration repair). Reintentos ante conexiones que no se establecen (~10 % en esta red) en Supabase y Turnstile; connection() antes de leer la sesión (aviso de Date.now() en el prerender de Next 16); limpieza de restos de pruebas |
 | 2026-10-19 | T13 | Sí: no existía csv.ts; luego RED de los enlaces de descarga en las secciones | 94/94 web; servidor real: 200 text/csv con licencia y Link rel=license para proyectos y normativa, 404 para aportes | Licencia como primera línea comentada (#) y cabecera HTTP Link; marca UTF-8 para Excel; punto decimal (datos abiertos); datos con use cache + cacheTag(tabla) para que la aprobación los invalide |
 | 2026-10-19 | T14 | Sí: no existía proponer_aporte.py; luego RED del reintento del cliente REST | Python 28/28; real contra pruebas: aporte 107 propuesto como Pendiente con origen agente y nombre buscar-noticias (borrado después) | ClienteRest reintenta una vez solo si la conexión no se estableció (WinError 10060 en esta red); las skills buscar-noticias y ficha-normativa proponen a la cola en lugar de editar los CSV |
+| 2026-10-19 | T15 | Sí: no existían respaldo.py ni el flujo de GitHub Actions | Python 35/35; real contra pruebas: 3 CSV escritos (0 registros, base sin aprobados) y, con la red caída, salió con error sin reescribir nada | Carpeta respaldo/ en la raíz; la Action necesita los secretos SUPABASE_URL y SUPABASE_ANON_KEY y se activa al crear el repositorio en GitHub (P4); modo --entorno env para leer las llaves de variables de entorno |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
