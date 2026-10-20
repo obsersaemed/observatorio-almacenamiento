@@ -170,7 +170,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde
   - Depende de: T07, T09
   - Archivos: `metadata` de cada `page.tsx`, `web/src/app/layout.tsx`
-- [ ] **T17 · XS** · Despliegue de vista previa en Vercel (requiere confirmación del usuario)
+- [x] **T17 · XS** · Despliegue de vista previa en Vercel (requiere confirmación del usuario)
   - Cubre: RNF-06, RNF-07, RNF-11
   - Prueba primero (RED): `web/tests/secretos.test.ts` compila y busca en `.next/static` el nombre y el valor de la llave de servicio (falla si aparecen; hoy falla porque no existe el build de verificación)
   - Hecho cuando (GREEN): prueba en verde y despliegue de **vista previa** en `*.vercel.app` con variables del proyecto **pruebas**, solo con aprobación explícita
@@ -266,6 +266,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T14 | Sí: no existía proponer_aporte.py; luego RED del reintento del cliente REST | Python 28/28; real contra pruebas: aporte 107 propuesto como Pendiente con origen agente y nombre buscar-noticias (borrado después) | ClienteRest reintenta una vez solo si la conexión no se estableció (WinError 10060 en esta red); las skills buscar-noticias y ficha-normativa proponen a la cola en lugar de editar los CSV |
 | 2026-10-19 | T15 | Sí: no existían respaldo.py ni el flujo de GitHub Actions | Python 35/35; real contra pruebas: 3 CSV escritos (0 registros, base sin aprobados) y, con la red caída, salió con error sin reescribir nada | Carpeta respaldo/ en la raíz; la Action necesita los secretos SUPABASE_URL y SUPABASE_ANON_KEY y se activa al crear el repositorio en GitHub (P4); modo --entorno env para leer las llaves de variables de entorno |
 | 2026-10-19 | T16 | Sí: no existían encabezado, robots ni sitemap; axe halló un encabezado de tabla vacío; prueba de contraste falló (3,46:1) | 111/111 web; navegador a 375 px: /, /aportar, /normativa y /admin/entrar sin desbordamiento y sin violaciones de axe (incluido contraste); robots.txt y sitemap.xml servidos | Encabezado con 'Saltar al contenido' y menú principal; --muted-foreground pasa a --text-body porque --text-muted no cumple AA (3,46:1); robots excluye /admin y /datos/; NEXT_PUBLIC_SITIO_URL para la URL pública; axe-core como dependencia de desarrollo |
+| 2026-10-19 | T17 | Sí: test:secretos fallaba sin build | Build revisado: ninguna llave privada en .next/static; repositorio privado en GitHub; respaldo en Actions OK; primer despliegue bloqueado por autor del commit | Identidad de git del repositorio cambiada a la cuenta obsersaemed (correo noreply de GitHub) porque Vercel Hobby bloquea commits de autores que no son el dueño. Pendiente: revisión del sitio publicado |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
