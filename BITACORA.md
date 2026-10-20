@@ -47,3 +47,11 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 ### Pendiente
 - Respuestas a las preguntas 5–20 de la sesión anterior.
 - Foto de la pizarra 3.
+
+## 2026-10-20 — Coordenadas corregidas
+
+- El usuario corrigió las coordenadas de los 7 proyectos en `datos/proyectos.csv` (por ejemplo
+  `49,653` → `4.9653`). Validador: 0 errores. El archivo venía de Excel en cp1252 y entró sin
+  revisión en los commits 4b851aa y 2eeb7ee (con `git add -A`); se pasó a UTF-8 sin cambiar datos.
+- `validar_datos.leer_csv` ahora acepta UTF-8 y cp1252 (exportaciones de Excel).
+- Lección: revisar `git status` antes de cada commit en lugar de `git add -A` a ciegas.

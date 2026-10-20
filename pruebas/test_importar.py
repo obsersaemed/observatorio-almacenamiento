@@ -20,7 +20,7 @@ from test_validar_datos import ENC_PROY, fila_proyecto  # noqa: E402
 class ServidorFalso:
     """Registra cada petición y responde con el estado configurado."""
 
-    def __init__(self, estado=201):
+    def __init__(self, estado=201, cuerpo=None):
         self.peticiones = []
         falso = self
 
@@ -36,6 +36,8 @@ class ServidorFalso:
                 self.end_headers()
                 if estado >= 400:
                     self.wfile.write(b'{"message":"falla simulada"}')
+                elif cuerpo is not None:
+                    self.wfile.write(json.dumps(cuerpo).encode("utf-8"))
 
             def log_message(self, *args):
                 pass
@@ -64,8 +66,9 @@ class TestImportar(unittest.TestCase):
         codigo, mensajes = importar(csv, ClienteRest(servidor.url, "llave-de-prueba"), self.esquemas)
         return codigo, mensajes, servidor.peticiones
 
-    def test_csv_actual_rechaza_los_siete_y_no_envia_nada(self):
-        actual = (RAIZ / "datos" / "proyectos.csv").read_text(encoding="utf-8-sig")
+    def test_csv_con_coordenadas_corridas_rechaza_los_siete_y_no_envia_nada(self):
+        # Copia fija de la primera exportación de la Sheet, con la coma decimal corrida.
+        actual = (RAIZ / "pruebas" / "datos" / "proyectos_coordenadas_corridas.csv").read_text(encoding="utf-8-sig")
         codigo, mensajes, peticiones = self.correr(actual)
         self.assertNotEqual(codigo, 0)
         self.assertEqual(peticiones, [])

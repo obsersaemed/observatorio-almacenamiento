@@ -77,6 +77,12 @@ class TestValidador(unittest.TestCase):
         errores, _ = self.proyectos(ENC_PROY + fila_proyecto())
         self.assertFalse(any("aportes" in e for e in errores), errores)
 
+    def test_lee_csv_guardado_por_excel_en_codificacion_windows(self):
+        # Excel en Windows exporta CSV en cp1252 (no UTF-8); las tildes deben leerse bien.
+        (self.dir / "proyectos.csv").write_bytes((ENC_PROY + fila_proyecto()).encode("cp1252"))
+        errores, _ = validar(self.dir)
+        self.assertEqual(errores, [])
+
     def test_noticia_con_norma_inexistente(self):
         (self.dir / "noticias.csv").write_text(
             "fecha,titulo,medio,enlace,resumen,etiquetas,proyecto_relacionado,norma_relacionada,publicacion\n"

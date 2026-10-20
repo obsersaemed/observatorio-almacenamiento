@@ -9,6 +9,7 @@ Solo usa la biblioteca estándar.
 """
 import argparse
 import csv
+import io
 import json
 import re
 import unicodedata
@@ -45,8 +46,13 @@ def numero(s):
 
 
 def leer_csv(ruta):
-    with open(ruta, encoding="utf-8-sig", newline="") as f:
-        return list(csv.reader(f))
+    """Lee UTF-8 (con o sin marca) y, si no lo es, cp1252: así guarda Excel en Windows."""
+    crudo = Path(ruta).read_bytes()
+    try:
+        texto = crudo.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        texto = crudo.decode("cp1252")
+    return list(csv.reader(io.StringIO(texto, newline="")))
 
 
 def limite(x):
