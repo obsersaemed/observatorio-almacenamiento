@@ -122,7 +122,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde
   - Depende de: T07
   - Archivos: `web/src/components/kpi-tarjeta.tsx`, `web/src/components/transicion.tsx`
-- [ ] **T09 · M** · Formulario `/aportar` con Turnstile, límite de envíos y número de seguimiento
+- [x] **T09 · M** · Formulario `/aportar` con Turnstile, límite de envíos y número de seguimiento
   - Cubre: RF-03, RF-04, RF-05, RF-06 · RNF-10 · CA-03.1, CA-03.2, CA-04.1, CA-05.1, CA-05.2, CA-06.1
   - Prueba primero (RED): `web/src/app/aportar/acciones.test.ts`: sin fuente o sin correo se rechaza; un Turnstile inválido (llave de prueba "siempre falla") se rechaza sin guardar; el 6.º envío en una hora del mismo origen se rechaza; un envío válido devuelve un número de seguimiento y guarda el correo solo en `aportantes`
   - Hecho cuando (GREEN): pruebas en verde
@@ -258,6 +258,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T06 | Sí: no existían importar.py ni supabase_rest.py | Python 20/20; real contra pruebas: CSV actual rechazado (14 errores, nada enviado) y fila válida importada, visible y borrada | Importación todo o nada; upsert por nombre; cliente REST con llaves sb_ (apikey + Bearer). Prueba corregida: cabeceras HTTP sin distinguir mayúsculas |
 | 2026-10-19 | T07 | Sí: no existían kpi.ts, inicio.tsx ni las páginas de sección | 30/30 web; build: / estático con revalidación 5 min; navegador real contra Supabase pruebas, 375 px sin desbordamiento, consola limpia | Desviaciones: con cacheComponents de Next 16 se usa 'use cache' + cacheLife(revalidate 300) + cacheTag('proyectos') en lugar de revalidate = 300 (T12 invalidará la etiqueta); la prueba del título pasó de page.test a inicio.test porque la página ahora es asíncrona; KPI con tarjetas propias sobre tokens (Tremor se evalúa en 002 por compatibilidad con Tailwind 4); etiquetas sin mayúsculas para no escribir MWH |
 | 2026-10-19 | T08 | Sí: no existían KpiValor ni Aparecer | 35/35 web; navegador: KPI con data-animado=true sin preferencia, valor final accesible en .sr-only, consola y servidor sin errores | Hook propio useMovimientoReducido (useSyncExternalStore) porque useReducedMotion de Motion guarda la primera lectura y no reacciona a cambios; corregido setState síncrono en efecto (lint). Corrección de T07: el panel de KPI va en <Suspense> (Next 16 con precarga parcial lo exige; el aviso 'URL data' desapareció); pruebas de inicio ajustadas a la ranura panelKpi y al valor accesible |
+| 2026-10-19 | T09 | Sí: no existían aportes.ts, formulario-aporte.tsx, turnstile.ts ni aportes-supabase.ts | 50/50 web, 13/13 integración (Turnstile real con llaves de prueba + Supabase pruebas); navegador: envío real devolvió seguimiento 16, aporte Pendiente/usuario con hash de origen; registro de prueba borrado | Lógica en lib/aportes.ts con dependencias inyectadas (pruebas en lib/aportes.test.ts en lugar de app/aportar/acciones.test.ts); sin react-hook-form: useActionState + atributos HTML + reglas compartidas; sal del hash = llave de servicio (solo servidor); el envío tarda ~5 s por Turnstile + Supabase |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
