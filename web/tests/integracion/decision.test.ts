@@ -115,6 +115,8 @@ describe("rechazar_aporte (CA-09.1)", () => {
 });
 
 test("los correos de editores se guardan en minúsculas", async () => {
-  const { error } = await servicio.from("editores").insert({ correo: `Mayus-${sufijo}@Ejemplo.co` });
+  const correo = `Mayus-${sufijo}@Ejemplo.co`;
+  const { error } = await servicio.from("editores").insert({ correo });
+  await servicio.from("editores").delete().in("correo", [correo, correo.toLowerCase()]); // por si se insertó
   expect(error?.code).toBe("23514");
 });
