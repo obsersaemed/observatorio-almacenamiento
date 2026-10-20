@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { Inicio } from "./inicio";
+import { Inicio, PanelKpi } from "./inicio";
 
 const kpi = {
   total: 7,
@@ -11,30 +11,30 @@ const kpi = {
 
 describe("inicio", () => {
   test("muestra el título del observatorio", () => {
-    render(<Inicio kpi={kpi} />);
+    render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     expect(
       screen.getByRole("heading", { level: 1, name: "Observatorio de Almacenamiento de Energía" }),
     ).toBeInTheDocument();
   });
 
   test("potencia y energía en operación van en tarjetas separadas con coma decimal (CA-02.1)", () => {
-    render(<Inicio kpi={kpi} />);
+    render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     const potencia = screen.getByRole("group", { name: "Potencia en operación [MW]" });
     const energia = screen.getByRole("group", { name: "Energía en operación [MWh]" });
     expect(potencia).not.toBe(energia);
-    expect(within(potencia).getByText("17,0 MW")).toBeInTheDocument();
-    expect(within(energia).getByText("10,8 MWh")).toBeInTheDocument();
+    expect(within(potencia).getByText("17,0 MW", { selector: ".sr-only" })).toBeInTheDocument();
+    expect(within(energia).getByText("10,8 MWh", { selector: ".sr-only" })).toBeInTheDocument();
   });
 
   test("muestra el número de proyectos por estado", () => {
-    render(<Inicio kpi={kpi} />);
+    render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     const estados = screen.getByRole("group", { name: "Proyectos por estado" });
     expect(within(estados).getByText("En operación").nextSibling).toHaveTextContent("3");
     expect(within(estados).getByText("Anunciado").nextSibling).toHaveTextContent("2");
   });
 
   test("da acceso a las cuatro secciones", () => {
-    render(<Inicio kpi={kpi} />);
+    render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     for (const [nombre, ruta] of [
       ["Implementación en el país", "/mapa"],
       ["Vehículos eléctricos", "/vehiculos"],
@@ -46,7 +46,7 @@ describe("inicio", () => {
   });
 
   test("invita a aportar datos", () => {
-    render(<Inicio kpi={kpi} />);
+    render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     expect(screen.getByRole("link", { name: /aportar/i })).toHaveAttribute("href", "/aportar");
   });
 });

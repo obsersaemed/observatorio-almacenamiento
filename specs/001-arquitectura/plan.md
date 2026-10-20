@@ -116,7 +116,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde; las páginas de sección existen con título y "En construcción"
   - Depende de: T02, T03, T05
   - Archivos: `web/src/lib/kpi.ts`, `web/src/app/page.tsx`, `web/src/components/kpi-tarjeta.tsx`, `web/src/app/{mapa,vehiculos,normativa,noticias}/page.tsx`
-- [ ] **T08 · S** · Animación de los KPI con Motion respetando el movimiento reducido
+- [x] **T08 · S** · Animación de los KPI con Motion respetando el movimiento reducido
   - Cubre: RF-17 · CA-17.1
   - Prueba primero (RED): `kpi-tarjeta.test.tsx` simula `prefers-reduced-motion: reduce` y espera ver el valor final de inmediato, sin el atributo de animación; sin la preferencia, espera que la animación esté presente
   - Hecho cuando (GREEN): pruebas en verde
@@ -257,6 +257,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T05 | Sí: primero faltaban las variables y luego las tablas (PGRST205); la prueba SQL fallaba sin columna_sql ni migración | SQL↔JSON 7/7, Python 18/18, RLS 8/8 contra pruebas | Desviaciones: noticias.revision→publicacion (Pendiente/Aprobado/Rechazado), tabla vehiculos pasa a la spec 003, nombres SQL con columna_sql(). La migración se aplicó en el SQL Editor porque db push falló al conectar por el pooler (puertos abiertos); falta registrarla con supabase migration repair cuando la CLI conecte |
 | 2026-10-19 | T06 | Sí: no existían importar.py ni supabase_rest.py | Python 20/20; real contra pruebas: CSV actual rechazado (14 errores, nada enviado) y fila válida importada, visible y borrada | Importación todo o nada; upsert por nombre; cliente REST con llaves sb_ (apikey + Bearer). Prueba corregida: cabeceras HTTP sin distinguir mayúsculas |
 | 2026-10-19 | T07 | Sí: no existían kpi.ts, inicio.tsx ni las páginas de sección | 30/30 web; build: / estático con revalidación 5 min; navegador real contra Supabase pruebas, 375 px sin desbordamiento, consola limpia | Desviaciones: con cacheComponents de Next 16 se usa 'use cache' + cacheLife(revalidate 300) + cacheTag('proyectos') en lugar de revalidate = 300 (T12 invalidará la etiqueta); la prueba del título pasó de page.test a inicio.test porque la página ahora es asíncrona; KPI con tarjetas propias sobre tokens (Tremor se evalúa en 002 por compatibilidad con Tailwind 4); etiquetas sin mayúsculas para no escribir MWH |
+| 2026-10-19 | T08 | Sí: no existían KpiValor ni Aparecer | 35/35 web; navegador: KPI con data-animado=true sin preferencia, valor final accesible en .sr-only, consola y servidor sin errores | Hook propio useMovimientoReducido (useSyncExternalStore) porque useReducedMotion de Motion guarda la primera lectura y no reacciona a cambios; corregido setState síncrono en efecto (lint). Corrección de T07: el panel de KPI va en <Suspense> (Next 16 con precarga parcial lo exige; el aviso 'URL data' desapareció); pruebas de inicio ajustadas a la ranura panelKpi y al valor accesible |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
