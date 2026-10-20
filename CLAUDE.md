@@ -141,6 +141,7 @@ Git, Python 3.12.10 con las dependencias de `Vehiculos/requirements.txt` y Chrom
 Playwright. Supabase y Vercel se usan con `npx supabase …` y `npx vercel …`, sin
 instalación global. **No hay Docker** y el equipo tiene 3,4 GB de RAM, así que Supabase
 local no es viable: las pruebas usan el segundo proyecto gratuito de Supabase ("pruebas").
+**Memoria:** no correr `npm run build` con `npm run dev` encendido (se agota la RAM).
 Los navegadores de Playwright para la app web se instalan con
 `npx playwright install chromium` cuando exista `web/`.
 

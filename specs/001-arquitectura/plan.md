@@ -134,7 +134,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde
   - Depende de: T05
   - Archivos: `web/src/middleware.ts`, `web/src/lib/acceso.ts`, `web/src/app/admin/entrar/page.tsx`
-- [ ] **T11 · M** · Lista y detalle de aportes pendientes, con origen y comparación
+- [x] **T11 · M** · Lista y detalle de aportes pendientes, con origen y comparación
   - Cubre: RF-08, RF-12 · CA-08.1, CA-12.1
   - Prueba primero (RED): `web/src/components/aportes/*.test.tsx` con datos de ejemplo: la lista muestra tipo, origen (`usuario` o `agente` + nombre), fecha y fuente; el detalle de una corrección muestra el valor actual y el propuesto lado a lado
   - Hecho cuando (GREEN): pruebas en verde
@@ -260,6 +260,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T08 | Sí: no existían KpiValor ni Aparecer | 35/35 web; navegador: KPI con data-animado=true sin preferencia, valor final accesible en .sr-only, consola y servidor sin errores | Hook propio useMovimientoReducido (useSyncExternalStore) porque useReducedMotion de Motion guarda la primera lectura y no reacciona a cambios; corregido setState síncrono en efecto (lint). Corrección de T07: el panel de KPI va en <Suspense> (Next 16 con precarga parcial lo exige; el aviso 'URL data' desapareció); pruebas de inicio ajustadas a la ranura panelKpi y al valor accesible |
 | 2026-10-19 | T09 | Sí: no existían aportes.ts, formulario-aporte.tsx, turnstile.ts ni aportes-supabase.ts | 50/50 web, 13/13 integración (Turnstile real con llaves de prueba + Supabase pruebas); navegador: envío real devolvió seguimiento 16, aporte Pendiente/usuario con hash de origen; registro de prueba borrado | Lógica en lib/aportes.ts con dependencias inyectadas (pruebas en lib/aportes.test.ts en lugar de app/aportar/acciones.test.ts); sin react-hook-form: useActionState + atributos HTML + reglas compartidas; sal del hash = llave de servicio (solo servidor); el envío tarda ~5 s por Turnstile + Supabase |
 | 2026-10-19 | T10 | Sí: no existían acceso.ts ni acceso-supabase.ts; luego RED de comodines (% como editor) y de destinoProxy | 62/62 web, 4/4 integración de editores (estable 3 de 3); navegador: /admin sin sesión → /admin/entrar, correo no editor → mensaje neutro y ningún usuario creado | Seguridad: ilike→eq para que % y _ no actúen como comodines. Next 16: middleware se llama proxy.ts; la decisión de acceso va en el proxy porque redirect() dentro de Suspense fallaba (terminaba en /); el layout queda como segunda barrera sin redirigir. Flujo PKCE de @supabase/ssr (abrir el enlace en el mismo navegador). Pendiente: probar el enlace real con obsersae_med@unal.edu.co y configurar las URL de redirección en Supabase |
+| 2026-10-19 | T11 | Sí: no existían aportes-admin.ts, lista.tsx ni comparacion.tsx | 69/69 web; build OK (con el servidor de desarrollo apagado) | El destino de una corrección se toma de datos.tabla (por defecto proyectos) y la clave de cada tabla (nombre, id, enlace); revisión visual de /admin pendiente de la sesión real del editor (prueba de punta a punta tras T12) |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
