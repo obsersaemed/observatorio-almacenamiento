@@ -55,3 +55,6 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
   revisión en los commits 4b851aa y 2eeb7ee (con `git add -A`); se pasó a UTF-8 sin cambiar datos.
 - `validar_datos.leer_csv` ahora acepta UTF-8 y cp1252 (exportaciones de Excel).
 - Lección: revisar `git status` antes de cada commit en lugar de `git add -A` a ciegas.
+- Importación a Supabase **pruebas** (`scripts/importar.py --entorno pruebas`): 7 proyectos como
+  Aprobado. El inicio muestra 17,0 MW y 12,8 MWh en operación (Termozipa, La Martina, Celsia
+  Palmira 2) y 3/1/2/1 por estado; `/datos/proyectos.csv` trae los 7.
