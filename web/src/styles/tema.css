@@ -16,7 +16,8 @@
   --secondary: var(--surface-tint);
   --secondary-foreground: var(--text-heading);
   --muted: var(--surface-tint);
-  --muted-foreground: var(--text-muted);
+  /* --text-muted (#7f868a) da 3,5:1 sobre el fondo: no cumple WCAG AA. Se usa --text-body. */
+  --muted-foreground: var(--text-body);
   --accent: var(--surface-tint);
   --accent-foreground: var(--text-heading);
   --destructive: var(--status-susp);

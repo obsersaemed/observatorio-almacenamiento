@@ -164,7 +164,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde; `.github/workflows/respaldo.yml` diario (se activa al subir el repositorio en P4)
   - Depende de: T05
   - Archivos: `scripts/respaldo.py`, `pruebas/test_respaldo.py`, `.github/workflows/respaldo.yml`
-- [ ] **T16 · S** · Metadatos por página, accesibilidad base y móvil
+- [x] **T16 · S** · Metadatos por página, accesibilidad base y móvil
   - Cubre: RNF-01, RNF-03, RNF-09
   - Prueba primero (RED): `web/src/app/metadatos.test.ts` exige `title` y `description` propios en `/`, `/aportar` y las cuatro secciones; prueba de componente con `jest-axe` sin violaciones en el inicio y en `/aportar`
   - Hecho cuando (GREEN): pruebas en verde
@@ -265,6 +265,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T13 | Sí: no existía csv.ts; luego RED de los enlaces de descarga en las secciones | 94/94 web; servidor real: 200 text/csv con licencia y Link rel=license para proyectos y normativa, 404 para aportes | Licencia como primera línea comentada (#) y cabecera HTTP Link; marca UTF-8 para Excel; punto decimal (datos abiertos); datos con use cache + cacheTag(tabla) para que la aprobación los invalide |
 | 2026-10-19 | T14 | Sí: no existía proponer_aporte.py; luego RED del reintento del cliente REST | Python 28/28; real contra pruebas: aporte 107 propuesto como Pendiente con origen agente y nombre buscar-noticias (borrado después) | ClienteRest reintenta una vez solo si la conexión no se estableció (WinError 10060 en esta red); las skills buscar-noticias y ficha-normativa proponen a la cola en lugar de editar los CSV |
 | 2026-10-19 | T15 | Sí: no existían respaldo.py ni el flujo de GitHub Actions | Python 35/35; real contra pruebas: 3 CSV escritos (0 registros, base sin aprobados) y, con la red caída, salió con error sin reescribir nada | Carpeta respaldo/ en la raíz; la Action necesita los secretos SUPABASE_URL y SUPABASE_ANON_KEY y se activa al crear el repositorio en GitHub (P4); modo --entorno env para leer las llaves de variables de entorno |
+| 2026-10-19 | T16 | Sí: no existían encabezado, robots ni sitemap; axe halló un encabezado de tabla vacío; prueba de contraste falló (3,46:1) | 111/111 web; navegador a 375 px: /, /aportar, /normativa y /admin/entrar sin desbordamiento y sin violaciones de axe (incluido contraste); robots.txt y sitemap.xml servidos | Encabezado con 'Saltar al contenido' y menú principal; --muted-foreground pasa a --text-body porque --text-muted no cumple AA (3,46:1); robots excluye /admin y /datos/; NEXT_PUBLIC_SITIO_URL para la URL pública; axe-core como dependencia de desarrollo |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).

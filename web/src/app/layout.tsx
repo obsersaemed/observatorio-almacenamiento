@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
+import { EncabezadoSitio } from "@/components/encabezado-sitio";
+import { URL_SITIO } from "@/lib/sitio";
 import "./globals.css";
 
 const raleway = Raleway({
@@ -14,6 +16,12 @@ export const metadata: Metadata = {
     template: "%s · Observatorio de Almacenamiento de Energía",
   },
   description: "Implementación, regulación y noticias de los sistemas de almacenamiento de energía con baterías (SAEB) en Colombia.",
+  metadataBase: URL_SITIO,
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: "Observatorio de Almacenamiento de Energía",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -22,7 +30,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es-CO"
       className={`${raleway.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <EncabezadoSitio />
+        <div id="contenido" tabIndex={-1} className="flex flex-1 flex-col outline-none">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

@@ -41,6 +41,31 @@ describe("tema TEJ", () => {
     expect(leer("src/app/globals.css")).toContain("../styles/tema.css");
   });
 
+  test("los textos sobre los fondos del tema cumplen contraste WCAG AA (4,5:1)", () => {
+    const definiciones = new Map<string, string>();
+    for (const css of [leer("src/styles/tokens/colors.css"), tema]) {
+      for (const [, nombre, valor] of sinComentarios(css).matchAll(/(--[\w-]+):\s*([^;]+);/g)) definiciones.set(nombre, valor.trim());
+    }
+    const resolver = (valor: string): string => {
+      const m = /^var\((--[\w-]+)\)$/.exec(valor);
+      return m ? resolver(definiciones.get(m[1]) ?? "") : valor;
+    };
+    const luminancia = (hex: string) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const contraste = (a: string, b: string) => {
+      const [l1, l2] = [luminancia(resolver(a)), luminancia(resolver(b))].sort((x, y) => y - x);
+      return (l1 + 0.05) / (l2 + 0.05);
+    };
+    for (const texto of ["var(--foreground)", "var(--muted-foreground)", "var(--card-foreground)"]) {
+      for (const fondo of ["var(--background)", "var(--card)"]) {
+        expect(contraste(texto, fondo), `${texto} sobre ${fondo}`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+    expect(contraste("var(--primary-foreground)", "var(--primary)")).toBeGreaterThanOrEqual(4.5);
+  });
+
   test("el botón primario de shadcn usa el color de marca", () => {
     render(<Button>Aportar</Button>);
     expect(screen.getByRole("button", { name: "Aportar" }).className).toContain("bg-primary");
