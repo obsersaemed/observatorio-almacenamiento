@@ -19,3 +19,14 @@ describe("páginas de sección (placeholder hasta las specs 002–005)", () => {
     expect(String(metadata.description ?? "").length).toBeGreaterThan(20);
   });
 });
+
+describe("descarga de datos de cada sección (RF-14)", () => {
+  test.each([
+    [Mapa, "/datos/proyectos.csv"],
+    [Normativa, "/datos/normativa.csv"],
+    [Noticias, "/datos/noticias.csv"],
+  ])("%#: enlaza al CSV de la sección", (Pagina, ruta) => {
+    render(<Pagina />);
+    expect(screen.getByRole("link", { name: /descargar datos/i })).toHaveAttribute("href", ruta);
+  });
+});

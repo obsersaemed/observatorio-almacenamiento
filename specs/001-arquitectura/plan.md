@@ -146,7 +146,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde
   - Depende de: T11
   - Archivos: `web/src/app/admin/acciones.ts`, `web/src/components/aportes/decision.tsx`
-- [ ] **T13 · S** · Descarga CSV por sección con fuente y licencia
+- [x] **T13 · S** · Descarga CSV por sección con fuente y licencia
   - Cubre: RF-14 · RNF-10 · CA-14.1
   - Prueba primero (RED): `web/src/lib/csv.test.ts`: solo registros aprobados, columna de fuente, línea de licencia CC BY 4.0, sin correos
   - Hecho cuando (GREEN): pruebas en verde; `/datos/proyectos.csv` responde con `text/csv`
@@ -262,6 +262,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T10 | Sí: no existían acceso.ts ni acceso-supabase.ts; luego RED de comodines (% como editor) y de destinoProxy | 62/62 web, 4/4 integración de editores (estable 3 de 3); navegador: /admin sin sesión → /admin/entrar, correo no editor → mensaje neutro y ningún usuario creado | Seguridad: ilike→eq para que % y _ no actúen como comodines. Next 16: middleware se llama proxy.ts; la decisión de acceso va en el proxy porque redirect() dentro de Suspense fallaba (terminaba en /); el layout queda como segunda barrera sin redirigir. Flujo PKCE de @supabase/ssr (abrir el enlace en el mismo navegador). Pendiente: probar el enlace real con obsersae_med@unal.edu.co y configurar las URL de redirección en Supabase |
 | 2026-10-19 | T11 | Sí: no existían aportes-admin.ts, lista.tsx ni comparacion.tsx | 69/69 web; build OK (con el servidor de desarrollo apagado) | El destino de una corrección se toma de datos.tabla (por defecto proyectos) y la clave de cada tabla (nombre, id, enlace); revisión visual de /admin pendiente de la sesión real del editor (prueba de punta a punta tras T12) |
 | 2026-10-19 | T12 | Sí: lib/decision.ts no existía; integración PGRST202 (sin funciones) hasta aplicar 0002; componente Decision probado RED tras escribirlo (apartado y restaurado) | 92/92 web, integración 24/24 en dos corridas; prueba manual del usuario: acceso con enlace a obsersae_med@unal.edu.co, lista de pendientes y dos rechazos con motivo guardados con revisado_por | Migración 0002 aplicada en el SQL Editor (falta registrarla con migration repair). Reintentos ante conexiones que no se establecen (~10 % en esta red) en Supabase y Turnstile; connection() antes de leer la sesión (aviso de Date.now() en el prerender de Next 16); limpieza de restos de pruebas |
+| 2026-10-19 | T13 | Sí: no existía csv.ts; luego RED de los enlaces de descarga en las secciones | 94/94 web; servidor real: 200 text/csv con licencia y Link rel=license para proyectos y normativa, 404 para aportes | Licencia como primera línea comentada (#) y cabecera HTTP Link; marca UTF-8 para Excel; punto decimal (datos abiertos); datos con use cache + cacheTag(tabla) para que la aprobación los invalide |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).

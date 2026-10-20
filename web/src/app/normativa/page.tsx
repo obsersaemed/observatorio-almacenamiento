@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Normativa() {
-  return <SeccionEnConstruccion titulo="Evolución normativa" descripcion={metadata.description as string} />;
+  return <SeccionEnConstruccion titulo="Evolución normativa" descripcion={metadata.description as string} descarga="/datos/normativa.csv" />;
 }

@@ -34,3 +34,16 @@ export async function proyectosParaKpi(): Promise<ProyectoKpi[]> {
   if (error) throw new Error(`No se pudieron leer los proyectos: ${error.message}`);
   return data ?? [];
 }
+
+/** Registros aprobados de una tabla pública, para las descargas CSV (RF-14). */
+export async function filasPublicadas(tabla: string): Promise<Record<string, unknown>[]> {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag(tabla);
+
+  const supabase = clientePublico();
+  if (!supabase) return [];
+  const { data, error } = await supabase.from(tabla).select("*").eq("publicacion", "Aprobado");
+  if (error) throw new Error(`No se pudieron leer ${tabla}: ${error.message}`);
+  return data ?? [];
+}

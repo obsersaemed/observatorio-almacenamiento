@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Noticias() {
-  return <SeccionEnConstruccion titulo="Noticias" descripcion={metadata.description as string} />;
+  return <SeccionEnConstruccion titulo="Noticias" descripcion={metadata.description as string} descarga="/datos/noticias.csv" />;
 }

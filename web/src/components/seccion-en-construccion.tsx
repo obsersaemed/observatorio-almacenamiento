@@ -1,7 +1,15 @@
 import Link from "next/link";
 
 // Marcador de sección mientras se construye su propia spec (002–005).
-export function SeccionEnConstruccion({ titulo, descripcion }: { titulo: string; descripcion: string }) {
+export function SeccionEnConstruccion({
+  titulo,
+  descripcion,
+  descarga,
+}: {
+  titulo: string;
+  descripcion: string;
+  descarga?: string;
+}) {
   return (
     <main className="mx-auto w-full max-w-[var(--page-max)] px-4 py-8">
       <h1 className="text-2xl font-extrabold text-[var(--text-heading)] sm:text-3xl">{titulo}</h1>
@@ -12,6 +20,13 @@ export function SeccionEnConstruccion({ titulo, descripcion }: { titulo: string;
           Volver al inicio
         </Link>
       </p>
+      {descarga && (
+        <p className="mt-4">
+          <a href={descarga} download className="font-semibold text-[var(--text-link)] underline">
+            Descargar datos (CSV, licencia CC BY 4.0)
+          </a>
+        </p>
+      )}
     </main>
   );
 }

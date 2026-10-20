@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Mapa() {
-  return <SeccionEnConstruccion titulo="Implementación en el país" descripcion={metadata.description as string} />;
+  return <SeccionEnConstruccion titulo="Implementación en el país" descripcion={metadata.description as string} descarga="/datos/proyectos.csv" />;
 }
