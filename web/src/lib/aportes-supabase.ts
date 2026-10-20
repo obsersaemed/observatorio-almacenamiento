@@ -2,6 +2,7 @@
 // que solo se importa desde código de servidor (la server action de /aportar).
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { DependenciasAporte } from "./aportes";
+import { fetchConReintento } from "./fetch-con-reintento";
 
 const UNA_HORA_MS = 60 * 60 * 1000;
 
@@ -9,7 +10,10 @@ export function clienteServicio(): SupabaseClient {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const llave = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !llave) throw new Error("Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY");
-  return createClient(url, llave, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createClient(url, llave, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: fetchConReintento },
+  });
 }
 
 export function dependenciasSupabase(

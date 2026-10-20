@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { normalizarCorreo } from "./acceso";
+import { fetchConReintento } from "./fetch-con-reintento";
 
 /** ¿El correo está en `editores`? Se consulta con la llave de servicio, antes de enviar nada.
  *  Comparación exacta (no ilike: % y _ del visitante actuarían como comodines); los correos
@@ -23,6 +24,7 @@ export function esEditorSupabase(servicio: SupabaseClient) {
 export async function clienteConSesion() {
   const almacen = await cookies();
   return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    global: { fetch: fetchConReintento },
     cookies: {
       getAll: () => almacen.getAll(),
       setAll: (lista) => {

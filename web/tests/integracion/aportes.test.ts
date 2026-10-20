@@ -5,10 +5,11 @@ import { afterAll, describe, expect, test } from "vitest";
 import { dependenciasSupabase } from "@/lib/aportes-supabase";
 import { LIMITE_POR_HORA, hashOrigen, registrarAporte } from "@/lib/aportes";
 import { verificarTurnstile } from "@/lib/turnstile";
+import { fetchConReintento } from "@/lib/fetch-con-reintento";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const servicio = createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
-const anonimo = createClient(url, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false } });
+const servicio = createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false }, global: { fetch: fetchConReintento } });
+const anonimo = createClient(url, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false }, global: { fetch: fetchConReintento } });
 
 const SIEMPRE_APRUEBA = "1x0000000000000000000000000000000AA";
 const SIEMPRE_FALLA = "2x0000000000000000000000000000000AA";
@@ -70,5 +71,5 @@ describe("registrarAporte con Supabase real", () => {
       .select("id", { count: "exact", head: true })
       .eq("origen_hash", hashOrigen(ip, sal));
     expect(count).toBe(LIMITE_POR_HORA);
-  });
+  }, 90_000); // 6 envíos reales, cada uno con Turnstile y Supabase
 });

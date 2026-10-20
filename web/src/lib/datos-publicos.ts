@@ -3,6 +3,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { cacheLife, cacheTag } from "next/cache";
 import type { ProyectoKpi } from "./kpi";
+import { fetchConReintento } from "./fetch-con-reintento";
 
 export const ETIQUETA_PROYECTOS = "proyectos";
 
@@ -10,7 +11,10 @@ function clientePublico() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const llave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !llave) return null;
-  return createClient(url, llave, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createClient(url, llave, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: fetchConReintento },
+  });
 }
 
 export async function proyectosParaKpi(): Promise<ProyectoKpi[]> {

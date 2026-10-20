@@ -1,10 +1,11 @@
 // Ayudante de pruebas de integración: clientes de Supabase "pruebas" y sesiones reales sin
 // correo (el enlace mágico se genera con la API de administración y se canjea aquí).
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { fetchConReintento } from "@/lib/fetch-con-reintento";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const opciones = { auth: { persistSession: false, autoRefreshToken: false } };
+const opciones = { auth: { persistSession: false, autoRefreshToken: false }, global: { fetch: fetchConReintento } };
 
 export const servicio = createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY!, opciones);
 export const anonimo = createClient(url, anonKey, opciones);

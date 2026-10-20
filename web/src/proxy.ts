@@ -3,10 +3,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { decidirAcceso, destinoProxy } from "@/lib/acceso";
+import { fetchConReintento } from "@/lib/fetch-con-reintento";
 
 export async function proxy(peticion: NextRequest) {
   let respuesta = NextResponse.next({ request: peticion });
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    global: { fetch: fetchConReintento },
     cookies: {
       getAll: () => peticion.cookies.getAll(),
       setAll: (lista) => {
