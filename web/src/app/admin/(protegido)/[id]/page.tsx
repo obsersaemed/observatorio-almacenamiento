@@ -3,9 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Comparacion } from "@/components/aportes/comparacion";
+import { Decision } from "@/components/aportes/decision";
 import { clienteConSesion } from "@/lib/acceso-supabase";
 import { CLAVE_TABLA, compararCampos, etiquetaOrigen, tablaDestino, type AporteFila } from "@/lib/aportes-admin";
+import { columnasDe } from "@/lib/decision";
 import { formatoFecha } from "@/lib/formato";
+import { aprobar, rechazar } from "./acciones";
 
 export const metadata: Metadata = { title: "Revisar aporte", robots: { index: false } };
 
@@ -58,6 +61,21 @@ async function Detalle({ params }: { params: Promise<{ id: string }> }) {
         {actual ? "Valor actual frente al propuesto" : "Datos propuestos"}
       </h2>
       <Comparacion filas={compararCampos(actual, aporte.datos ?? {})} />
+
+      {aporte.publicacion === "Pendiente" ? (
+        <Decision
+          campos={columnasDe(tabla).map((c) => {
+            const valor = (aporte.datos ?? {})[c.sql] ?? actual?.[c.sql];
+            return { sql: c.sql, etiqueta: c.nombre, obligatorio: Boolean(c.obligatorio), valor: valor == null ? "" : String(valor) };
+          })}
+          aprobar={aprobar.bind(null, aporte.id)}
+          rechazar={rechazar.bind(null, aporte.id)}
+        />
+      ) : (
+        <p className="mt-8 rounded-[var(--radius-md)] border border-border bg-card p-4">
+          Este aporte ya fue revisado ({aporte.publicacion}).
+        </p>
+      )}
     </>
   );
 }
