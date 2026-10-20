@@ -1,7 +1,8 @@
-export default function Inicio() {
-  return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8">
-      <h1 className="text-2xl font-extrabold uppercase">Observatorio de Almacenamiento de Energía</h1>
-    </main>
-  );
+import { Inicio } from "@/components/inicio";
+import { proyectosParaKpi } from "@/lib/datos-publicos";
+import { calcularKpi } from "@/lib/kpi";
+
+export default async function PaginaInicio() {
+  const kpi = calcularKpi(await proyectosParaKpi());
+  return <Inicio kpi={kpi} />;
 }

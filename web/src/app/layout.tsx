@@ -9,7 +9,10 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "Observatorio de Almacenamiento de Energía",
+  title: {
+    default: "Observatorio de Almacenamiento de Energía",
+    template: "%s · Observatorio de Almacenamiento de Energía",
+  },
   description: "Implementación, regulación y noticias de los sistemas de almacenamiento de energía con baterías (SAEB) en Colombia.",
 };
 
