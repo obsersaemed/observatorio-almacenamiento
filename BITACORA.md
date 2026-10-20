@@ -58,3 +58,13 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - Importación a Supabase **pruebas** (`scripts/importar.py --entorno pruebas`): 7 proyectos como
   Aprobado. El inicio muestra 17,0 MW y 12,8 MWh en operación (Termozipa, La Martina, Celsia
   Palmira 2) y 3/1/2/1 por estado; `/datos/proyectos.csv` trae los 7.
+
+## 2026-10-20 — Publicación de prueba (T17)
+
+- Repositorio privado https://github.com/obsersaemed/observatorio-almacenamiento (cuenta personal
+  obsersaemed). Secretos del respaldo: SUPABASE_URL y SUPABASE_ANON_KEY; primera corrida del respaldo
+  correcta (7 proyectos, commit del bot b0904f5).
+- Vercel Hobby: proyecto observatorio-almacenamiento (equipo "Observatorio SAEB col"), Root
+  Directory `web`, 6 variables (4 públicas marcadas como seguras, 2 privadas). Dominio
+  https://observatorio-almacenamiento.vercel.app con datos de Supabase **pruebas** y llaves de
+  prueba de Turnstile. No se usa la integración de Supabase de Vercel.
