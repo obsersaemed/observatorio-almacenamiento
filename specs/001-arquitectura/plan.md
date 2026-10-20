@@ -152,7 +152,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde; `/datos/proyectos.csv` responde con `text/csv`
   - Depende de: T05
   - Archivos: `web/src/lib/csv.ts`, `web/src/app/datos/[seccion]/route.ts`
-- [ ] **T14 · S** · Canal de agentes: `proponer_aporte.py` y skills conectadas
+- [x] **T14 · S** · Canal de agentes: `proponer_aporte.py` y skills conectadas
   - Cubre: RF-12 · CA-12.1
   - Prueba primero (RED): `pruebas/test_proponer_aporte.py` con REST simulado: envía con `origen = agente`, el nombre del agente y la fuente obligatoria; sin fuente se niega
   - Hecho cuando (GREEN): pruebas en verde; `buscar-noticias` y `ficha-normativa` usan el script en lugar de editar los CSV
@@ -263,6 +263,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T11 | Sí: no existían aportes-admin.ts, lista.tsx ni comparacion.tsx | 69/69 web; build OK (con el servidor de desarrollo apagado) | El destino de una corrección se toma de datos.tabla (por defecto proyectos) y la clave de cada tabla (nombre, id, enlace); revisión visual de /admin pendiente de la sesión real del editor (prueba de punta a punta tras T12) |
 | 2026-10-19 | T12 | Sí: lib/decision.ts no existía; integración PGRST202 (sin funciones) hasta aplicar 0002; componente Decision probado RED tras escribirlo (apartado y restaurado) | 92/92 web, integración 24/24 en dos corridas; prueba manual del usuario: acceso con enlace a obsersae_med@unal.edu.co, lista de pendientes y dos rechazos con motivo guardados con revisado_por | Migración 0002 aplicada en el SQL Editor (falta registrarla con migration repair). Reintentos ante conexiones que no se establecen (~10 % en esta red) en Supabase y Turnstile; connection() antes de leer la sesión (aviso de Date.now() en el prerender de Next 16); limpieza de restos de pruebas |
 | 2026-10-19 | T13 | Sí: no existía csv.ts; luego RED de los enlaces de descarga en las secciones | 94/94 web; servidor real: 200 text/csv con licencia y Link rel=license para proyectos y normativa, 404 para aportes | Licencia como primera línea comentada (#) y cabecera HTTP Link; marca UTF-8 para Excel; punto decimal (datos abiertos); datos con use cache + cacheTag(tabla) para que la aprobación los invalide |
+| 2026-10-19 | T14 | Sí: no existía proponer_aporte.py; luego RED del reintento del cliente REST | Python 28/28; real contra pruebas: aporte 107 propuesto como Pendiente con origen agente y nombre buscar-noticias (borrado después) | ClienteRest reintenta una vez solo si la conexión no se estableció (WinError 10060 en esta red); las skills buscar-noticias y ficha-normativa proponen a la cola en lugar de editar los CSV |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).

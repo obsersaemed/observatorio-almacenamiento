@@ -48,14 +48,21 @@ class ClienteRest:
         if prefer:
             cabeceras["Prefer"] = prefer
         peticion = urllib.request.Request(self.base + ruta, data=datos, headers=cabeceras, method=metodo)
-        try:
-            with urllib.request.urlopen(peticion, timeout=self.tiempo) as r:
-                texto = r.read().decode("utf-8")
-                return json.loads(texto) if texto else None
-        except urllib.error.HTTPError as e:
-            raise ErrorRest(f"{metodo} {ruta.split('?')[0]} → HTTP {e.code}: {e.read().decode('utf-8', 'replace')}") from None
-        except urllib.error.URLError as e:
-            raise ErrorRest(f"{metodo} {ruta.split('?')[0]} → sin conexión: {e.reason}") from None
+        donde = f"{metodo} {ruta.split('?')[0]}"
+        # Un reintento solo si la conexión no llegó a establecerse (URLError): la petición no
+        # salió y no se duplica nada. Un tiempo agotado leyendo la respuesta no se reintenta.
+        for intento in (1, 2):
+            try:
+                with urllib.request.urlopen(peticion, timeout=self.tiempo) as r:
+                    texto = r.read().decode("utf-8")
+                    return json.loads(texto) if texto else None
+            except urllib.error.HTTPError as e:
+                raise ErrorRest(f"{donde} → HTTP {e.code}: {e.read().decode('utf-8', 'replace')}") from None
+            except urllib.error.URLError as e:
+                if intento == 2:
+                    raise ErrorRest(f"{donde} → sin conexión: {e.reason}") from None
+            except TimeoutError as e:
+                raise ErrorRest(f"{donde} → sin respuesta a tiempo: {e}") from None
 
     def insertar(self, tabla, filas, conflicto=None, devolver=False):
         """POST de una lista de filas; con `conflicto` actualiza las que ya existen (upsert)."""
