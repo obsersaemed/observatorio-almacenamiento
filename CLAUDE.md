@@ -191,7 +191,7 @@ Claude los recibe y debe resolverlos o reportarlos.
 | Fecha | Entregable | Estado |
 |---|---|---|
 | 10-19 | Arnés: CLAUDE.md, datos, validador, hook, skills, esqueleto del sitio | Hecho |
-| 10-20 | Plataforma base 001: T01–T09 (app, tema, formato, esquemas, base de datos, importación, inicio, aportes) | |
+| 10-20 | Plataforma base 001: T01–T09 (app, tema, formato, esquemas, base de datos, importación, inicio, aportes) | Hecho |
 | 10-21 | Plataforma base 001: T10–T17 + E2E limpio | |
 | 10-22 | 002 · Implementación en el país (mapa, filtros, KPI) | |
 | 10-23 | 003 · Vehículos eléctricos | |

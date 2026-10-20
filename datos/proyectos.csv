@@ -1,20 +1,20 @@
-Nombre,Operador,Estado,Tecnologia,FPO,Tipo uso/conexi√≥n,"Punto de conexi√≥n
+Nombre,Operador,Estado,Tecnologia,FPO,Tipo uso/conexiÛn,"Punto de conexiÛn
 kV",Departamento,Municipio,Latitud,Longitud,"Potencia nominal
-[MW]","Capacidad m√°xima
-[MWh]","Potencia m√°xima de descarga
-[MW]","Potencia m√°xima de carga
-[MW]","Estado de carga m√≠nimo t√©cnico
-[%]","Eficiencia m√≠nima
+[MW]","Capacidad m·xima
+[MWh]","Potencia m·xima de descarga
+[MW]","Potencia m·xima de carga
+[MW]","Estado de carga mÌnimo tÈcnico
+[%]","Eficiencia mÌnima
 [%]","Eficiencia de carga
 [%]","Eficiencia de descarga
 [%]","Eficiencia de almacenamiento
-[%]","Tiempo para aporte de m√°xima potencia
-[%]",Tipo de compensaci√≥n adicional,Fuente
-BESS Termozipa,Enel-Emgesa,En operaci√≥n,Li-ion,2021,Regulaci√≥n primaria de frecuencia,13.8,Cundinamarca,Tocancip√°,"49,653","-739,128",7,"3,9",,,,,,,,,,https://www.enel.com.co/es/historias/a202203-almacenamiento-de-energia-en-bess-termozipa.html
-La Martina,Erco,En operaci√≥n,Li-ion,2025,Inyecci√≥n de energia por la noche,,Cundinamarca,Paratebueno,"43,750","-732,136",9,"6,9",,,,,,,,,,https://erco.energy/co/blog/energia-solar-baterias-gran-escala
-Celsia Solar Palmira 2,Celsia,En operaci√≥n,Li-ion,2024,Inyecci√≥n de energia por la noche,,Valle del Cauca,Palmira,"35,394","-763,036",1,2,,,,,,,,,,https://www.celsia.com/es/noticias/celsia-innova-al-poner-en-operacion-el-primer-sistema-de-baterias-conectado-a-una-granja-de-energia-solar/
-Canadian solar,Air-e,Inactivo,Li-ion,2019,,,Atlantico,Barranquilla,"109,639","-747,964",50,45,,,,,,,,,,https://www.bmcbec.com.co/publicaciones/posts/noticias/noticias/canadian-solar-energy-group-fue-la-ganadora-de-la-primera
-Bosques Solares de los Llanos 8,Bosques Solares de los Llanos 8,Anunciado,Li-ion,2030,Mercado regulado a trav√©s de los contratos de largo plazo,,Meta,Villavicencio,"41,420","-736,266",50,195,,,,,,,,,,https://www.mininterior.gov.co/normativas/bosques-solares-de-los-llanos-8-170-mw-y-su-conexion-a-la-subestacion-ocoa-115-kv/
-Parque solar andromeda,Celsia,Anunciado,Li-ion,2030,Mercado regulado a trav√©s de los contratos de largo plazo,115,Sucre,Toluviejo,"94,497","-754,392",50,195,,,,,,,,,,https://www.mininterior.gov.co/normativas/estudio-de-impacto-ambiental-parque-solar-andromeda-y-su-linea-de-conexion/
-Pradera solar,Andina Solar- Erco -  Climate Fund Managers,En construcci√≥n,Li-ion,2027,Mercado regulado a trav√©s de los contratos de largo plazo,115,Norte de Santander,La Esperanza,"76,397","-733,283",18,25,,,,,,,,,,"https://www.andinasolar.com.co/pradera/
+[%]","Tiempo para aporte de m·xima potencia
+[%]",Tipo de compensaciÛn adicional,Fuente
+BESS Termozipa,Enel-Emgesa,En operaciÛn,Li-ion,2021,RegulaciÛn primaria de frecuencia,13.8,Cundinamarca,Tocancip·,4.9653,-73.9128,7,"3,9",,,,,,,,,,https://www.enel.com.co/es/historias/a202203-almacenamiento-de-energia-en-bess-termozipa.html
+La Martina,Erco,En operaciÛn,Li-ion,2025,InyecciÛn de energia por la noche,,Cundinamarca,Paratebueno,4.3750,-73.2136,9,"6,9",,,,,,,,,,https://erco.energy/co/blog/energia-solar-baterias-gran-escala
+Celsia Solar Palmira 2,Celsia,En operaciÛn,Li-ion,2024,InyecciÛn de energia por la noche,,Valle del Cauca,Palmira,3.5394,-76.3036,1,2,,,,,,,,,,https://www.celsia.com/es/noticias/celsia-innova-al-poner-en-operacion-el-primer-sistema-de-baterias-conectado-a-una-granja-de-energia-solar/
+Canadian solar,Air-e,Inactivo,Li-ion,2019,,,Atlantico,Barranquilla,10.9639,-74.7964,50,45,,,,,,,,,,https://www.bmcbec.com.co/publicaciones/posts/noticias/noticias/canadian-solar-energy-group-fue-la-ganadora-de-la-primera
+Bosques Solares de los Llanos 8,Bosques Solares de los Llanos 8,Anunciado,Li-ion,2030,Mercado regulado a travÈs de los contratos de largo plazo,,Meta,Villavicencio,4.1420,-73.6266,50,195,,,,,,,,,,https://www.mininterior.gov.co/normativas/bosques-solares-de-los-llanos-8-170-mw-y-su-conexion-a-la-subestacion-ocoa-115-kv/
+Parque solar andromeda,Celsia,Anunciado,Li-ion,2030,Mercado regulado a travÈs de los contratos de largo plazo,115,Sucre,Toluviejo,9.4497,-75.4392,50,195,,,,,,,,,,https://www.mininterior.gov.co/normativas/estudio-de-impacto-ambiental-parque-solar-andromeda-y-su-linea-de-conexion/
+Pradera solar,Andina Solar- Erco -  Climate Fund Managers,En construcciÛn,Li-ion,2027,Mercado regulado a travÈs de los contratos de largo plazo,115,Norte de Santander,La Esperanza,7.6397,-73.3283,18,25,,,,,,,,,,"https://www.andinasolar.com.co/pradera/
 https://www.mininterior.gov.co/normativas/parque-solar-pradera-40mw/"
