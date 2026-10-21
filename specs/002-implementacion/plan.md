@@ -208,7 +208,15 @@ aprobado: `maplibre-gl` y `@tanstack/react-table`.
   - Depende de: T21
   - Archivos: `web/src/components/mapa/mapa-proyectos.tsx`, test
 
-Estimación total: 22 tareas (3 M, 12 S, 7 XS) · unas 12 h, entre el 2026-10-21 y el 2026-10-22.
+### Ajuste pedido por el usuario después del cierre (2026-10-21)
+- [x] **T23 · S** · Filtros como desplegables de selección múltiple
+  - Cubre: RF-08, RNF-01, RNF-03 · CA-08.1, CA-08.2 (sin cambio de spec: RF-08 no fija la forma del control)
+  - Prueba primero (RED): `filtros.test.tsx`. Cada filtro es un botón con su título que dice «Todas», el valor elegido o «N seleccionados». Al abrirlo muestra la casilla «Todas», un buscador y las opciones con su conteo, y cada casilla conserva el nombre «Valor (n)». «Todas» limpia el filtro, el buscador acota las opciones y Escape cierra y devuelve el foco al botón. Hoy los filtros son listas de casillas siempre visibles.
+  - Hecho cuando (GREEN): pruebas en verde. La vista y las pruebas E2E de los filtros se adaptan, y el E2E de los escenarios de filtros sigue en verde.
+  - Depende de: T22
+  - Archivos: `web/src/components/mapa/filtros.tsx`, `web/src/components/mapa/desplegable-filtro.tsx`, tests, `web/e2e/002-implementacion.spec.ts`
+
+Estimación total: 23 tareas (3 M, 13 S, 7 XS) · unas 13 h, entre el 2026-10-21 y el 2026-10-22.
 
 **Prerrequisitos del usuario:** aplicar `0004_servicios.sql` en el SQL Editor de **pruebas**
 (durante T03) y corregir los 2 textos de servicio en la `Base de datos SAEB`.
@@ -305,6 +313,7 @@ borrados al final.
 | 2026-10-21 | T19 | El valor elegido sin resultados no aparecía | 191/191; `npm run build` correcto | Los valores elegidos que no tienen proyectos se muestran con «(0)» al final de su filtro |
 | 2026-10-21 | T20, T21 | `posicion-tarjeta.test.ts` no compilaba y la tarjeta estaba dentro del marco que recorta el mapa | 197/197 | La tarjeta salió del marco: en escritorio se posiciona con `posicionTarjeta` y se monta 6 px sobre el punto; en móvil va debajo del mapa. Margen de salida de 400 ms. Revisión en Chromium sin interfaz (Playwright, WebGL por software): con el mouse en escritorio y con el toque a 375 px, «Proponer corrección» queda visible y sin nada encima en los 7 puntos (14/14), sin desplazamiento horizontal. La primera revisión no encontró los puntos porque el selector `button[aria-expanded]` coincidía con el indicador de Next (solo en desarrollo) |
 | 2026-10-21 | T22 | Con la tarjeta abierta por el mouse, Escape en el cuerpo de la página no la cerraba | 198/198; `npm run build` correcto | Mientras hay una tarjeta abierta, Escape se escucha en todo el documento. Esto reemplaza el `onKeyDown` del contenedor |
+| 2026-10-21 | T23 | 10 de las 11 pruebas de `filtros.test.tsx` fallaron: los filtros eran casillas siempre visibles | 203/203; `npm run build` correcto; revisado con Playwright en escritorio y a 375 px | Componente `DesplegableFiltro`, con un solo desplegable abierto a la vez. Las pruebas de la vista abren el desplegable antes de marcar. El agente E2E adaptó sus pruebas y la cuarta corrida dio 23/23 |
 
 ## Informe E2E
-[e2e-informe.md](e2e-informe.md): tercera corrida del 2026-10-21, 23/23 escenarios en verde. Hubo 3 RNF no comprobables desde fuera: RNF-02 se midió aparte, con una mediana de 1,16 s; RNF-05 y RNF-08 se confirman en el código. O-8 se corrigió con T22. Cerrada con la aprobación del usuario.
+[e2e-informe.md](e2e-informe.md): cuarta corrida del 2026-10-21 (después de T23), 23/23 escenarios en verde. Hubo 3 RNF no comprobables desde fuera: RNF-02 se midió aparte, con una mediana de 1,16 s; RNF-05 y RNF-08 se confirman en el código. O-8 se corrigió con T22. Cerrada con la aprobación del usuario.

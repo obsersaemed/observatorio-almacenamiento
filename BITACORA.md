@@ -124,3 +124,7 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 4. Publicar en Vercel (push a `main`) solo con la confirmación del usuario.
 5. Siguiente: 003 · Vehículos eléctricos.
 
+## 2026-10-21 — Filtros de /mapa como desplegables (T23)
+- A pedido del usuario, cada filtro pasó a ser un desplegable de selección múltiple: muestra «Todas», el valor elegido o «N seleccionados», y al abrirlo trae la casilla «Todas», un buscador y el conteo por opción. Sin cambio de spec (RF-08 no fija la forma del control).
+- TDD: 203 pruebas web en verde y build correcto. El E2E limpio adaptó sus pruebas y la cuarta corrida dio 23/23.
+

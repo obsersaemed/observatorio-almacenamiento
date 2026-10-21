@@ -32,6 +32,8 @@ const filas = [
 const filasDeTabla = () =>
   screen.getAllByRole("row").slice(1).map((r) => within(r).getAllByRole("cell")[0].querySelector("button")?.textContent);
 const puntos = () => within(screen.getByRole("list", { name: "Puntos del mapa" })).queryAllByRole("listitem").map((l) => l.textContent);
+// T23: las casillas de cada filtro están dentro de su desplegable.
+const abrirFiltro = (titulo: string) => fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
 const proyectosFiltrados = () => screen.getByRole("group", { name: "Proyectos según filtros" }).textContent;
 
 beforeEach(() => window.history.replaceState(null, "", "/mapa"));
@@ -40,6 +42,7 @@ afterEach(() => vi.restoreAllMocks());
 describe("VistaMapa", () => {
   test("un filtro cambia a la vez la tabla, los KPI, los puntos y la URL (CA-09.1, CA-10.1)", async () => {
     render(<VistaMapa filas={filas} />);
+    abrirFiltro("Estado");
     fireEvent.click(screen.getByRole("checkbox", { name: "Anunciado (2)" }));
     expect(filasDeTabla()).toEqual(["Anunciado 1", "Anunciado 2"]);
     expect(await screen.findByText("Anunciado 1", { selector: "li" })).toBeInTheDocument();
@@ -52,6 +55,7 @@ describe("VistaMapa", () => {
     window.history.replaceState(null, "", "/mapa?departamento=Sucre");
     render(<VistaMapa filas={filas} />);
     expect(filasDeTabla()).toEqual(["Anunciado 2"]);
+    abrirFiltro("Departamento");
     expect(screen.getByRole("checkbox", { name: "Sucre (1)" })).toBeChecked();
   });
 
@@ -76,6 +80,7 @@ describe("VistaMapa", () => {
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
     render(<VistaMapa filas={filas} />);
+    abrirFiltro("Departamento");
     fireEvent.click(screen.getByRole("checkbox", { name: "Sucre (1)" }));
     fireEvent.click(screen.getByRole("button", { name: /Descargar CSV/ }));
 

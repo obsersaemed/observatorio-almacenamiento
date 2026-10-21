@@ -1,8 +1,10 @@
 "use client";
 
-// Panel de filtros de /mapa (spec 002, RF-08). Casillas con el conteo de cada opción, según
-// los demás filtros. En móvil empieza plegado (RNF-01).
-import { useEffect, useRef } from "react";
+// Panel de filtros de /mapa (spec 002, RF-08). Un desplegable de selección múltiple por
+// filtro (T23), con el conteo de cada opción según los demás filtros. Solo uno abierto a la
+// vez. En móvil el panel empieza plegado (RNF-01).
+import { useEffect, useRef, useState } from "react";
+import { DesplegableFiltro } from "./desplegable-filtro";
 import { CAMPOS_FILTRO, opcionesDe, type CampoFiltro, type Filtros as TipoFiltros, type ProyectoMapa } from "@/lib/proyectos-mapa";
 
 const ETIQUETA: Record<CampoFiltro, string> = {
@@ -33,14 +35,13 @@ export function Filtros({
   onCambiar: (filtros: TipoFiltros) => void;
 }) {
   const panel = useRef<HTMLDetailsElement>(null);
+  const [abierto, setAbierto] = useState<CampoFiltro | null>(null);
   useEffect(() => {
     if (panel.current && window.matchMedia?.("(max-width: 639px)").matches) panel.current.open = false;
   }, []);
 
   const activos = CAMPOS_FILTRO.reduce((n, c) => n + (filtros[c]?.length ?? 0), 0);
-  const alternar = (campo: CampoFiltro, valor: string, marcado: boolean) => {
-    const actuales = filtros[campo] ?? [];
-    const nuevos = marcado ? [...actuales, valor] : actuales.filter((v) => v !== valor);
+  const cambiar = (campo: CampoFiltro, nuevos: string[]) => {
     const siguiente: TipoFiltros = { ...filtros, [campo]: nuevos };
     if (!nuevos.length) delete siguiente[campo];
     onCambiar(siguiente);
@@ -57,22 +58,16 @@ export function Filtros({
       </summary>
       <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {CAMPOS_FILTRO.map((campo) => (
-          <fieldset key={campo} className="min-w-0 text-sm">
-            <legend className="font-semibold text-[var(--text-heading)]">{ETIQUETA[campo]}</legend>
-            <div className="mt-1 grid max-h-44 gap-1 overflow-y-auto">
-              {opcionesConElegidos(proyectos, campo, filtros).map(({ valor, cantidad }) => (
-                <label key={valor} className="flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    className="mt-1"
-                    checked={filtros[campo]?.includes(valor) ?? false}
-                    onChange={(e) => alternar(campo, valor, e.target.checked)}
-                  />
-                  <span className="break-words">{`${valor} (${cantidad})`}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <DesplegableFiltro
+            key={campo}
+            titulo={ETIQUETA[campo]}
+            opciones={opcionesConElegidos(proyectos, campo, filtros)}
+            elegidos={filtros[campo] ?? []}
+            abierto={abierto === campo}
+            onAbrir={() => setAbierto(campo)}
+            onCerrar={() => setAbierto((a) => (a === campo ? null : a))}
+            onCambiar={(nuevos) => cambiar(campo, nuevos)}
+          />
         ))}
       </div>
     </details>

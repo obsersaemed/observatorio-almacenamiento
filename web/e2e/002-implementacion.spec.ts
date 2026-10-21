@@ -7,6 +7,8 @@
 // Segunda corrida (2026-10-21): RF-04 cambió (CA-04.1 ajustado, CA-04.4 nuevo, E2E-23).
 // Tercera corrida (2026-10-21): E2E-06 y E2E-23 recorren todos los puntos libres; se oculta
 // el indicador de desarrollo de Next.js (<nextjs-portal>), que no es parte de la app.
+// Cuarta corrida (2026-10-21): cada filtro es un desplegable. El botón se llama «<Filtro>
+// Todas|valor|N seleccionados» y abre la casilla «Todas», un buscador y las casillas «Valor (n)».
 import { test, expect, type Page, type Locator } from "@playwright/test";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -96,8 +98,37 @@ const puntos = (page: Page) => page.getByRole("button", { name: new RegExp(` · 
 const punto = (page: Page, nombre: string) => page.getByRole("button", { name: new RegExp(`^${esc(nombre)} · `) });
 const tarjeta = (page: Page, nombre?: string) => (nombre ? page.getByRole("dialog", { name: nombre }) : page.getByRole("dialog"));
 const grupoFiltro = (page: Page, nombre: string) => page.getByRole("group", { name: nombre, exact: true });
+/** Botón del desplegable de un filtro: su nombre es «<Filtro> <Todas|valor|N seleccionados>». */
+const botonFiltro = (page: Page, grupo: string) =>
+  grupoFiltro(page, grupo).getByRole("button", { name: new RegExp(`^${esc(grupo)} `) });
 const opcion = (page: Page, grupo: string, valor: string) =>
   grupoFiltro(page, grupo).getByRole("checkbox", { name: new RegExp(`^${esc(valor)} \\(\\d+\\)$`) });
+/** Casillas de las opciones (sin «Todas»). */
+const opcionesFiltro = (page: Page, grupo: string) =>
+  grupoFiltro(page, grupo).getByRole("group", { name: `Opciones de ${grupo}` }).getByRole("checkbox");
+
+/** Abre el desplegable del filtro si está cerrado. */
+async function abrirFiltro(page: Page, grupo: string) {
+  const b = botonFiltro(page, grupo);
+  if ((await b.getAttribute("aria-expanded")) !== "true") await b.click();
+  await expect(b).toHaveAttribute("aria-expanded", "true");
+  await expect(grupoFiltro(page, grupo).getByRole("searchbox", { name: `Buscar en ${grupo}` })).toBeVisible();
+}
+
+/** Cierra el desplegable con Escape. */
+async function cerrarFiltro(page: Page, grupo: string) {
+  const b = botonFiltro(page, grupo);
+  if ((await b.getAttribute("aria-expanded")) === "true") await page.keyboard.press("Escape");
+  await expect(b).not.toHaveAttribute("aria-expanded", "true");
+}
+
+/** ¿Está marcada la opción? Abre el desplegable para verla y lo vuelve a cerrar. */
+async function estaMarcada(page: Page, grupo: string, valor: string) {
+  await abrirFiltro(page, grupo);
+  const r = await opcion(page, grupo, valor).isChecked();
+  await cerrarFiltro(page, grupo);
+  return r;
+}
 
 async function abrirMapa(page: Page, query = "") {
   await page.goto(`/mapa${query}`);
@@ -123,8 +154,10 @@ async function textoKpi(page: Page, nombre: string) {
 }
 
 async function marcar(page: Page, grupo: string, valor: string) {
+  await abrirFiltro(page, grupo);
   await opcion(page, grupo, valor).check();
   await expect(page).toHaveURL(/\?/);
+  await cerrarFiltro(page, grupo);
 }
 
 function centro(b: { x: number; y: number; width: number; height: number }) {
@@ -607,16 +640,40 @@ test.describe("002 · Implementación en el país (datos)", () => {
     expect(esperados).toEqual([S.antOp, S.boyOp].sort());
     await expect(filas(page)).toHaveCount(esperados.length);
     expect(await nombresFilas(page, ap.map((p) => p.nombre))).toEqual(esperados);
+    // El botón de cada desplegable resume lo elegido.
+    await expect.soft(botonFiltro(page, "Departamento")).toHaveAccessibleName("Departamento 2 seleccionados");
+    await expect.soft(botonFiltro(page, "Estado")).toHaveAccessibleName("Estado En operación");
   });
 
   test("E2E-13 · CA-08.2: con un departamento elegido, el filtro de municipio solo lista los suyos con su conteo", async ({ page }) => {
     soloEscritorio();
     await abrirMapa(page);
     await marcar(page, "Departamento", "Antioquia");
-    const muni = grupoFiltro(page, "Municipio").getByRole("checkbox");
+    await abrirFiltro(page, "Municipio");
+    const muni = opcionesFiltro(page, "Municipio");
     await expect(muni).toHaveCount(2);
-    const nombres = await muni.evaluateAll((es) => es.map((e) => e.getAttribute("aria-label") ?? (e as HTMLInputElement).labels?.[0]?.textContent?.trim() ?? ""));
+    await expect(muni.nth(0)).toBeVisible();
+    const nombres: string[] = [];
+    for (let i = 0; i < (await muni.count()); i++) {
+      nombres.push((await muni.nth(i).ariaSnapshot()).replace(/^- checkbox "([^"]*)"[\s\S]*$/, "$1"));
+    }
     expect(nombres.sort()).toEqual(["Apartadó (1)", "Medellín (1)"]);
+    // Comportamiento del desplegable (no es un CA): buscador, Escape y clic afuera.
+    const extra: Record<string, string> = {};
+    const buscador = grupoFiltro(page, "Municipio").getByRole("searchbox", { name: "Buscar en Municipio" });
+    await buscador.fill("Mede");
+    await page.waitForTimeout(300);
+    extra.buscar = JSON.stringify(await opcionesFiltro(page, "Municipio").evaluateAll((es) => es.filter((e) => (e as HTMLElement).checkVisibility()).map((e) => e.getAttribute("aria-label") ?? (e as HTMLInputElement).labels?.[0]?.innerText)));
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+    extra.escape = String(await botonFiltro(page, "Municipio").getAttribute("aria-expanded"));
+    await abrirFiltro(page, "Municipio");
+    await page.getByRole("heading", { name: "Implementación en el país", level: 1 }).click();
+    await page.waitForTimeout(300);
+    extra.clicAfuera = String(await botonFiltro(page, "Municipio").getAttribute("aria-expanded"));
+    test.info().annotations.push({ type: "desplegable", description: JSON.stringify(extra) });
+    expect.soft(extra.escape, "Escape cierra el desplegable").not.toBe("true");
+    expect.soft(extra.clicAfuera, "un clic afuera cierra el desplegable").not.toBe("true");
   });
 
   test("E2E-14 · CA-09.1: mapa, tabla, KPI «proyectos según filtros» y CSV tienen los mismos proyectos", async ({ page }) => {
@@ -653,10 +710,12 @@ test.describe("002 · Implementación en el país (datos)", () => {
     const otra = await context.newPage();
     await otra.goto(url);
     await expect(tabla(otra)).toBeVisible();
+    await expect(botonFiltro(otra, "Departamento")).toHaveAccessibleName("Departamento 2 seleccionados");
+    await expect(botonFiltro(otra, "Estado")).toHaveAccessibleName("Estado Anunciado");
     for (const [g, v] of [["Departamento", "Antioquia"], ["Departamento", "Huila"], ["Estado", "Anunciado"]]) {
-      await expect(opcion(otra, g, v), `${g}: ${v}`).toBeChecked();
+      expect(await estaMarcada(otra, g, v), `${g}: ${v}`).toBe(true);
     }
-    await expect(opcion(otra, "Estado", "En operación")).not.toBeChecked();
+    expect(await estaMarcada(otra, "Estado", "En operación")).toBe(false);
     await expect(filas(otra)).toHaveCount(resultado.length);
     expect(await nombresFilas(otra, ap.map((p) => p.nombre))).toEqual(resultado);
     await otra.close();
@@ -665,12 +724,22 @@ test.describe("002 · Implementación en el país (datos)", () => {
   test("E2E-16 · CA-10.2: «Limpiar filtros» deja la URL sin filtros y muestra todos los aprobados", async ({ page }) => {
     soloEscritorio();
     await abrirMapa(page, "?departamento=Antioquia&estado=Anunciado");
-    await expect(opcion(page, "Departamento", "Antioquia")).toBeChecked();
+    expect(await estaMarcada(page, "Departamento", "Antioquia")).toBe(true);
+    await expect(botonFiltro(page, "Estado")).toHaveAccessibleName("Estado Anunciado");
     await page.getByRole("button", { name: "Limpiar filtros" }).click();
     await expect(page).toHaveURL(/\/mapa$/);
     const ap = await aprobados();
     await expect(filas(page)).toHaveCount(ap.length);
-    await expect(page.getByRole("checkbox", { checked: true })).toHaveCount(0);
+    // Ningún filtro queda activo: cada botón dice «Todas» y, al abrirlo, solo «Todas» está marcada.
+    for (const g of ["Estado", "Departamento", "Municipio", "Servicios", "Operador", "Tecnología", "Año de FPO"]) {
+      await expect(botonFiltro(page, g)).toHaveAccessibleName(`${g} Todas`);
+    }
+    for (const g of ["Estado", "Departamento"]) {
+      await abrirFiltro(page, g);
+      await expect(opcionesFiltro(page, g).and(page.getByRole("checkbox", { checked: true }))).toHaveCount(0);
+      await expect(grupoFiltro(page, g).getByRole("checkbox", { name: "Todas", exact: true })).toBeChecked();
+      await cerrarFiltro(page, g);
+    }
   });
 
   test("E2E-17 · CA-11.1: con solo Anunciado, «Instalado» no cambia y «según filtros» suma solo anunciados", async ({ page }) => {
@@ -705,7 +774,9 @@ test.describe("002 · Implementación en el país (datos)", () => {
     // Las opciones se reducen según los demás filtros, así que la combinación vacía se aplica por URL (RF-10).
     await abrirMapa(page);
     await marcar(page, "Departamento", "Antioquia");
-    const estados = await grupoFiltro(page, "Estado").getByRole("checkbox").evaluateAll((es) => es.map((e) => (e as HTMLInputElement).labels?.[0]?.textContent?.trim()));
+    await abrirFiltro(page, "Estado");
+    const estados = await opcionesFiltro(page, "Estado").evaluateAll((es) => es.map((e) => e.getAttribute("aria-label") ?? (e as HTMLInputElement).labels?.[0]?.innerText?.replace(/\s+/g, " ").trim()));
+    await cerrarFiltro(page, "Estado");
     test.info().annotations.push({ type: "estados-ofrecidos-con-Antioquia", description: JSON.stringify(estados) });
     await abrirMapa(page, "?departamento=Antioquia&estado=Inactivo");
     await expect(page.getByText("Ningún proyecto cumple estos filtros")).toBeVisible();
@@ -715,8 +786,11 @@ test.describe("002 · Implementación en el país (datos)", () => {
     expect(await textoKpi(page, "Potencia según filtros [MW] (todos los estados)")).toMatch(/\b0(,0)? MW\b/);
     expect(await textoKpi(page, "Energía según filtros [MWh] (todos los estados)")).toMatch(/\b0(,0)? MWh\b/);
     // Observación (no bloqueante): ¿se ve el filtro activo «Inactivo»?
+    const boton = await botonFiltro(page, "Estado").innerText();
+    await abrirFiltro(page, "Estado");
     const visible = await opcion(page, "Estado", "Inactivo").isVisible().catch(() => false);
-    test.info().annotations.push({ type: "filtro-Inactivo-visible-y-marcado", description: String(visible && (await opcion(page, "Estado", "Inactivo").isChecked())) });
+    test.info().annotations.push({ type: "filtro-Inactivo-visible-y-marcado", description: `botón «${boton}»; casilla visible y marcada: ${visible && (await opcion(page, "Estado", "Inactivo").isChecked())}` });
+    await cerrarFiltro(page, "Estado");
   });
 
   test("E2E-19 · CA-13.1: el CSV de la vista filtrada trae solo esos proyectos, Fuente, CC BY 4.0 y ningún correo", async ({ page }) => {
@@ -974,6 +1048,7 @@ test.describe("002 · Implementación en el país (375 px y RNF)", () => {
     expect(descInicio, "descripción distinta de la de inicio").not.toContain(`content="${desc}"`);
 
     // RNF-01: filtros plegados en un panel.
+    await expect(botonFiltro(page, "Estado"), "el panel de filtros viene plegado").toBeHidden();
     await expect(opcion(page, "Estado", "En operación")).toBeHidden();
     const desborde = () => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(await desborde(), "sin desplazamiento horizontal").toBeLessThanOrEqual(0);
@@ -1003,6 +1078,18 @@ test.describe("002 · Implementación en el país (375 px y RNF)", () => {
     // Sin vuelo: el punto salta a su posición final (a lo sumo el desplazamiento de la página y el salto).
     expect(pos.length, "sin animación de vuelo").toBeLessThanOrEqual(3);
     expect(await desborde(), "sin desplazamiento horizontal con la tarjeta abierta").toBeLessThanOrEqual(0);
+    // RNF-01 con los filtros desplegados: se abre el panel y el desplegable de Departamento.
+    await page.keyboard.press("Escape");
+    await page.getByText("Filtros", { exact: true }).first().click();
+    await expect(botonFiltro(page, "Departamento")).toBeVisible();
+    await abrirFiltro(page, "Departamento");
+    await opcion(page, "Departamento", "Antioquia").check();
+    await expect(page).toHaveURL(/departamento=/);
+    const caja = (await grupoFiltro(page, "Departamento").getByRole("group", { name: "Opciones de Departamento" }).boundingBox())!;
+    test.info().annotations.push({ type: "desplegable-375", description: `x ${Math.round(caja.x)}–${Math.round(caja.x + caja.width)}; desborde ${await desborde()}` });
+    expect.soft(caja.x, "desplegable dentro de la pantalla").toBeGreaterThanOrEqual(0);
+    expect.soft(caja.x + caja.width, "desplegable dentro de la pantalla").toBeLessThanOrEqual(375);
+    expect(await desborde(), "sin desplazamiento horizontal con un desplegable abierto").toBeLessThanOrEqual(0);
     expect(errores, "consola sin errores").toEqual([]);
   });
 });
