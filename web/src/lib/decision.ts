@@ -1,9 +1,11 @@
 // Aprobación y rechazo de aportes (RF-09, RF-10, RF-16). La aplicación real ocurre en la
 // función aplicar_aporte de la base (transacción, historial); aquí se valida con las reglas
 // compartidas y se decide qué campos enviar.
-import definicion from "@/generado/esquemas.json";
 import { tablaDestino, type AporteFila, type TablaDestino } from "./aportes-admin";
-import { validar, type NombreEsquema } from "./esquemas";
+import { columnasDe, ESQUEMA_DE_TABLA, valorEsCo } from "./columnas";
+import { validar } from "./esquemas";
+
+export { columnaSql, columnasDe, ESQUEMA_DE_TABLA } from "./columnas";
 
 export type ResultadoDecision = { ok: true } | { ok: false; errores: string[] };
 
@@ -12,29 +14,6 @@ export type DependenciasDecision = {
   rechazar: (aporteId: number, motivo: string) => Promise<void>;
   revalidar: (etiqueta: TablaDestino) => void;
 };
-
-/** Igual que columna_sql() en scripts/validar_datos.py: 'Potencia nominal [MW]' → 'potencia_nominal_mw'. */
-export function columnaSql(nombre: string): string {
-  return nombre
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
-
-export const ESQUEMA_DE_TABLA: Record<TablaDestino, NombreEsquema> = {
-  proyectos: "proyectos",
-  normas: "normativa",
-  noticias: "noticias",
-};
-
-/** Columnas editables de una tabla: nombre original (etiqueta) y nombre SQL. */
-export function columnasDe(tabla: TablaDestino) {
-  return definicion[ESQUEMA_DE_TABLA[tabla]].columnas
-    .map((c) => ({ ...c, sql: columnaSql(c.nombre) }))
-    .filter((c) => c.sql !== "publicacion");
-}
 
 const vacio = (v: unknown) => v === null || v === undefined || String(v).trim() === "";
 const igual = (a: unknown, b: unknown) =>
@@ -46,6 +25,20 @@ export function datosDesdeFormulario(formulario: FormData): Record<string, strin
     if (clave.startsWith("campo:")) datos[clave.slice("campo:".length)] = String(valor).trim();
   }
   return datos;
+}
+
+export type CampoDecision = { sql: string; etiqueta: string; obligatorio: boolean; valor: string; valores?: string[] };
+
+/** Campos del formulario de aprobación: lo propuesto sobre lo actual, en es-CO, con listas
+ *  para los campos de valores permitidos (CA-16.1, RNF-04). */
+export function camposDecision(aporte: AporteFila, actual: Record<string, unknown> | null): CampoDecision[] {
+  return columnasDe(tablaDestino(aporte)).map((c) => ({
+    sql: c.sql,
+    etiqueta: c.nombre,
+    obligatorio: Boolean(c.obligatorio),
+    valor: valorEsCo(c, (aporte.datos ?? {})[c.sql] ?? actual?.[c.sql]),
+    ...(c.tipo === "enum" && c.valores ? { valores: c.valores } : {}),
+  }));
 }
 
 export async function rechazarAporte(id: number, motivo: string, deps: DependenciasDecision): Promise<ResultadoDecision> {

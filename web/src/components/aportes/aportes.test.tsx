@@ -42,22 +42,23 @@ describe("ListaAportes", () => {
   });
 });
 
-describe("Comparacion (CA-08.1)", () => {
-  test("muestra valor actual y propuesto lado a lado y resalta lo que cambia", () => {
+describe("Comparacion (CA-08.1, RNF-04)", () => {
+  test("muestra el nombre legible del campo y los valores lado a lado, y resalta lo que cambia", () => {
     render(
       <Comparacion
         filas={[
-          { campo: "potencia_nominal_mw", actual: "7", propuesto: "12", cambia: true },
-          { campo: "estado", actual: "En operación", propuesto: "En operación", cambia: false },
+          { campo: "potencia_nominal_mw", etiqueta: "Potencia nominal [MW]", actual: "7", propuesto: "4,5", cambia: true },
+          { campo: "estado", etiqueta: "Estado", actual: "En operación", propuesto: "En operación", cambia: false },
         ]}
       />,
     );
     expect(screen.getByRole("columnheader", { name: "Valor actual" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Propuesto" })).toBeInTheDocument();
-    const fila = screen.getByRole("row", { name: /potencia_nominal_mw/ });
+    const fila = screen.getByRole("row", { name: /Potencia nominal \[MW\]/ });
     expect(within(fila).getByText("7")).toBeInTheDocument();
-    expect(within(fila).getByText("12")).toBeInTheDocument();
+    expect(within(fila).getByText("4,5")).toBeInTheDocument();
     expect(fila).toHaveAttribute("data-cambia", "true");
-    expect(screen.getByRole("row", { name: /estado/ })).toHaveAttribute("data-cambia", "false");
+    expect(screen.queryByText("potencia_nominal_mw")).not.toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /Estado/ })).toHaveAttribute("data-cambia", "false");
   });
 });

@@ -20,7 +20,7 @@ export function Comparacion({ filas }: { filas: FilaComparacion[] }) {
               data-cambia={String(f.cambia)}
               className={f.cambia ? "bg-[var(--surface-tint)] font-semibold" : undefined}
             >
-              <th scope="row" className="px-3 py-2 font-mono text-xs">{f.campo}</th>
+              <th scope="row" className="px-3 py-2 font-medium">{f.etiqueta}</th>
               <td className="px-3 py-2">{f.actual}</td>
               <td className="px-3 py-2">{f.propuesto}</td>
             </tr>

@@ -195,7 +195,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde con 0003 aplicada; la migración se genera desde `datos/esquemas.json`
   - Depende de: T05
   - Archivos: `scripts/generar_validacion_sql.py`, `supabase/migrations/0003_correcciones_e2e.sql`, pruebas
-- [ ] **T21 · S** · Formato es-CO, etiquetas legibles y listas en `/admin` (F3, F2)
+- [x] **T21 · S** · Formato es-CO, etiquetas legibles y listas en `/admin` (F3, F2)
   - Cubre: RNF-04, CA-08.1, CA-16.1
   - Prueba primero (RED): `web/src/components/aportes/aportes.test.tsx` y `decision.test.tsx`: la comparación muestra «Potencia nominal [MW]» y «4,5»; en la aprobación `Estado` es una lista con los valores permitidos y los números se prellenan con coma decimal
   - Hecho cuando (GREEN): pruebas en verde
@@ -293,6 +293,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T16 | Sí: no existían encabezado, robots ni sitemap; axe halló un encabezado de tabla vacío; prueba de contraste falló (3,46:1) | 111/111 web; navegador a 375 px: /, /aportar, /normativa y /admin/entrar sin desbordamiento y sin violaciones de axe (incluido contraste); robots.txt y sitemap.xml servidos | Encabezado con 'Saltar al contenido' y menú principal; --muted-foreground pasa a --text-body porque --text-muted no cumple AA (3,46:1); robots excluye /admin y /datos/; NEXT_PUBLIC_SITIO_URL para la URL pública; axe-core como dependencia de desarrollo |
 | 2026-10-19 | T17 | Sí: test:secretos fallaba sin build | Build revisado: ninguna llave privada en .next/static; repositorio privado en GitHub; respaldo en Actions OK; primer despliegue bloqueado por autor del commit | Identidad de git del repositorio cambiada a la cuenta obsersaemed (correo noreply de GitHub) porque Vercel Hobby bloquea commits de autores que no son el dueño. Pendiente: revisión del sitio publicado |
 | 2026-10-19 | T17 | — | Sitio publicado en https://observatorio-almacenamiento.vercel.app: 12 rutas con el código esperado (/admin→307, aportes.csv→404), KPI 17,0 MW y 12,8 MWh, CSV con 7 proyectos, robots con dominio real; 11 scripts publicados sin llaves privadas | Despliegue automático desde main; Vercel con datos de Supabase pruebas y llaves de prueba de Turnstile |
+| 2026-10-20 | T21 | Sí: comparación con nombres técnicos y punto decimal; Estado como texto libre; prellenado con separador de miles leído como decimal | 115/115 web | columnas.ts concentra etiquetas, tipos y formato es-CO (sin separador de miles para que el valor se lea de vuelta igual) |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).

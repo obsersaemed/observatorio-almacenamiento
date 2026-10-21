@@ -1,7 +1,7 @@
 // T12 · RF-09, RF-10, RF-16 (CA-09.1, CA-09.2, CA-10.1, CA-16.1)
 import { describe, expect, test, vi } from "vitest";
 import type { AporteFila } from "./aportes-admin";
-import { aprobarAporte, columnaSql, datosDesdeFormulario, rechazarAporte } from "./decision";
+import { aprobarAporte, camposDecision, columnaSql, datosDesdeFormulario, rechazarAporte } from "./decision";
 import { mensaje } from "./esquemas";
 
 const aporte = (cambios: Partial<AporteFila> = {}): AporteFila => ({
@@ -99,4 +99,16 @@ test("datosDesdeFormulario toma los campos 'campo:<columna>' del formulario", ()
   f.set("campo:potencia_nominal_mw", "7");
   f.set("otro", "x");
   expect(datosDesdeFormulario(f)).toEqual({ nombre: "BESS", potencia_nominal_mw: "7" });
+});
+
+describe("camposDecision (RNF-04, CA-16.1)", () => {
+  test("prellena con lo propuesto sobre lo actual, números con coma y Estado con su lista", () => {
+    const campos = camposDecision(aporte({ datos: { potencia_nominal_mw: 4.5 } }), actual);
+    const potencia = campos.find((c) => c.sql === "potencia_nominal_mw")!;
+    const estado = campos.find((c) => c.sql === "estado")!;
+    expect(potencia).toMatchObject({ etiqueta: "Potencia nominal [MW]", valor: "4,5" });
+    expect(estado).toMatchObject({ valor: "En operación", obligatorio: true });
+    expect(estado.valores).toEqual(["En operación", "En construcción", "Anunciado", "Inactivo"]);
+    expect(campos.find((c) => c.sql === "nombre")?.valores).toBeUndefined();
+  });
 });

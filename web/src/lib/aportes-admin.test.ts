@@ -21,16 +21,18 @@ describe("tablaDestino", () => {
 });
 
 describe("compararCampos (CA-08.1)", () => {
-  test("lista cada campo propuesto con su valor actual y marca los que cambian", () => {
+  test("lista cada campo propuesto con su etiqueta, valores en es-CO y si cambia (RNF-04)", () => {
     const actual = { nombre: "BESS Termozipa", potencia_nominal_mw: 7, estado: "En operación" };
-    const propuesto = { potencia_nominal_mw: 12, estado: "En operación", tabla: "proyectos" };
-    expect(compararCampos(actual, propuesto)).toEqual([
-      { campo: "potencia_nominal_mw", actual: "7", propuesto: "12", cambia: true },
-      { campo: "estado", actual: "En operación", propuesto: "En operación", cambia: false },
+    const propuesto = { potencia_nominal_mw: 4.5, estado: "En operación", tabla: "proyectos" };
+    expect(compararCampos("proyectos", actual, propuesto)).toEqual([
+      { campo: "potencia_nominal_mw", etiqueta: "Potencia nominal [MW]", actual: "7", propuesto: "4,5", cambia: true },
+      { campo: "estado", etiqueta: "Estado", actual: "En operación", propuesto: "En operación", cambia: false },
     ]);
   });
 
   test("sin registro actual todos los campos son nuevos", () => {
-    expect(compararCampos(null, { titulo: "X" })).toEqual([{ campo: "titulo", actual: "—", propuesto: "X", cambia: true }]);
+    expect(compararCampos("noticias", null, { titulo: "X" })).toEqual([
+      { campo: "titulo", etiqueta: "titulo", actual: "—", propuesto: "X", cambia: true },
+    ]);
   });
 });

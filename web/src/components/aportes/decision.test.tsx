@@ -32,3 +32,18 @@ describe("Decision", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(/Planeado/);
   });
 });
+
+describe("Decision · campos con valores permitidos (CA-16.1)", () => {
+  test("un campo con valores permitidos se elige de una lista", () => {
+    render(
+      <Decision
+        campos={[{ sql: "estado", etiqueta: "Estado", obligatorio: true, valor: "Anunciado", valores: ["En operación", "Anunciado"] }]}
+        aprobar={vi.fn()}
+        rechazar={vi.fn()}
+      />,
+    );
+    const lista = screen.getByRole("combobox", { name: /Estado/ });
+    expect(lista).toHaveValue("Anunciado");
+    expect(within(lista).getAllByRole("option").map((o) => o.textContent)).toEqual(["", "En operación", "Anunciado"]);
+  });
+});

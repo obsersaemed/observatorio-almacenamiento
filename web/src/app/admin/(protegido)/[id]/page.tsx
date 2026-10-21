@@ -6,7 +6,7 @@ import { Comparacion } from "@/components/aportes/comparacion";
 import { Decision } from "@/components/aportes/decision";
 import { clienteConSesion } from "@/lib/acceso-supabase";
 import { CLAVE_TABLA, compararCampos, etiquetaOrigen, tablaDestino, type AporteFila } from "@/lib/aportes-admin";
-import { columnasDe } from "@/lib/decision";
+import { camposDecision } from "@/lib/decision";
 import { formatoFecha } from "@/lib/formato";
 import { aprobar, rechazar } from "./acciones";
 
@@ -60,14 +60,11 @@ async function Detalle({ params }: { params: Promise<{ id: string }> }) {
       <h2 className="mt-8 text-lg font-bold text-[var(--text-heading)]">
         {actual ? "Valor actual frente al propuesto" : "Datos propuestos"}
       </h2>
-      <Comparacion filas={compararCampos(actual, aporte.datos ?? {})} />
+      <Comparacion filas={compararCampos(tabla, actual, aporte.datos ?? {})} />
 
       {aporte.publicacion === "Pendiente" ? (
         <Decision
-          campos={columnasDe(tabla).map((c) => {
-            const valor = (aporte.datos ?? {})[c.sql] ?? actual?.[c.sql];
-            return { sql: c.sql, etiqueta: c.nombre, obligatorio: Boolean(c.obligatorio), valor: valor == null ? "" : String(valor) };
-          })}
+          campos={camposDecision(aporte, actual)}
           aprobar={aprobar.bind(null, aporte.id)}
           rechazar={rechazar.bind(null, aporte.id)}
         />

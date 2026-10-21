@@ -3,11 +3,11 @@
 // Formularios de decisión del editor (RF-09): ajustar y aprobar, o rechazar con motivo.
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import type { ResultadoDecision } from "@/lib/decision";
+import type { CampoDecision, ResultadoDecision } from "@/lib/decision";
+
+export type { CampoDecision };
 
 type Accion = (anterior: ResultadoDecision | null, datos: FormData) => Promise<ResultadoDecision>;
-export type CampoDecision = { sql: string; etiqueta: string; obligatorio: boolean; valor: string };
-
 const estiloCampo = "mt-1 block w-full rounded-[var(--radius-md)] border border-input bg-card px-3 py-2 font-normal";
 
 function Errores({ resultado }: { resultado: ResultadoDecision | null }) {
@@ -38,7 +38,16 @@ export function Decision({ campos, aprobar, rechazar }: { campos: CampoDecision[
             <label key={c.sql} className="block text-sm font-semibold text-[var(--text-heading)]">
               {c.etiqueta}
               {c.obligatorio && " *"}
-              <input name={`campo:${c.sql}`} defaultValue={c.valor} className={estiloCampo} />
+              {c.valores ? (
+                <select name={`campo:${c.sql}`} defaultValue={c.valor} className={estiloCampo}>
+                  <option value="" />
+                  {c.valores.map((v) => (
+                    <option key={v}>{v}</option>
+                  ))}
+                </select>
+              ) : (
+                <input name={`campo:${c.sql}`} defaultValue={c.valor} className={estiloCampo} />
+              )}
             </label>
           ))}
         </div>

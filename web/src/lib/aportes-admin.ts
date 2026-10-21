@@ -1,4 +1,6 @@
 // Datos y reglas para la revisión de aportes en /admin (RF-08, RF-12).
+import { columnasDe, valorEsCo, type TablaPublicable } from "./columnas";
+
 export type AporteFila = {
   id: number;
   tipo: string;
@@ -12,7 +14,7 @@ export type AporteFila = {
   creado_en: string;
 };
 
-export type TablaDestino = "proyectos" | "normas" | "noticias";
+export type TablaDestino = TablaPublicable;
 
 /** Columna que identifica un registro en cada tabla (la que se escribe en registro_afectado). */
 export const CLAVE_TABLA: Record<TablaDestino, string> = { proyectos: "nombre", normas: "id", noticias: "enlace" };
@@ -29,17 +31,22 @@ export function tablaDestino({ tipo, datos }: Pick<AporteFila, "tipo" | "datos">
   return "proyectos";
 }
 
-const mostrar = (v: unknown) => (v === null || v === undefined || v === "" ? "—" : String(v));
+export type FilaComparacion = { campo: string; etiqueta: string; actual: string; propuesto: string; cambia: boolean };
 
-export type FilaComparacion = { campo: string; actual: string; propuesto: string; cambia: boolean };
-
-/** Campos propuestos frente a los valores actuales del registro (CA-08.1). */
-export function compararCampos(actual: Record<string, unknown> | null, propuesto: Record<string, unknown>): FilaComparacion[] {
+/** Campos propuestos frente a los valores actuales del registro, con su nombre legible y en
+ *  formato es-CO (CA-08.1, RNF-04). */
+export function compararCampos(
+  tabla: TablaDestino,
+  actual: Record<string, unknown> | null,
+  propuesto: Record<string, unknown>,
+): FilaComparacion[] {
+  const columnas = new Map(columnasDe(tabla).map((c) => [c.sql, c]));
   return Object.entries(propuesto)
     .filter(([campo]) => campo !== "tabla")
     .map(([campo, valor]) => {
-      const a = mostrar(actual?.[campo]);
-      const p = mostrar(valor);
-      return { campo, actual: a, propuesto: p, cambia: a !== p };
+      const c = columnas.get(campo);
+      const a = valorEsCo(c, actual?.[campo]) || "—";
+      const p = valorEsCo(c, valor) || "—";
+      return { campo, etiqueta: c?.nombre ?? campo, actual: a, propuesto: p, cambia: a !== p };
     });
 }
