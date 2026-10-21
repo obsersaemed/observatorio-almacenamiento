@@ -1,6 +1,6 @@
 # 001 · Arquitectura y plataforma base — Plan
 
-Estado: En curso
+Estado: En curso (correcciones del E2E)
 Fecha: 2026-10-19
 Spec: [spec.md](spec.md)
 
@@ -177,6 +177,31 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Depende de: T16, P4, P5
   - Archivos: `web/tests/secretos.test.ts`, `web/vercel.json` (si hace falta)
 
+- [ ] **T18 · S** · Fuente del cambio en el registro y en el historial (F1)
+  - Cubre: RF-11 · CA-11.1
+  - Prueba primero (RED): `web/src/lib/decision.test.ts`: al aprobar una corrección, la fuente propuesta del registro suma la del aporte a la anterior sin duplicar; integración `tests/integracion/decision.test.ts`: `historial.fuente` es la fuente del aporte
+  - Hecho cuando (GREEN): pruebas en verde con la migración 0003 aplicada
+  - Depende de: T12
+  - Archivos: `web/src/lib/decision.ts`, `web/src/app/admin/(protegido)/[id]/page.tsx`, `supabase/migrations/0003_correcciones_e2e.sql`
+- [ ] **T19 · S** · Historial consultable en `/admin/historial` (F1)
+  - Cubre: RF-11 · CA-11.1
+  - Prueba primero (RED): `web/src/components/aportes/historial.test.tsx`: la tabla muestra fecha dd/mm/aaaa, editor, enlace al aporte, registro, campos cambiados (antes → después, es-CO) y fuente
+  - Hecho cuando (GREEN): pruebas en verde; enlace al historial desde el encabezado de `/admin`
+  - Depende de: T11
+  - Archivos: `web/src/components/aportes/historial.tsx`, `web/src/lib/historial.ts`, `web/src/app/admin/(protegido)/historial/page.tsx`
+- [ ] **T20 · M** · Mismo mensaje cuando la base rechaza un valor (F2)
+  - Cubre: RF-16 · CA-16.1
+  - Prueba primero (RED): `pruebas/test_sql_esquemas.py`: la migración 0003 valida cada enum y rango con el mensaje de la plantilla; integración `tests/integracion/rls.test.ts`: insertar `Estado = Planeado` con la llave de servicio devuelve el mensaje compartido
+  - Hecho cuando (GREEN): pruebas en verde con 0003 aplicada; la migración se genera desde `datos/esquemas.json`
+  - Depende de: T05
+  - Archivos: `scripts/generar_validacion_sql.py`, `supabase/migrations/0003_correcciones_e2e.sql`, pruebas
+- [ ] **T21 · S** · Formato es-CO, etiquetas legibles y listas en `/admin` (F3, F2)
+  - Cubre: RNF-04, CA-08.1, CA-16.1
+  - Prueba primero (RED): `web/src/components/aportes/aportes.test.tsx` y `decision.test.tsx`: la comparación muestra «Potencia nominal [MW]» y «4,5»; en la aprobación `Estado` es una lista con los valores permitidos y los números se prellenan con coma decimal
+  - Hecho cuando (GREEN): pruebas en verde
+  - Depende de: T11, T12
+  - Archivos: `web/src/lib/aportes-admin.ts`, `web/src/components/aportes/comparacion.tsx`, `web/src/components/aportes/decision.tsx`, `web/src/app/admin/(protegido)/[id]/page.tsx`
+
 Estimación total: 17 tareas (2 XS, 10 S, 5 M) ≈ 15,5 h. Además, P1–P5 dependen del usuario.
 
 ## Escenarios E2E
@@ -200,7 +225,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | E2E-13 | CA-13.1 | 1. Correr `python scripts/respaldo.py --entorno pruebas` | Se generan los CSV sin correos, o termina con error si la API falla |
 | E2E-14 | CA-14.1 | 1. Descargar `/datos/proyectos.csv` | Solo aprobados, columna de fuente, licencia CC BY 4.0, sin correos |
 | E2E-15 | CA-15.1 | 1. Importar el CSV actual 2. Importar un CSV corregido de prueba | Primero se rechazan los 7 con su motivo; después se aceptan |
-| E2E-16 | CA-16.1 | 1. Intentar `Estado = Planeado` por el formulario, por la aprobación y por la importación | Rechazado con el mismo mensaje en las tres vías |
+| E2E-16 | CA-16.1 | 1. Intentar `Estado = Planeado` por la aprobación, directamente en la base y por la importación | Rechazado con el mismo mensaje en las tres vías; en la aprobación Estado es una lista |
 | E2E-17 | CA-17.1 | 1. Emular movimiento reducido 2. Abrir `/` | KPI sin animación de conteo |
 | E2E-18 | RNF-01, RNF-03 | 1. Viewport de 375 px 2. Recorrer `/`, `/aportar` y las secciones 3. Correr axe | Sin desplazamiento horizontal ni violaciones graves de axe; consola sin errores |
 | E2E-19 | RNF-02 | 1. Medir LCP de `/` con el build de producción y throttling 4G | LCP < 2,5 s |
@@ -218,17 +243,17 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | RF-08 | CA-08.1 | T11 | E2E-09 |
 | RF-09 | CA-09.1, CA-09.2 | T12 | E2E-10, E2E-11 |
 | RF-10 | CA-10.1 | T12 | E2E-11 |
-| RF-11 | CA-11.1 | T05, T12 | E2E-11 |
+| RF-11 | CA-11.1 | T05, T12, T18, T19 | E2E-11 |
 | RF-12 | CA-12.1 | T11, T14 | E2E-12 |
 | RF-13 | CA-13.1 | T15 | E2E-13 |
 | RF-14 | CA-14.1 | T13 | E2E-14 |
 | RF-15 | CA-15.1 | T06 | E2E-15 |
-| RF-16 | CA-16.1 | T04, T05, T06, T12 | E2E-16 |
+| RF-16 | CA-16.1 | T04, T05, T06, T12, T20, T21 | E2E-16 |
 | RF-17 | CA-17.1 | T08 | E2E-17 |
 | RNF-01 | — | T07, T16 | E2E-18 |
 | RNF-02 | — | T07 | E2E-19 |
 | RNF-03 | — | T16 | E2E-18 |
-| RNF-04 | — | T03 | E2E-02 |
+| RNF-04 | — | T03, T21 | E2E-02, E2E-09 |
 | RNF-05 | — | T02 | revisión visual en E2E-18 |
 | RNF-06 | — | T17 | revisión de planes (sin costo) |
 | RNF-07 | — | T05, T10, T17 | prueba `secretos.test.ts` |

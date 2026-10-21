@@ -43,7 +43,7 @@ normativa, noticias) se especifican aparte (002 a 005).
 | RF-13 | Debe existir una exportación diaria de todas las tablas publicadas a CSV versionado en el repositorio. | HU-06 |
 | RF-14 | El visitante debe poder descargar en CSV los datos publicados de cada sección, con la columna de fuente y la licencia CC BY 4.0. | HU-03 |
 | RF-15 | Debe existir una importación inicial desde `Base de datos SAEB` que rechace los registros inválidos y reporte cada rechazo. | HU-06 |
-| RF-16 | Las mismas reglas de datos (obligatorios, valores permitidos, rangos y coordenadas dentro de Colombia) deben aplicarse en el formulario, en la aprobación, en la base de datos y en la importación. | HU-02, HU-04 |
+| RF-16 | Las mismas reglas de datos (obligatorios, valores permitidos, rangos y coordenadas dentro de Colombia) deben aplicarse en la aprobación, en la base de datos y en la importación, con el mismo mensaje. El formulario público aplica las reglas de los campos que captura (tipo, descripción, fuente, correo); los datos estructurados del registro (p. ej. `Estado`) los completa el editor al aprobar. | HU-02, HU-04 |
 | RF-17 | Las transiciones y los KPI deben animarse; con la preferencia de movimiento reducido del sistema, las animaciones deben desactivarse. | HU-01 |
 
 ## Criterios de aceptación
@@ -93,8 +93,10 @@ normativa, noticias) se especifican aparte (002 a 005).
   visible en el sitio público sin intervención manual.
 
 **RF-11**
-- **CA-11.1** Dado un cambio aprobado, cuando se consulta el historial del registro, entonces se ven
-  la fecha, el editor, el aporte de origen, los valores anteriores y nuevos, y la fuente.
+- **CA-11.1** Dado un cambio aprobado, cuando el editor consulta el historial en `/admin`, entonces
+  ve la fecha, el editor, el aporte de origen, los valores anteriores y nuevos, y la fuente **del
+  aporte** que justificó el cambio; y el registro publicado conserva su fuente anterior y suma la
+  del aporte.
 
 **RF-12**
 - **CA-12.1** Dada una noticia propuesta por el agente de noticias, cuando el editor la ve, entonces
@@ -116,7 +118,8 @@ normativa, noticias) se especifican aparte (002 a 005).
 
 **RF-16**
 - **CA-16.1** Dado un valor de `Estado` fuera de la lista permitida, cuando se intenta guardar por
-  cualquiera de las cuatro vías, entonces se rechaza con el mismo mensaje.
+  la aprobación, directamente en la base de datos o por la importación, entonces se rechaza con el
+  mismo mensaje. En la aprobación, `Estado` se elige de una lista con los valores permitidos.
 
 **RF-17**
 - **CA-17.1** Dado un sistema con movimiento reducido activado, cuando se abre el inicio, entonces
@@ -171,3 +174,4 @@ Aceptadas por el usuario el 2026-10-19:
 |---|---|---|
 | 2026-10-19 | Primera versión | Brainstorm 001 aprobado |
 | 2026-10-19 | Aclaraciones 1–5 resueltas, IDs CA-xx.n, CA-03.2 y RNF-11 | Aprobación del usuario |
+| 2026-10-20 | RF-16 y CA-16.1: tres vías (el formulario público no captura Estado) y Estado como lista en la aprobación; CA-11.1: historial consultable en /admin, fuente del aporte y fuente acumulada en el registro | Informe E2E (F1, F2); aprobado por el usuario |
