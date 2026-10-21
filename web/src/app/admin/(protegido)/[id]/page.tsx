@@ -70,7 +70,12 @@ async function Detalle({ params }: { params: Promise<{ id: string }> }) {
         />
       ) : (
         <p className="mt-8 rounded-[var(--radius-md)] border border-border bg-card p-4">
-          Este aporte ya fue revisado ({aporte.publicacion}).
+          Este aporte ya fue revisado ({aporte.publicacion}).{" "}
+          {aporte.publicacion === "Aprobado" && (
+            <Link href={`/admin/historial?aporte=${aporte.id}`} className="text-[var(--text-link)] underline">
+              Ver el cambio en el historial
+            </Link>
+          )}
         </p>
       )}
     </>

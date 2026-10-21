@@ -29,9 +29,14 @@ async function Guardian({ children }: { children: ReactNode }) {
     <>
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex w-full max-w-[var(--page-max)] flex-wrap items-center justify-between gap-2 px-4 py-3">
-          <Link href="/admin" className="font-bold text-[var(--text-heading)]">
-            Revisión de aportes
-          </Link>
+          <nav aria-label="Editores" className="flex flex-wrap items-center gap-4">
+            <Link href="/admin" className="font-bold text-[var(--text-heading)]">
+              Revisión de aportes
+            </Link>
+            <Link href="/admin/historial" className="text-sm font-semibold text-[var(--text-link)] underline">
+              Historial
+            </Link>
+          </nav>
           <form action={cerrarSesion} className="flex items-center gap-3 text-sm">
             <span>{sesion.correo}</span>
             <Button type="submit" variant="outline" size="sm">

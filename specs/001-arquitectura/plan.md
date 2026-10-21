@@ -183,7 +183,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde con la migración 0003 aplicada
   - Depende de: T12
   - Archivos: `web/src/lib/decision.ts`, `web/src/app/admin/(protegido)/[id]/page.tsx`, `supabase/migrations/0003_correcciones_e2e.sql`
-- [ ] **T19 · S** · Historial consultable en `/admin/historial` (F1)
+- [x] **T19 · S** · Historial consultable en `/admin/historial` (F1)
   - Cubre: RF-11 · CA-11.1
   - Prueba primero (RED): `web/src/components/aportes/historial.test.tsx`: la tabla muestra fecha dd/mm/aaaa, editor, enlace al aporte, registro, campos cambiados (antes → después, es-CO) y fuente
   - Hecho cuando (GREEN): pruebas en verde; enlace al historial desde el encabezado de `/admin`
@@ -294,6 +294,7 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T17 | Sí: test:secretos fallaba sin build | Build revisado: ninguna llave privada en .next/static; repositorio privado en GitHub; respaldo en Actions OK; primer despliegue bloqueado por autor del commit | Identidad de git del repositorio cambiada a la cuenta obsersaemed (correo noreply de GitHub) porque Vercel Hobby bloquea commits de autores que no son el dueño. Pendiente: revisión del sitio publicado |
 | 2026-10-19 | T17 | — | Sitio publicado en https://observatorio-almacenamiento.vercel.app: 12 rutas con el código esperado (/admin→307, aportes.csv→404), KPI 17,0 MW y 12,8 MWh, CSV con 7 proyectos, robots con dominio real; 11 scripts publicados sin llaves privadas | Despliegue automático desde main; Vercel con datos de Supabase pruebas y llaves de prueba de Turnstile |
 | 2026-10-20 | T21 | Sí: comparación con nombres técnicos y punto decimal; Estado como texto libre; prellenado con separador de miles leído como decimal | 115/115 web | columnas.ts concentra etiquetas, tipos y formato es-CO (sin separador de miles para que el valor se lea de vuelta igual) |
+| 2026-10-20 | T19 | Sí: no existían historial.ts ni la tabla | 120/120 web | /admin/historial con filtros por registro o aporte; enlace desde el encabezado de /admin y desde el aporte aprobado |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
