@@ -58,7 +58,8 @@ class TestMigracion(unittest.TestCase):
                 bloque = bloque_tabla(self.sql, tabla) or ""
                 col = columna_sql(c["nombre"])
                 linea = next((l for l in bloque.split("\n") if re.match(rf"\s*{col}\s", l)), "")
-                for v in c.get("valores", []):
+                # Las columnas tipo lista se validan valor por valor en el disparador (0004), no con check.
+                for v in (c.get("valores", []) if c["tipo"] == "enum" else []):
                     self.assertIn(f"'{v}'", linea, f"{tabla}.{col}: falta el valor '{v}' en el check")
                 for limite in ("min", "max"):
                     if limite in c:

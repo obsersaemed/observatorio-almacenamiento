@@ -197,7 +197,7 @@ Claude los recibe y debe resolverlos o reportarlos.
 | 10-19 | Arnés: CLAUDE.md, datos, validador, hook, skills, esqueleto del sitio | Hecho |
 | 10-20 | Plataforma base 001: T01–T09 (app, tema, formato, esquemas, base de datos, importación, inicio, aportes) | Hecho |
 | 10-21 | Plataforma base 001: T10–T17 + E2E limpio | Hecho (E2E limpio 19/19 el 10-21; 001 terminada) |
-| 10-22 | 002 · Implementación en el país (mapa, filtros, KPI) | Brainstorm y spec aprobados el 10-21; plan en borrador |
+| 10-22 | 002 · Implementación en el país (mapa, filtros, KPI) | Hecho el 10-21 (22 tareas; E2E limpio 23/23) |
 | 10-23 | 003 · Vehículos eléctricos | |
 | 10-24 | 004 · Evolución normativa | |
 | 10-25 | 005 · Noticias | |

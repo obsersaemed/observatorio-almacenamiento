@@ -18,8 +18,8 @@ ENC_PROY = ("Nombre,Operador,Estado,Tecnologia,FPO,Tipo uso/conexión,Punto de c
             "Tiempo para aporte de máxima potencia [%],Tipo de compensación adicional,Fuente\n")
 
 
-def fila_proyecto(estado="En operación", lat='"4,9653"', lon='"-73,9128"'):
-    return f"P1,Op,{estado},Li-ion,2024,STN,115,Cundinamarca,Tocancipá,{lat},{lon},7,\"3,9\",,,,,,,,,,https://ejemplo.co\n"
+def fila_proyecto(estado="En operación", lat='"4,9653"', lon='"-73,9128"', servicios=""):
+    return f"P1,Op,{estado},Li-ion,2024,{servicios},115,Cundinamarca,Tocancipá,{lat},{lon},7,\"3,9\",,,,,,,,,,https://ejemplo.co\n"
 
 
 class TestValidador(unittest.TestCase):
@@ -52,6 +52,19 @@ class TestValidador(unittest.TestCase):
     def test_estado_no_permitido(self):
         errores, _ = self.proyectos(ENC_PROY + fila_proyecto(estado="Planeado"))
         self.assertTrue(any("Estado" in e for e in errores))
+
+    def test_servicios_de_la_lista_separados_por_coma(self):
+        dos = '"Regulación primaria de frecuencia, Inyección de energía en la noche"'
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto(servicios=dos))
+        self.assertEqual(errores, [])
+
+    def test_servicio_fuera_de_la_lista(self):
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto(servicios="Servicio X"))
+        esquema = json.loads((self.dir / "esquemas.json").read_text(encoding="utf-8"))
+        col = next(c for c in esquema["proyectos"]["columnas"] if c["nombre"] == "Tipo uso/conexión")
+        esperado = esquema["_mensajes"]["valores"].format(
+            columna="Tipo uso/conexión", valor="Servicio X", valores=", ".join(col["valores"]))
+        self.assertTrue(any(e.endswith(esperado) for e in errores), errores)
 
     def test_columnas_en_otro_orden(self):
         enc = ENC_PROY.replace("Nombre,Operador", "Operador,Nombre")

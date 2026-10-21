@@ -101,7 +101,41 @@ test("datosDesdeFormulario toma los campos 'campo:<columna>' del formulario", ()
   expect(datosDesdeFormulario(f)).toEqual({ nombre: "BESS", potencia_nominal_mw: "7" });
 });
 
+test("datosDesdeFormulario une con coma las casillas marcadas de un campo de lista (002 · CA-14.1)", () => {
+  const f = new FormData();
+  f.append("campo:tipo_uso_conexion", "");
+  f.append("campo:tipo_uso_conexion", "Regulación primaria de frecuencia");
+  f.append("campo:tipo_uso_conexion", "Inyección de energía en la noche");
+  expect(datosDesdeFormulario(f)).toEqual({
+    tipo_uso_conexion: "Regulación primaria de frecuencia, Inyección de energía en la noche",
+  });
+  const vacio = new FormData();
+  vacio.append("campo:tipo_uso_conexion", "");
+  expect(datosDesdeFormulario(vacio)).toEqual({ tipo_uso_conexion: "" });
+});
+
 describe("camposDecision (RNF-04, CA-16.1)", () => {
+  test("T18 · un servicio propuesto fuera de la lista se avisa y el grupo se llama Servicios (O-3)", () => {
+    const campos = camposDecision(
+      aporte({ datos: { tipo_uso_conexion: "Servicio X, Inyección de energía en la noche" } }),
+      actual,
+    );
+    const servicios = campos.find((c) => c.sql === "tipo_uso_conexion")!;
+    expect(servicios.etiqueta).toBe("Servicios");
+    expect(servicios.aviso).toBe(
+      "El aporte propone «Servicio X», que no está en la lista. Elige los servicios que correspondan; ese valor no se guardará.",
+    );
+    const sinAviso = camposDecision(aporte({ datos: {} }), { ...actual, tipo_uso_conexion: "Inyección de energía en la noche" });
+    expect(sinAviso.find((c) => c.sql === "tipo_uso_conexion")!.aviso).toBeUndefined();
+  });
+
+  test("Servicios se ofrece como lista de varios valores (002 · CA-14.1)", () => {
+    const campos = camposDecision(aporte({ datos: {} }), { ...actual, tipo_uso_conexion: "Inyección de energía en la noche" });
+    const servicios = campos.find((c) => c.sql === "tipo_uso_conexion")!;
+    expect(servicios).toMatchObject({ multiple: true, valor: "Inyección de energía en la noche" });
+    expect(servicios.valores).toHaveLength(3);
+  });
+
   test("prellena con lo propuesto sobre lo actual, números con coma y Estado con su lista", () => {
     const campos = camposDecision(aporte({ datos: { potencia_nominal_mw: 4.5 } }), actual);
     const potencia = campos.find((c) => c.sql === "potencia_nominal_mw")!;

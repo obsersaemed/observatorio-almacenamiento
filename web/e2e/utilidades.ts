@@ -25,7 +25,8 @@ const SERVICIO = ENV.SUPABASE_SERVICE_ROLE_KEY;
 
 // Prefijo único de todo lo que siembran estas pruebas.
 export const FECHA = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-export const PREFIJO = `e2e-${FECHA}-`;
+// E2E_PREFIJO permite separar corridas del mismo día (p. ej. "e2e-20261021b-").
+export const PREFIJO = process.env.E2E_PREFIJO ?? `e2e-${FECHA}-`;
 export const DOMINIO_PRUEBA = "ejemplo.co";
 
 export function admin(): SupabaseClient {

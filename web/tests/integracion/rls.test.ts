@@ -91,6 +91,23 @@ describe("restricciones de la base (CA-16.1)", () => {
     expect(error?.message).toBe(mensaje("valores", { columna: "Estado", valor: "Planeado", valores }));
   });
 
+  test("un servicio fuera de la lista se rechaza con el mensaje compartido (002 · CA-14.1)", async () => {
+    const { error } = await servicio
+      .from("proyectos")
+      .insert({ ...proyecto("servicio inválido", "Pendiente"), tipo_uso_conexion: "Servicio X" });
+    expect(error?.code).toBe("23514");
+    const valores = definicion.proyectos.columnas.find((c) => c.nombre === "Tipo uso/conexión")!.valores!.join(", ");
+    expect(error?.message).toBe(mensaje("valores", { columna: "Tipo uso/conexión", valor: "Servicio X", valores }));
+  });
+
+  test("dos servicios de la lista separados por coma se aceptan (002 · CA-14.2)", async () => {
+    const { error } = await servicio.from("proyectos").insert({
+      ...proyecto("dos servicios", "Pendiente"),
+      tipo_uso_conexion: "Regulación primaria de frecuencia, Inyección de energía en la noche",
+    });
+    expect(error).toBeNull();
+  });
+
   test("una latitud fuera de Colombia se rechaza", async () => {
     const { error } = await servicio
       .from("proyectos")

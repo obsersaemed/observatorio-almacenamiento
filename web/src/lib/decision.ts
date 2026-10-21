@@ -3,7 +3,7 @@
 // compartidas y se decide qué campos enviar.
 import { tablaDestino, type AporteFila, type TablaDestino } from "./aportes-admin";
 import { columnasDe, ESQUEMA_DE_TABLA, valorEsCo } from "./columnas";
-import { validar } from "./esquemas";
+import { separarLista, validar } from "./esquemas";
 
 export { columnaSql, columnasDe, ESQUEMA_DE_TABLA } from "./columnas";
 
@@ -19,15 +19,28 @@ const vacio = (v: unknown) => v === null || v === undefined || String(v).trim() 
 const igual = (a: unknown, b: unknown) =>
   (vacio(a) && vacio(b)) || (!vacio(a) && !vacio(b) && String(a).trim() === String(b).trim());
 
+/** Los campos de lista llegan como varias casillas con la misma clave (más una vacía, para
+ *  poder quitarlas todas): se unen con «, », igual que se guardan en la base. */
 export function datosDesdeFormulario(formulario: FormData): Record<string, string> {
   const datos: Record<string, string> = {};
-  for (const [clave, valor] of formulario.entries()) {
-    if (clave.startsWith("campo:")) datos[clave.slice("campo:".length)] = String(valor).trim();
+  for (const clave of new Set(formulario.keys())) {
+    if (!clave.startsWith("campo:")) continue;
+    const valores = formulario.getAll(clave).map((v) => String(v).trim());
+    datos[clave.slice("campo:".length)] = valores.length > 1 ? valores.filter(Boolean).join(", ") : valores[0];
   }
   return datos;
 }
 
-export type CampoDecision = { sql: string; etiqueta: string; obligatorio: boolean; valor: string; valores?: string[] };
+export type CampoDecision = {
+  sql: string;
+  etiqueta: string;
+  obligatorio: boolean;
+  valor: string;
+  valores?: string[];
+  multiple?: boolean;
+  /** Valores propuestos que no están en la lista: no se pueden marcar y no se guardan (O-3). */
+  aviso?: string;
+};
 
 /** Campos del formulario de aprobación: lo propuesto sobre lo actual, en es-CO, con listas
  *  para los campos de valores permitidos (CA-16.1, RNF-04). */
@@ -37,12 +50,19 @@ export function camposDecision(aporte: AporteFila, actual: Record<string, unknow
     // CA-11.1: la cifra publicada debe citar la fuente que la respalda. La del aporte se suma
     // a la del registro (sin duplicar); en un registro nuevo sin fuente, se usa la del aporte.
     if (c.sql === "fuente") valor = unirFuentes(valor, aporte.fuente);
+    const fuera = c.tipo === "lista" && c.valores ? separarLista(valor).filter((v) => !c.valores!.includes(v)) : [];
     return {
       sql: c.sql,
-      etiqueta: c.nombre,
+      etiqueta: c.etiqueta ?? c.nombre,
       obligatorio: Boolean(c.obligatorio),
       valor,
       ...(c.tipo === "enum" && c.valores ? { valores: c.valores } : {}),
+      ...(c.tipo === "lista" && c.valores ? { valores: c.valores, multiple: true } : {}),
+      ...(fuera.length
+        ? {
+            aviso: `El aporte propone ${fuera.map((v) => `«${v}»`).join(", ")}, que no está en la lista. Elige los servicios que correspondan; ese valor no se guardará.`,
+          }
+        : {}),
     };
   });
 }

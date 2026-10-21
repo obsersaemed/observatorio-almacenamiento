@@ -7,9 +7,10 @@ import definicion from "@/generado/esquemas.json";
 
 type Columna = {
   nombre: string;
-  tipo: "texto" | "numero" | "fecha" | "urls" | "correo" | "enum";
+  tipo: "texto" | "numero" | "fecha" | "urls" | "correo" | "enum" | "lista";
   obligatorio?: boolean;
   valores?: string[];
+  separador?: string;
   min?: number;
   max?: number;
 };
@@ -31,6 +32,11 @@ export function leerNumero(valor: unknown): number | null {
   if (v.includes(",") && v.includes(".")) v = v.replaceAll(".", "");
   const x = Number(v.replace(",", "."));
   return v !== "" && Number.isFinite(x) ? x : null;
+}
+
+/** Igual que separar_lista() en validar_datos.py: "a ,b" → ["a", "b"] (sin vacíos). */
+export function separarLista(texto: string, separador = ","): string[] {
+  return texto.split(separador).map((v) => v.trim()).filter(Boolean);
 }
 
 const esFechaReal = (v: string) =>
@@ -57,6 +63,12 @@ function campo(c: Columna) {
       }
       case "enum":
         return c.valores!.includes(texto) ? texto : falla("valores", { valores: c.valores!.join(", ") });
+      case "lista": {
+        const valores = separarLista(texto, c.separador);
+        return valores.every((v) => c.valores!.includes(v))
+          ? valores.join(`${c.separador ?? ","} `)
+          : falla("valores", { valores: c.valores!.join(", ") });
+      }
       case "fecha":
         return esFechaReal(texto) ? texto : falla("fecha");
       case "urls":

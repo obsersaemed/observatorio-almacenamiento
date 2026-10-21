@@ -1,6 +1,6 @@
 # 002 · Implementación en el país — Plan
 
-Estado: Borrador
+Estado: Terminado (2026-10-21)
 Fecha: 2026-10-21
 Spec: [spec.md](spec.md)
 
@@ -68,92 +68,147 @@ aprobado: `maplibre-gl` y `@tanstack/react-table`.
 - **CSV y Sheet:** se convierten los mismos 2 textos en `datos/proyectos.csv`. El usuario los corrige también en la `Base de datos SAEB`. Canadian solar queda vacío. Ninguna cifra cambia.
 
 ## Tareas
-- [ ] **T01 · S** · Tipo `lista` en el esquema y el validador de Python
+- [x] **T01 · S** · Tipo `lista` en el esquema y el validador de Python
   - Cubre: RF-14 · CA-14.1 (validador)
   - Prueba primero (RED): en `pruebas/test_validar.py`, un CSV con «Regulación primaria de frecuencia, Inyección de energía en la noche» pasa y uno con «Servicio X» falla con el mensaje de `valores` (hoy falla porque `lista` no existe y el texto se acepta).
   - Hecho cuando (GREEN): prueba en verde; `python scripts/validar_datos.py` sin errores con `datos/proyectos.csv` convertido.
   - Depende de: —
   - Archivos: `datos/esquemas.json`, `datos/proyectos.csv`, `scripts/validar_datos.py`, `pruebas/test_validar.py`
-- [ ] **T02 · S** · `lista` en zod con el mismo mensaje
+- [x] **T02 · S** · `lista` en zod con el mismo mensaje
   - Cubre: RF-14 · CA-14.1 (aprobación)
   - Prueba primero (RED): `web/src/lib/esquemas.test.ts`. `validar("proyectos", …)` acepta dos valores separados por coma y rechaza «Servicio X» con el mismo texto que Python (hoy lo acepta).
   - Hecho cuando (GREEN): prueba en verde; el valor normalizado se guarda como «a, b».
   - Depende de: T01
   - Archivos: `web/src/lib/esquemas.ts`, `web/src/lib/esquemas.test.ts`
-- [ ] **T03 · S** · Regla SQL y migración 0004
+- [x] **T03 · S** · Regla SQL y migración 0004
   - Cubre: RF-14 · CA-14.1 (base de datos e importación)
   - Prueba primero (RED): `pruebas/test_generar_validacion_sql.py`. El SQL generado para `lista` separa el valor y lanza el mensaje de `valores`. En `web/tests/integracion`, insertar «Servicio X» en **pruebas** se rechaza con el mismo texto (hoy se acepta).
   - Hecho cuando (GREEN): pruebas en verde después de que el usuario aplica 0004. `importar.py --simular` rechaza «Servicio X» con el mismo mensaje.
   - Depende de: T01
   - Archivos: `scripts/generar_validacion_sql.py`, `pruebas/test_generar_validacion_sql.py`, `supabase/migrations/0004_servicios.sql`, `web/tests/integracion/servicios.test.ts`
-- [ ] **T04 · S** · Servicios con casillas en la aprobación
+- [x] **T04 · S** · Servicios con casillas en la aprobación
   - Cubre: RF-14 · CA-14.1 (lista en la aprobación)
   - Prueba primero (RED): `decision.test.tsx`. El campo Servicios muestra 3 casillas, marca las del valor actual y el envío con dos marcadas produce «a, b» (hoy es un texto libre).
   - Hecho cuando (GREEN): prueba en verde.
   - Depende de: T02
   - Archivos: `web/src/components/aportes/decision.tsx`, `web/src/lib/decision.ts`, tests
-- [ ] **T05 · S** · Filtrado y opciones con conteo
+- [x] **T05 · S** · Filtrado y opciones con conteo
   - Cubre: RF-08, RF-12, RF-14 · CA-08.1, CA-08.2, CA-12.1, CA-14.2
   - Prueba primero (RED): `web/src/lib/proyectos-mapa.test.ts`. Usa datos ficticios. Comprueba que el filtro admite varios valores dentro de un mismo filtro y que entre filtros deben cumplirse todos, que un proyecto con dos servicios coincide con cualquiera de los dos, que los municipios dependen de los departamentos, que se cuentan los proyectos por opción y que un resultado vacío da 0 (hoy el módulo no existe).
   - Hecho cuando (GREEN): prueba en verde.
   - Depende de: —
   - Archivos: `web/src/lib/proyectos-mapa.ts`, test
-- [ ] **T06 · S** · KPI filtrado, duración y filtros en la URL
+- [x] **T06 · S** · KPI filtrado, duración y filtros en la URL
   - Cubre: RF-05, RF-10, RF-11 · CA-05.1, CA-10.1, CA-10.2, CA-11.1
   - Prueba primero (RED): en `proyectos-mapa.test.ts`, la duración de 50 MW / 195 MWh es 3,9 h y queda vacía si falta un dato. Los KPI «Instalado» solo suman `En operación` y los «según filtros» suman todos los estados del resultado. En `filtros-url.test.ts`, el viaje de ida y vuelta de filtros a URL y de vuelta a filtros conserva tildes y valores múltiples, y los filtros vacíos dan una URL sin consulta.
   - Hecho cuando (GREEN): pruebas en verde.
   - Depende de: T05
   - Archivos: `web/src/lib/proyectos-mapa.ts`, `web/src/lib/filtros-url.ts`, tests
-- [ ] **T07 · XS** · Lectura de proyectos para el mapa
+- [x] **T07 · XS** · Lectura de proyectos para el mapa
   - Cubre: RF-01 · CA-01.2
   - Prueba primero (RED): `web/tests/integracion/mapa-datos.test.ts`. `proyectosParaMapa()` contra **pruebas** devuelve solo los aprobados y no incluye columnas internas (hoy la función no existe).
   - Hecho cuando (GREEN): prueba en verde.
   - Depende de: —
   - Archivos: `web/src/lib/datos-publicos.ts`, test
-- [ ] **T08 · M** · Tabla ordenable
+- [x] **T08 · M** · Tabla ordenable
   - Cubre: RF-02, RF-03, RF-12, RNF-04 · CA-02.1, CA-03.1, CA-12.1
   - Prueba primero (RED): `tabla-proyectos.test.tsx`. Comprueba que la tabla tiene encabezados con unidades entre corchetes, que ordena por MW de mayor a menor, que usa coma decimal, que marca «sin ubicación en el mapa», que muestra «Ningún proyecto cumple estos filtros» y que una fila se puede elegir con el teclado.
   - Hecho cuando (GREEN): prueba en verde; `@tanstack/react-table` instalado.
   - Depende de: T05
   - Archivos: `web/src/components/mapa/tabla-proyectos.tsx`, test, `web/package.json`
-- [ ] **T09 · S** · Tarjeta del proyecto
+- [x] **T09 · S** · Tarjeta del proyecto
   - Cubre: RF-05, RF-06 · CA-05.1, CA-05.2, CA-06.1
   - Prueba primero (RED): `tarjeta-proyecto.test.tsx`. Con 50 MW y 195 MWh muestra «50,0 MW», «195,0 MWh» y «3,9 h». Muestra «Servicios: Sin dato», oculta los campos vacíos y no tiene enlaces de fuente. «Proponer corrección» apunta a `/aportar?tipo=Corrección&registro=<nombre>`.
   - Hecho cuando (GREEN): prueba en verde.
   - Depende de: T06
   - Archivos: `web/src/components/mapa/tarjeta-proyecto.tsx`, test
-- [ ] **T10 · XS** · Prellenado de `/aportar`
+- [x] **T10 · XS** · Prellenado de `/aportar`
   - Cubre: RF-06 · CA-06.1
   - Prueba primero (RED): `formulario-aporte.test.tsx`. Con `tipo=Corrección` y `registro=La Martina`, el tipo y el proyecto llegan elegidos (hoy se ignoran). Un tipo inválido se ignora.
   - Hecho cuando (GREEN): prueba en verde.
   - Depende de: —
   - Archivos: `web/src/app/aportar/page.tsx`, `web/src/components/formulario-aporte.tsx`, test
-- [ ] **T11 · M** · Mapa con marcadores accesibles y leyenda
+- [x] **T11 · M** · Mapa con marcadores accesibles y leyenda
   - Cubre: RF-01, RF-04, RF-07, RNF-03, RNF-05, RNF-06 · CA-01.1, CA-04.1, CA-04.2, CA-04.3, CA-07.1
   - Prueba primero (RED): `mapa-proyectos.test.tsx`, con `maplibre-gl` simulado. Comprueba que hay un botón por proyecto con coordenadas y con `aria-label` (nombre y estado), y que el color del botón viene de un token. La tarjeta se abre con `mouseenter`, `click` y `focus`, y se cierra con Escape y con `mouseleave`. `seleccionado` centra con `flyTo` o, con movimiento reducido, con `jumpTo`. La leyenda nombra los 4 estados. Se ve la atribución de OSM.
   - Hecho cuando (GREEN): prueba en verde; `maplibre-gl` instalado y cargado con `dynamic(…, { ssr: false })`.
   - Depende de: T09
   - Archivos: `web/src/components/mapa/mapa-proyectos.tsx`, `web/src/components/mapa/leyenda.tsx`, test, `web/package.json`, `web/src/styles/tokens/colors.css`
-- [ ] **T12 · S** · Panel de filtros y KPI de la sección
+- [x] **T12 · S** · Panel de filtros y KPI de la sección
   - Cubre: RF-08, RF-11, RNF-01 · CA-08.2, CA-11.1
   - Prueba primero (RED): en `filtros.test.tsx`, el panel muestra 7 filtros con el conteo de cada opción, el municipio depende del departamento y el panel se pliega en móvil. En `kpi-mapa.test.tsx`, aparecen dos grupos con MW y MWh en tarjetas distintas y el rótulo «(todos los estados)».
   - Hecho cuando (GREEN): pruebas en verde.
   - Depende de: T06
   - Archivos: `web/src/components/mapa/filtros.tsx`, `web/src/components/mapa/kpi-mapa.tsx`, tests
-- [ ] **T13 · M** · Vista completa de `/mapa` con URL, selección y descarga
+- [x] **T13 · M** · Vista completa de `/mapa` con URL, selección y descarga
   - Cubre: RF-07, RF-09, RF-10, RF-13, RNF-07 · CA-07.1, CA-09.1, CA-10.1, CA-10.2, CA-13.1
   - Prueba primero (RED): `vista-mapa.test.tsx`, con el mapa simulado. Un filtro cambia a la vez la tabla, los KPI, los marcadores y la URL. Elegir una fila marca el proyecto seleccionado. «Limpiar filtros» vacía la URL. La descarga produce `csvDe` con solo las filas filtradas, la licencia y la columna `Fuente`. En `metadatos.test.ts`, `/mapa` tiene su título y su descripción.
   - Hecho cuando (GREEN): pruebas en verde; `/mapa` se abre en `npm run dev` sin errores de consola.
   - Depende de: T07, T08, T11, T12
   - Archivos: `web/src/components/mapa/vista-mapa.tsx`, `web/src/app/mapa/page.tsx`, tests
-- [ ] **T14 · XS** · Accesibilidad, 375 px y LCP de `/mapa`
+- [x] **T14 · XS** · Accesibilidad, 375 px y LCP de `/mapa`
   - Cubre: RNF-01, RNF-02, RNF-03 · (todos los CA a 375 px)
   - Prueba primero (RED): agregar `/mapa` con datos ficticios a `a11y.test.tsx` (axe sin violaciones) y a `001-lcp.spec.ts` (LCP < 2,5 s con 4G simulado). Hoy `/mapa` es la página «en construcción»: la prueba de la vista falla.
   - Hecho cuando (GREEN): pruebas en verde.
   - Depende de: T13
   - Archivos: `web/src/components/a11y.test.tsx`, `web/e2e/001-lcp.spec.ts`
 
-Estimación total: 14 tareas (3 M, 8 S, 3 XS) · unas 9 h, entre hoy (tarde) y el 2026-10-22.
+
+### Correcciones del informe E2E (aprobadas el 2026-10-21)
+- [x] **T15 · S** · Toque en pantalla táctil (F1, E2E-06)
+  - Cubre: RF-04 · CA-04.2
+  - Prueba primero (RED): `mapa-proyectos.test.tsx`. Un `pointerenter` con `pointerType: "touch"` no abre la tarjeta, y el toque (`click`) sí la abre y la deja abierta aunque después llegue un `mouseleave`. Hoy el *mouseenter* simulado del toque la abre y el *mouseleave* la cierra.
+  - Hecho cuando (GREEN): prueba en verde.
+  - Depende de: —
+  - Archivos: `web/src/components/mapa/mapa-proyectos.tsx`, test
+- [x] **T16 · S** · Tarjeta alcanzable con mouse y teclado (F2, E2E-10b)
+  - Cubre: RF-04, RF-06 · CA-04.1, CA-04.4
+  - Prueba primero (RED): `mapa-proyectos.test.tsx`. Al pasar el mouse del punto a la tarjeta, esta sigue abierta, y al salir de ambos se cierra. Enter sobre el punto deja la tarjeta abierta y mueve el foco a ella. Si el foco sale del punto hacia la tarjeta, esta no se cierra. Hoy se cierra en los tres casos.
+  - Hecho cuando (GREEN): prueba en verde.
+  - Depende de: T15
+  - Archivos: `web/src/components/mapa/mapa-proyectos.tsx`, test
+- [x] **T17 · XS** · Contenedor del mapa accesible (O-1)
+  - Cubre: RNF-03
+  - Prueba primero (RED): `mapa-proyectos.test.tsx`. Ningún ancestro de un elemento que recibe el foco tiene `aria-hidden`. El mapa se crea con `locale` en español («Mostrar atribución»…) y el lienzo tiene un nombre accesible. Hoy el contenedor tiene `aria-hidden="true"` y no se pasa `locale`.
+  - Hecho cuando (GREEN): prueba en verde.
+  - Depende de: T16
+  - Archivos: `web/src/components/mapa/mapa-proyectos.tsx`, test
+- [x] **T18 · S** · Servicio fuera de la lista en la aprobación (O-3)
+  - Cubre: RF-14 · CA-14.1
+  - Prueba primero (RED): en `decision.test.ts` y `decision.test.tsx`, si el aporte propone «Servicio X», el campo muestra un aviso con el valor propuesto que no está en la lista, para que el editor decida, y el grupo se llama «Servicios». Hoy el valor se descarta sin avisar y el grupo se llama «Tipo uso/conexión».
+  - Hecho cuando (GREEN): pruebas en verde.
+  - Depende de: —
+  - Archivos: `web/src/lib/decision.ts`, `web/src/components/aportes/decision.tsx`, tests
+- [x] **T19 · XS** · Filtros de la URL sin resultados (O-2)
+  - Cubre: RF-08, RF-10 · CA-10.1, CA-12.1
+  - Prueba primero (RED): `filtros.test.tsx`. Un valor elegido que no tiene proyectos con los demás filtros aparece marcado con «(0)» y se puede desmarcar. Hoy no aparece.
+  - Hecho cuando (GREEN): prueba en verde.
+  - Depende de: —
+  - Archivos: `web/src/components/mapa/filtros.tsx`, test
+
+### Correcciones de la segunda corrida E2E (2026-10-21)
+- [x] **T20 · S** · Tarjeta completa, sin recortes ni tapada por la atribución (F: E2E-06, E2E-23)
+  - Cubre: RF-04, RF-06 · CA-04.2, CA-04.4
+  - Prueba primero (RED): en `posicion-tarjeta.test.ts`, la función pura `posicionTarjeta(punto, tarjeta, marco)` deja la tarjeta dentro del marco con un margen de 8 px. La pone encima del punto si cabe y debajo si no. La centra en x sin salirse de los bordes. Si es más alta que el marco, limita su alto (`maxHeight`). En `mapa-proyectos.test.tsx`, la tarjeta no queda dentro del marco que recorta el mapa (`overflow-hidden`) ni debajo de la atribución. Hoy la función no existe y la tarjeta está dentro del marco.
+  - Hecho cuando (GREEN): pruebas en verde. A 375 px la tarjeta va debajo del mapa, en el flujo de la página. En escritorio se posiciona con `posicionTarjeta`.
+  - Depende de: T19
+  - Archivos: `web/src/lib/posicion-tarjeta.ts`, `web/src/components/mapa/mapa-proyectos.tsx`, tests
+- [x] **T21 · XS** · Sin hueco entre el punto y la tarjeta (F: E2E-23 con mouse)
+  - Cubre: RF-04 · CA-04.4
+  - Prueba primero (RED): en `posicion-tarjeta.test.ts`, el borde de la tarjeta se monta 6 px sobre el punto, arriba o abajo, en lugar de dejar 14 px de separación. Hoy hay un hueco que cierra la tarjeta al cruzarlo.
+  - Hecho cuando (GREEN): prueba en verde. El margen de salida sube a 400 ms.
+  - Depende de: T20
+  - Archivos: `web/src/lib/posicion-tarjeta.ts`, `web/src/components/mapa/mapa-proyectos.tsx`, test
+
+### Observación de la tercera corrida E2E (2026-10-21)
+- [x] **T22 · XS** · Escape cierra también la tarjeta abierta con el mouse (O-8)
+  - Cubre: RF-04
+  - Prueba primero (RED): en `mapa-proyectos.test.tsx`, con la tarjeta abierta por el mouse y el foco en el cuerpo de la página, Escape la cierra. Hoy Escape solo se escucha dentro del mapa.
+  - Hecho cuando (GREEN): prueba en verde.
+  - Depende de: T21
+  - Archivos: `web/src/components/mapa/mapa-proyectos.tsx`, test
+
+Estimación total: 22 tareas (3 M, 12 S, 7 XS) · unas 12 h, entre el 2026-10-21 y el 2026-10-22.
 
 **Prerrequisitos del usuario:** aplicar `0004_servicios.sql` en el SQL Editor de **pruebas**
 (durante T03) y corregir los 2 textos de servicio en la `Base de datos SAEB`.
@@ -186,6 +241,7 @@ borrados al final.
 | E2E-19 | CA-13.1 | 1. Filtrar 2. Descargar | El CSV tiene solo esos proyectos, columna `Fuente`, licencia CC BY 4.0 y ningún correo |
 | E2E-20 | CA-14.1 | 1. Proponer y aprobar en `/admin` un servicio fuera de la lista (no se puede elegir: verificar las casillas) 2. Insertar «Servicio X» directo en la base de **pruebas** 3. `importar.py --simular` y `validar_datos.py` con un CSV que lo tenga | Las casillas solo ofrecen los 3 valores; la base, la importación y el validador rechazan con el mismo mensaje |
 | E2E-21 | CA-14.2 | 1. Sembrar un proyecto con dos servicios 2. Filtrar por cada uno | Aparece en ambos casos y su tarjeta lista los dos |
+| E2E-23 | CA-04.4 | 1. En escritorio, pasar el mouse a un punto y moverlo a su tarjeta; pulsar «Proponer corrección» 2. A 375 px, tocar un punto y pulsar el enlace 3. Solo con el teclado: Tab hasta un punto, Enter, Tab hasta el enlace, Enter | En los tres casos se abre `/aportar` con tipo *Corrección* y el proyecto ya indicados |
 | E2E-22 | RNF-01, RNF-06, RNF-07 | 1. Abrir `/mapa` a 375 px y con movimiento reducido 2. Elegir una fila | Sin desplazamiento horizontal; filtros plegados; centrado sin vuelo animado; consola sin errores |
 
 ## Trazabilidad
@@ -194,20 +250,20 @@ borrados al final.
 | RF-01 | CA-01.1, CA-01.2 | T07, T11 | E2E-01, E2E-02 |
 | RF-02 | CA-02.1 | T08 | E2E-03 |
 | RF-03 | CA-03.1 | T08 | E2E-04 |
-| RF-04 | CA-04.1, CA-04.2, CA-04.3 | T11 | E2E-05, E2E-06, E2E-07 |
+| RF-04 | CA-04.1, CA-04.2, CA-04.3, CA-04.4 | T11, T15, T16, T20, T21 | E2E-05, E2E-06, E2E-07, E2E-23 |
 | RF-05 | CA-05.1, CA-05.2 | T06, T09 | E2E-08, E2E-09 |
-| RF-06 | CA-06.1 | T09, T10 | E2E-10 |
+| RF-06 | CA-06.1 | T09, T10, T16 | E2E-10, E2E-23 |
 | RF-07 | CA-07.1 | T11, T13 | E2E-11 |
-| RF-08 | CA-08.1, CA-08.2 | T05, T12 | E2E-12, E2E-13 |
+| RF-08 | CA-08.1, CA-08.2 | T05, T12, T19 | E2E-12, E2E-13 |
 | RF-09 | CA-09.1 | T13 | E2E-14 |
-| RF-10 | CA-10.1, CA-10.2 | T06, T13 | E2E-15, E2E-16 |
+| RF-10 | CA-10.1, CA-10.2 | T06, T13, T19 | E2E-15, E2E-16 |
 | RF-11 | CA-11.1 | T06, T12 | E2E-17 |
 | RF-12 | CA-12.1 | T05, T08 | E2E-18 |
 | RF-13 | CA-13.1 | T13 | E2E-19 |
-| RF-14 | CA-14.1, CA-14.2 | T01–T05 | E2E-20, E2E-21 |
+| RF-14 | CA-14.1, CA-14.2 | T01–T05, T18 | E2E-20, E2E-21 |
 | RNF-01 | — | T12, T14 | E2E-06, E2E-22 |
 | RNF-02 | — | T11, T14 | LCP (`001-lcp.spec.ts`) |
-| RNF-03 | — | T08, T11, T14 | E2E-07 |
+| RNF-03 | — | T08, T11, T14, T17 | E2E-07 |
 | RNF-04 | — | T08, T09 | E2E-03, E2E-08 |
 | RNF-05 | — | T11 | E2E-01 |
 | RNF-06 | — | T11 | E2E-22 |
@@ -227,6 +283,28 @@ borrados al final.
 ## Registro de implementación
 | Fecha | Tarea | RED (falló como se esperaba) | GREEN | Refactor / desviación |
 |---|---|---|---|---|
+| 2026-10-21 | T01 | `test_servicio_fuera_de_la_lista` falló con KeyError: la columna no tenía `valores` | 2 pruebas nuevas en verde; `validar_datos.py` 0 errores con los textos convertidos | `fila_proyecto()` usaba «STN» como servicio: ahora el valor es un parámetro y por defecto va vacío. El mensaje muestra el valor completo, igual que con `enum` |
+| 2026-10-21 | T03 | `test_validacion_sql`: faltaban la regla `lista` y la 0004; `rls.test.ts` (integración): la base aceptó «Servicio X» | Python 45/45 en verde. La integración queda en rojo hasta que el usuario aplique la 0004 en **pruebas** | El generador ahora escribe en la última migración (0004). `test_sql_esquemas` exige el `check` en línea solo para `enum`: `lista` se valida en el disparador. El historial registra la conversión con el editor «migración 0004 (spec 002)» |
+| 2026-10-21 | T02 | Los 2 tests de `esquemas.test.ts` fallaron: no normalizaba ni rechazaba | 125/125 | `separarLista()` exportada para reutilizarla en la aprobación |
+| 2026-10-21 | T04 | 3 pruebas fallaron (unión de casillas, `multiple`, `fieldset`) | 128/128 | Una casilla oculta vacía permite quitar todos los servicios. Una prueba de rechazo (CA-09.1) falló una vez por tiempo con el equipo cargado y pasó al repetir (intermitencia, no regresión) |
+| 2026-10-21 | T05 | `proyectos-mapa.test.ts` no compilaba: el módulo no existía | 19/19 (junto con T06) | Los conteos de cada filtro se calculan con los demás filtros (facetas), así el municipio depende del departamento sin regla aparte. «Sin dato» también es una opción del filtro de servicios |
+| 2026-10-21 | T06 | `filtros-url.test.ts` no compilaba: el módulo no existía | 19/19 | `filtrosDeConsulta` acepta `URLSearchParams` y los `searchParams` de Next |
+| 2026-10-21 | T07 | `mapa-datos.test.ts` (integración): `leerProyectosMapa is not a function` | 2/2 contra **pruebas** | Se separó `leerProyectosMapa(cliente)`, que se puede probar, de `proyectosParaMapa()`, que se cachea. Se instalaron `@tanstack/react-table` 8 y `maplibre-gl` 5 |
+| 2026-10-21 | T08 | No compilaba: el componente no existía | 5/5 | La fila elegida usa `--surface-tint`. La tabla se desplaza dentro de su caja en móvil, no la página |
+| 2026-10-21 | T09 | No compilaba: el componente no existía | 4/4 | `enlaceCorreccion()` exportada para el mapa. kV con `valorEsCo` (13,8 kV) |
+| 2026-10-21 | T10 | El tipo no llegaba prellenado | 158/158 en la suite | `/aportar` lee `tipo` y `registro` de la URL. Un tipo inválido se ignora |
+| 2026-10-21 | T11 | No compilaba: el componente no existía | 9/9 con `maplibre-gl` simulado | Refactor por el lint (React Compiler): el mapa se guarda en estado y las posiciones se calculan al pintar. La tarjeta fija es la selección que controla la vista, y un clic en un punto no mueve el mapa. **En el navegador se encontraron dos fallas que las pruebas no cubren**, las dos ya corregidas. (1) El CSS de MapLibre pone `position: relative` al contenedor y lo dejaba con 0 px de alto, sin mapa base: ahora usa `size-full`. (2) Las tarjetas de los puntos del norte se cortaban: ahora se abren hacia el lado con más espacio. El encuadre usa los límites de Colombia (`bounds`) en lugar de un zoom fijo |
+| 2026-10-21 | T12 | No compilaba: los componentes no existían | 7/7 | La prueba cuenta solo los `fieldset`, porque `<details>` también tiene el rol `group`. En móvil, el panel se pliega cambiando el DOM y no con `setState`, por el lint |
+| 2026-10-21 | T13 | No compilaba: la vista no existía. Además, `secciones.test` seguía esperando «en construcción» | 6/6 en la vista; 180/180 en la suite | La URL se lee con `useSyncExternalStore` (al hidratar no hay filtros, así el HTML coincide) y se escribe con `history.replaceState`. **Desviación de T07:** `leerProyectosMapa` trae todas las columnas públicas del CSV, porque la descarga filtrada (RF-13) necesita la `Fuente`. Su prueba de integración se ajustó primero (RED) y luego pasó. `csv.ts` importa `columnaSql` de `columnas.ts` para no cargar `decision.ts` en el navegador |
+| 2026-10-21 | T14 | La prueba axe de la vista, la tarjeta y el mapa se escribió después de T13 y **pasó de entrada**: no hubo RED real. Se deja como regresión | 183/183. LCP de `/mapa` con build local y 4G lenta: 2108, 1144 y 1156 ms (mediana 1,16 s) | **`npm run build` falló** en `/aportar` por leer `searchParams` fuera de `<Suspense>` (T10; las pruebas unitarias no lo detectan). Se corrigió con un `Suspense` que muestra el formulario sin prellenar mientras se lee la URL. El build pasa: `/mapa` es estática con revalidación de 5 min |
+| 2026-10-21 | T03 (cierre) | — | El usuario aplicó la 0004 en **pruebas**. Integración 28/28, con «Servicio X» rechazado con el mismo mensaje. `importar.py --simular`: 7 válidos. La base tiene los 3 valores de la lista y Canadian solar queda vacío | — |
+| 2026-10-21 | T15 | Con `touchstart → mouseenter → mouseleave → click` la tarjeta se abría con el *mouseenter* simulado y se cerraba con el *mouseleave* | 36/36 en el mapa | Durante 800 ms después de un toque se ignoran los eventos de mouse que el navegador simula. La tarjeta solo se abre con el toque (clic) |
+| 2026-10-21 | T16 | 3 pruebas: la tarjeta se cerraba al pasar del punto a ella, Enter no movía el foco y el *blur* hacia el enlace la cerraba | 36/36 | 250 ms de margen para pasar el mouse del punto a la tarjeta. Enter (clic con `detail` 0) deja la tarjeta abierta y enfoca el diálogo (`tabIndex -1`). Un *blur* hacia la tarjeta no la cierra. **CA-04.1 ajustado:** la prueba espera el cierre (`waitFor`) en lugar de comprobarlo al instante |
+| 2026-10-21 | T17 | El contenedor tenía `aria-hidden` y no se pasaba `locale` | 36/36 | Se quitó `aria-hidden`. Los controles de MapLibre están en español y el lienzo se llama «Mapa de los proyectos de almacenamiento» |
+| 2026-10-21 | T18 | 2 pruebas: no había aviso y la etiqueta era «Tipo uso/conexión» | 190/190 | `etiqueta: "Servicios"` en `datos/esquemas.json` (fuente única; el validador la ignora). Los valores fuera de la lista se avisan con `role="status"` |
+| 2026-10-21 | T19 | El valor elegido sin resultados no aparecía | 191/191; `npm run build` correcto | Los valores elegidos que no tienen proyectos se muestran con «(0)» al final de su filtro |
+| 2026-10-21 | T20, T21 | `posicion-tarjeta.test.ts` no compilaba y la tarjeta estaba dentro del marco que recorta el mapa | 197/197 | La tarjeta salió del marco: en escritorio se posiciona con `posicionTarjeta` y se monta 6 px sobre el punto; en móvil va debajo del mapa. Margen de salida de 400 ms. Revisión en Chromium sin interfaz (Playwright, WebGL por software): con el mouse en escritorio y con el toque a 375 px, «Proponer corrección» queda visible y sin nada encima en los 7 puntos (14/14), sin desplazamiento horizontal. La primera revisión no encontró los puntos porque el selector `button[aria-expanded]` coincidía con el indicador de Next (solo en desarrollo) |
+| 2026-10-21 | T22 | Con la tarjeta abierta por el mouse, Escape en el cuerpo de la página no la cerraba | 198/198; `npm run build` correcto | Mientras hay una tarjeta abierta, Escape se escucha en todo el documento. Esto reemplaza el `onKeyDown` del contenedor |
 
 ## Informe E2E
-Enlace a `e2e-informe.md` cuando exista.
+[e2e-informe.md](e2e-informe.md): tercera corrida del 2026-10-21, 23/23 escenarios en verde. Hubo 3 RNF no comprobables desde fuera: RNF-02 se midió aparte, con una mediana de 1,16 s; RNF-05 y RNF-08 se confirman en el código. O-8 se corrigió con T22. Cerrada con la aprobación del usuario.

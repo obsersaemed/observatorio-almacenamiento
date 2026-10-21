@@ -46,4 +46,50 @@ describe("Decision · campos con valores permitidos (CA-16.1)", () => {
     expect(lista).toHaveValue("Anunciado");
     expect(within(lista).getAllByRole("option").map((o) => o.textContent)).toEqual(["", "En operación", "Anunciado"]);
   });
+
+  test("un campo de varios valores se elige con casillas y marca los actuales (002 · CA-14.1)", () => {
+    render(
+      <Decision
+        campos={[
+          {
+            sql: "tipo_uso_conexion",
+            etiqueta: "Tipo uso/conexión",
+            obligatorio: false,
+            valor: "Regulación primaria de frecuencia, Inyección de energía en la noche",
+            valores: ["Regulación primaria de frecuencia", "Inyección de energía en la noche", "Mercado regulado a través de contratos de largo plazo"],
+            multiple: true,
+          },
+        ]}
+        aprobar={vi.fn()}
+        rechazar={vi.fn()}
+      />,
+    );
+    const grupo = screen.getByRole("group", { name: /Tipo uso\/conexión/ });
+    const casillas = within(grupo).getAllByRole("checkbox");
+    expect(casillas).toHaveLength(3);
+    expect(casillas.map((c) => (c as HTMLInputElement).checked)).toEqual([true, true, false]);
+    expect(screen.queryByRole("textbox", { name: /Tipo uso/ })).toBeNull();
+  });
+
+  test("T18 · muestra el aviso de un valor fuera de la lista junto a las casillas (O-3)", () => {
+    render(
+      <Decision
+        campos={[
+          {
+            sql: "tipo_uso_conexion",
+            etiqueta: "Servicios",
+            obligatorio: false,
+            valor: "Servicio X",
+            valores: ["Regulación primaria de frecuencia", "Inyección de energía en la noche"],
+            multiple: true,
+            aviso: "El aporte propone «Servicio X», que no está en la lista.",
+          },
+        ]}
+        aprobar={vi.fn()}
+        rechazar={vi.fn()}
+      />,
+    );
+    const grupo = screen.getByRole("group", { name: "Servicios" });
+    expect(within(grupo).getByRole("status")).toHaveTextContent("El aporte propone «Servicio X», que no está en la lista.");
+  });
 });

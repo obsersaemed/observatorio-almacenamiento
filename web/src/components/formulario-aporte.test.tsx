@@ -11,6 +11,17 @@ describe("FormularioAporte", () => {
     expect(screen.getByRole("button", { name: /enviar aporte/i })).toBeInTheDocument();
   });
 
+  test("llega prellenado desde «Proponer corrección» del mapa (002 · CA-06.1)", () => {
+    render(<FormularioAporte accion={vi.fn()} siteKey="clave" inicial={{ tipo: "Corrección", registro: "La Martina" }} />);
+    expect(screen.getByLabelText(/tipo de aporte/i)).toHaveValue("Corrección");
+    expect(screen.getByDisplayValue("La Martina")).toHaveAttribute("name", "registro_afectado");
+  });
+
+  test("ignora un tipo inicial que no existe", () => {
+    render(<FormularioAporte accion={vi.fn()} siteKey="clave" inicial={{ tipo: "Otra cosa", registro: "X" }} />);
+    expect(screen.getByLabelText(/tipo de aporte/i)).toHaveValue("Proyecto nuevo");
+  });
+
   test("explica que el correo es privado", () => {
     render(<FormularioAporte accion={vi.fn()} siteKey="clave" />);
     expect(screen.getByText(/no se publica/i)).toBeInTheDocument();

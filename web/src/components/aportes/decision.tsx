@@ -4,6 +4,7 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import type { CampoDecision, ResultadoDecision } from "@/lib/decision";
+import { separarLista } from "@/lib/esquemas";
 
 export type { CampoDecision };
 
@@ -34,7 +35,29 @@ export function Decision({ campos, aprobar, rechazar }: { campos: CampoDecision[
         </p>
         <Errores resultado={resAprobar} />
         <div className="grid gap-3 sm:grid-cols-2">
-          {campos.map((c) => (
+          {campos.map((c) =>
+            c.multiple ? (
+              <fieldset key={c.sql} className="text-sm sm:col-span-2">
+                <legend className="font-semibold text-[var(--text-heading)]">{c.etiqueta}</legend>
+                {c.aviso && (
+                  <p role="status" className="mt-1 rounded-[var(--radius-md)] border border-destructive p-2 text-destructive">
+                    {c.aviso}
+                  </p>
+                )}
+                <input type="hidden" name={`campo:${c.sql}`} value="" />
+                {c.valores!.map((v) => (
+                  <label key={v} className="mt-1 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name={`campo:${c.sql}`}
+                      value={v}
+                      defaultChecked={separarLista(c.valor).includes(v)}
+                    />
+                    {v}
+                  </label>
+                ))}
+              </fieldset>
+            ) : (
             <label key={c.sql} className="block text-sm font-semibold text-[var(--text-heading)]">
               {c.etiqueta}
               {c.obligatorio && " *"}
@@ -49,7 +72,8 @@ export function Decision({ campos, aprobar, rechazar }: { campos: CampoDecision[
                 <input name={`campo:${c.sql}`} defaultValue={c.valor} className={estiloCampo} />
               )}
             </label>
-          ))}
+            ),
+          )}
         </div>
         <Button type="submit" size="lg" disabled={aprobando} className="justify-self-start">
           {aprobando ? "Aprobando…" : "Aprobar y publicar"}

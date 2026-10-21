@@ -2,7 +2,7 @@
 // columnas internas ni correos), solo registros aprobados, licencia CC BY 4.0 en la
 // primera línea y marca UTF-8 para que Excel lea bien las tildes. Punto decimal.
 import definicion from "@/generado/esquemas.json";
-import { columnaSql } from "./decision";
+import { columnaSql } from "./columnas";
 
 export type SeccionDescargable = "proyectos" | "normativa" | "noticias";
 

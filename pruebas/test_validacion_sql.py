@@ -1,6 +1,6 @@
 """T20 · RF-16 · CA-16.1: la base valida con los mismos mensajes que la web y la importación.
 La validación SQL se genera desde datos/esquemas.json (scripts/generar_validacion_sql.py) y la
-migración 0003 debe contener exactamente lo generado. Correr con: python -m unittest discover pruebas"""
+última migración que la regenera (0004) debe contener exactamente lo generado. Correr con: python -m unittest discover pruebas"""
 import json
 import sys
 import unittest
@@ -10,7 +10,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "scripts"))
 from generar_validacion_sql import INICIO, FIN, generar  # noqa: E402
 
-MIGRACION = RAIZ / "supabase" / "migrations" / "0003_correcciones_e2e.sql"
+MIGRACION = RAIZ / "supabase" / "migrations" / "0004_servicios.sql"
 ESQUEMAS = json.loads((RAIZ / "datos" / "esquemas.json").read_text(encoding="utf-8"))
 
 
@@ -29,6 +29,19 @@ class TestValidacionSql(unittest.TestCase):
                 if c["tipo"] == "enum" and not c.get("privado"):
                     esperado = plantilla.format(columna=c["nombre"], valor="%s", valores=", ".join(c["valores"]))
                     self.assertIn(esperado.replace("'", "''"), sql, f"{nombre}.{c['nombre']}")
+
+    def test_lista_valida_cada_valor_con_el_mensaje_de_la_plantilla(self):
+        """002 · RF-14 · CA-14.1: 'Tipo uso/conexión' se separa por coma y cada valor debe estar en la lista."""
+        sql = generar(ESQUEMAS)
+        c = next(c for c in ESQUEMAS["proyectos"]["columnas"] if c["nombre"] == "Tipo uso/conexión")
+        esperado = ESQUEMAS["_mensajes"]["valores"].format(columna=c["nombre"], valor="%s", valores=", ".join(c["valores"]))
+        self.assertIn(esperado.replace("'", "''"), sql)
+        self.assertIn("regexp_split_to_table(new.tipo_uso_conexion, ',')", sql)
+
+    def test_0004_convierte_los_textos_viejos_de_servicios(self):
+        texto = MIGRACION.read_text(encoding="utf-8")
+        self.assertIn("'Inyección de energia por la noche'", texto)
+        self.assertIn("'Mercado regulado a través de los contratos de largo plazo'", texto)
 
     def test_rangos_obligatorios_y_enlaces(self):
         sql = generar(ESQUEMAS)

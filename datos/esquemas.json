@@ -45,7 +45,14 @@
       },
       {
         "nombre": "Tipo uso/conexión",
-        "tipo": "texto"
+        "etiqueta": "Servicios",
+        "tipo": "lista",
+        "separador": ",",
+        "valores": [
+          "Regulación primaria de frecuencia",
+          "Inyección de energía en la noche",
+          "Mercado regulado a través de contratos de largo plazo"
+        ]
       },
       {
         "nombre": "Punto de conexión kV",

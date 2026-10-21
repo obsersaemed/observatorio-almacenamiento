@@ -60,6 +60,11 @@ def limite(x):
     return int(x) if isinstance(x, float) and x.is_integer() else x
 
 
+def separar_lista(c, v):
+    """Valores de una columna tipo lista: 'a, b' → ['a', 'b'] (sin vacíos)."""
+    return [x.strip() for x in v.split(c.get("separador", ",")) if x.strip()]
+
+
 def validar_valor(c, v, mensajes):
     """Mensaje de error para el valor v de la columna c, o None si es válido.
     Las plantillas vienen de esquemas.json (_mensajes) y las comparte la web."""
@@ -75,6 +80,9 @@ def validar_valor(c, v, mensajes):
             return m("rango", min=limite(c.get("min", "-inf")), max=limite(c.get("max", "inf")))
     elif t == "enum" and v not in c["valores"]:
         return m("valores", valores=", ".join(c["valores"]))
+    elif t == "lista":
+        if any(x not in c["valores"] for x in separar_lista(c, v)):
+            return m("valores", valores=", ".join(c["valores"]))
     elif t == "fecha":
         try:
             date.fromisoformat(v)

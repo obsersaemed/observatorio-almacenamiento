@@ -7,6 +7,37 @@ import { ListaAportes } from "./aportes/lista";
 import { EncabezadoSitio } from "./encabezado-sitio";
 import { FormularioAporte } from "./formulario-aporte";
 import { Inicio, PanelKpi } from "./inicio";
+import { MapaProyectos } from "./mapa/mapa-proyectos";
+import { TarjetaProyecto } from "./mapa/tarjeta-proyecto";
+import { VistaMapa } from "./mapa/vista-mapa";
+import { aProyectoMapa, type FilaPublica } from "@/lib/proyectos-mapa";
+
+// /mapa (spec 002): MapLibre necesita WebGL; se simula con un mapa que solo sabe proyectar.
+vi.mock("maplibre-gl", () => {
+  class Mapa {
+    on(e: string, fn: () => void) {
+      if (e === "load") queueMicrotask(fn);
+      return this;
+    }
+    off() {}
+    remove() {}
+    flyTo() {}
+    jumpTo() {}
+    project([lng, lat]: [number, number]) {
+      return { x: (lng + 80) * 10, y: (13 - lat) * 10 };
+    }
+  }
+  return { default: { Map: Mapa }, Map: Mapa };
+});
+vi.mock("./mapa/mapa-diferido", () => ({ MapaDiferido: () => null }));
+
+const filaMapa = (f: Partial<FilaPublica>): FilaPublica => ({
+  nombre: "Ficticio", operador: "Op", estado: "En operación", tecnologia: "Li-ion", fpo: "2024",
+  tipo_uso_conexion: "Inyección de energía en la noche", punto_de_conexion_kv: 115, departamento: "Meta",
+  municipio: "Villavicencio", latitud: 4.1, longitud: -73.6, potencia_nominal_mw: 50, capacidad_maxima_mwh: 195,
+  fuente: "https://ejemplo.co", publicacion: "Aprobado", ...f,
+});
+const filasMapa = [filaMapa({}), filaMapa({ nombre: "Sin punto", estado: "Anunciado", latitud: null, longitud: null })];
 
 const kpi = { total: 2, porEstado: { "En operación": 1, "En construcción": 1, Anunciado: 0, Inactivo: 0 }, mwOperacion: 7, mwhOperacion: 3.9 };
 
@@ -43,8 +74,20 @@ describe("axe sin violaciones", () => {
     ["inicio", <Inicio key="i" panelKpi={<PanelKpi kpi={kpi} />} />],
     ["formulario de aporte", <FormularioAporte key="f" accion={vi.fn()} siteKey="clave" />],
     ["lista de aportes", <ListaAportes key="l" aportes={[{ id: 1, tipo: "Noticia", registro_afectado: null, descripcion: "x", datos: {}, fuente: "https://e.co", origen: "usuario", agente: null, publicacion: "Pendiente", creado_en: "2026-10-20T00:00:00Z" }]} />],
+    ["vista de /mapa (002 · RNF-03)", <VistaMapa key="v" filas={filasMapa} />],
+    ["tarjeta del proyecto (002)", <TarjetaProyecto key="t" proyecto={aProyectoMapa(filasMapa[0])} onCerrar={vi.fn()} />],
   ])("%s", async (_nombre, elemento) => {
     const { container } = render(<div>{elemento}</div>);
     expect(await violaciones(container)).toEqual([]);
   });
+});
+
+test("mapa con sus puntos y la leyenda (002 · RNF-03)", async () => {
+  const { container } = render(
+    <div>
+      <MapaProyectos proyectos={filasMapa.map(aProyectoMapa)} seleccionado="Ficticio" onSeleccionar={vi.fn()} />
+    </div>,
+  );
+  await screen.findByRole("button", { name: /Ficticio/ });
+  expect(await violaciones(container)).toEqual([]);
 });

@@ -1,13 +1,26 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
+
+vi.mock("@/lib/datos-publicos", () => ({ proyectosParaMapa: () => new Promise(() => {}) }));
+
 import Mapa, { metadata as mMapa } from "./mapa/page";
 import Normativa, { metadata as mNormativa } from "./normativa/page";
 import Noticias, { metadata as mNoticias } from "./noticias/page";
 import Vehiculos, { metadata as mVehiculos } from "./vehiculos/page";
 
-describe("páginas de sección (placeholder hasta las specs 002–005)", () => {
+describe("Implementación en el país (spec 002)", () => {
+  test("ya no es un aviso de construcción: título, metadatos y espacio para la vista con datos", () => {
+    render(<Mapa />);
+    expect(screen.getByRole("heading", { level: 1, name: "Implementación en el país" })).toBeInTheDocument();
+    expect(screen.queryByText(/en construcción/i)).toBeNull();
+    expect(screen.getByText(/Cargando los proyectos/)).toBeInTheDocument();
+    expect(mMapa.title).toBe("Implementación en el país");
+    expect(String(mMapa.description ?? "").length).toBeGreaterThan(20);
+  });
+});
+
+describe("páginas de sección (placeholder hasta las specs 003–005)", () => {
   test.each([
-    [Mapa, mMapa, "Implementación en el país"],
     [Vehiculos, mVehiculos, "Vehículos eléctricos"],
     [Normativa, mNormativa, "Evolución normativa"],
     [Noticias, mNoticias, "Noticias"],

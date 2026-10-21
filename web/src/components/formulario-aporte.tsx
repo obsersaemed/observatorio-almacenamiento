@@ -15,9 +15,12 @@ const TIPOS = definicion.aportes.columnas.find((c) => c.nombre === "tipo")?.valo
 const campo = "mt-1 block w-full rounded-[var(--radius-md)] border border-input bg-card px-3 py-2";
 const etiqueta = "block font-semibold text-[var(--text-heading)]";
 
-export function FormularioAporte({ accion, siteKey }: { accion: Accion; siteKey: string }) {
+/** Valores iniciales desde la URL, p. ej. «Proponer corrección» en el mapa (spec 002, RF-06). */
+export type InicialAporte = { tipo?: string; registro?: string };
+
+export function FormularioAporte({ accion, siteKey, inicial }: { accion: Accion; siteKey: string; inicial?: InicialAporte }) {
   const [resultado, enviar, enviando] = useActionState(accion, null);
-  const [tipo, setTipo] = useState(TIPOS[0] ?? "");
+  const [tipo, setTipo] = useState(inicial?.tipo && TIPOS.includes(inicial.tipo) ? inicial.tipo : (TIPOS[0] ?? ""));
 
   if (resultado?.ok) {
     return (
@@ -56,7 +59,7 @@ export function FormularioAporte({ accion, siteKey }: { accion: Accion; siteKey:
       {tipo === "Corrección" && (
         <label className={etiqueta}>
           Registro que se corrige
-          <input name="registro_afectado" required className={campo} placeholder="Nombre del proyecto, id de la norma o enlace de la noticia" />
+          <input name="registro_afectado" required defaultValue={inicial?.registro} className={campo} placeholder="Nombre del proyecto, id de la norma o enlace de la noticia" />
         </label>
       )}
 

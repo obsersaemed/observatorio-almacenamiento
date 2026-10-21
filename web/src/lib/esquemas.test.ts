@@ -31,6 +31,23 @@ describe("esquemas construidos desde datos/esquemas.json", () => {
     expect(r.datos?.["Capacidad máxima [MWh]"]).toBeCloseTo(3.9);
   });
 
+  test("servicios de la lista separados por coma se aceptan y se normalizan (002 · CA-14.2)", () => {
+    const r = validar("proyectos", {
+      ...proyectoValido,
+      "Tipo uso/conexión": "Regulación primaria de frecuencia ,Inyección de energía en la noche",
+    });
+    expect(r.errores).toEqual([]);
+    expect(r.datos?.["Tipo uso/conexión"]).toBe("Regulación primaria de frecuencia, Inyección de energía en la noche");
+  });
+
+  test("un servicio fuera de la lista se rechaza con el mismo mensaje que Python y SQL (002 · CA-14.1)", () => {
+    const r = validar("proyectos", { ...proyectoValido, "Tipo uso/conexión": "Servicio X" });
+    const valores = definicion.proyectos.columnas.find((c) => c.nombre === "Tipo uso/conexión")!.valores!;
+    expect(r.errores).toEqual([
+      mensaje("valores", { columna: "Tipo uso/conexión", valor: "Servicio X", valores: valores.join(", ") }),
+    ]);
+  });
+
   test("Estado fuera de la lista se rechaza con el mensaje de la plantilla", () => {
     const r = validar("proyectos", { ...proyectoValido, Estado: "Planeado" });
     const valores = definicion.proyectos.columnas.find((c) => c.nombre === "Estado")!.valores!;

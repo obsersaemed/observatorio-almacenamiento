@@ -6,7 +6,7 @@ Se ejecuta antes que las restricciones CHECK de 0001, así que el mensaje que ll
 
 Uso:
     python scripts/generar_validacion_sql.py              # imprime el bloque SQL
-    python scripts/generar_validacion_sql.py --escribir   # lo reemplaza en la migración 0003
+    python scripts/generar_validacion_sql.py --escribir   # lo reemplaza en la última migración (0004)
 """
 import argparse
 import json
@@ -18,7 +18,7 @@ from validar_datos import RAIZ, columna_sql, limite  # noqa: E402
 
 INICIO = "-- >>> validación generada desde datos/esquemas.json con scripts/generar_validacion_sql.py (no editar a mano)"
 FIN = "-- <<< fin de la validación generada"
-MIGRACION = RAIZ / "supabase" / "migrations" / "0003_correcciones_e2e.sql"
+MIGRACION = RAIZ / "supabase" / "migrations" / "0004_servicios.sql"  # la última que lo regenera
 ESQUEMAS = ("proyectos", "normativa", "noticias", "aportes")
 
 
@@ -44,6 +44,14 @@ def reglas_de(columna, mensajes):
         valores = ", ".join(literal(v) for v in columna["valores"])
         texto = m("valores", valor="%s", valores=", ".join(columna["valores"]))
         lineas.append(f"if {col} is not null and {col} not in ({valores}) then {lanzar(texto, col)} end if;")
+    elif tipo == "lista":
+        valores = ", ".join(literal(v) for v in columna["valores"])
+        texto = m("valores", valor="%s", valores=", ".join(columna["valores"]))
+        separador = literal(columna.get("separador", ","))
+        lineas.append(
+            f"if {col} is not null and exists (select 1 from regexp_split_to_table({col}, {separador}) as v "
+            f"where btrim(v) <> '' and btrim(v) not in ({valores})) then {lanzar(texto, col)} end if;"
+        )
     elif tipo == "numero" and ("min" in columna or "max" in columna):
         condiciones = []
         if "min" in columna:

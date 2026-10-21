@@ -93,3 +93,34 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 5. Spec 002 · Implementación en el país (mapa, filtros, KPI): empezar con `brainstorm`.
 6. Decisiones abiertas: preguntas 5–20 (clasificación por resolución, servicios, fuentes de
    noticias, bilingüe, mantenimiento).
+
+## 2026-10-21 — 001 cerrada y 002 · Implementación en el país terminada
+
+### Hecho
+- **001:** el segundo E2E limpio dio 19/19 y la spec se cerró como Terminada (commit 5925db0).
+- **002:**
+  - Brainstorm y spec aprobados. Decisiones:
+    - Servicios = `Tipo uso/conexión` como lista cerrada, separada por coma.
+    - Sin resolución habilitante ni filtros por dimensiones en el MVP.
+    - La tarjeta no muestra enlaces de fuente.
+  - Plan de 22 tareas implementado con TDD.
+  - `/mapa` muestra el mapa (MapLibre + OpenFreeMap/OSM), la tabla, los filtros en la URL, los KPI «Instalado» y «según filtros», la tarjeta accesible (mouse, toque y teclado) y la descarga CSV filtrada.
+  - E2E limpio en 3 corridas: 22/26, 21/23 y 23/23. Las fallas se convirtieron en las tareas T15–T21; la observación O-8, en T22.
+- **Migración 0004** (servicios como lista y conversión de 2 textos), aplicada por el usuario en **pruebas**. `datos/proyectos.csv` quedó con los mismos 2 textos convertidos; ninguna cifra cambió.
+- **Pruebas:** 198 web, 28 de integración y Python en verde; validador sin errores; `npm run build` correcto. El LCP de `/mapa` en local con 4G lenta tuvo una mediana de 1,16 s.
+
+### Hallazgos
+- `npm run build` encontró un error que las pruebas unitarias no detectaban: `searchParams` fuera de `<Suspense>` en `/aportar`, que rompe el prerender con `cacheComponents`. Conviene compilar antes de cada E2E.
+- El CSS de MapLibre pone `position: relative` al contenedor del mapa.
+- En desarrollo, el indicador de Next.js tapa la esquina inferior izquierda y tiene su propio `aria-expanded`.
+- Con el panel del navegador oculto, `requestAnimationFrame` no corre y el mapa no carga. Para revisar se usa Playwright sin interfaz.
+
+### Pendiente
+1. Corregir en la `Base de datos SAEB` los 2 textos de servicios (ya corregidos en `datos/` y en **pruebas**).
+2. Observaciones menores de la 002:
+   - «Data from OpenStreetMap» aparece en inglés (viene del estilo de OpenFreeMap).
+   - La tarjeta se monta sobre el punto (O-9).
+3. Los pendientes 2–4 y 6 de la sesión del 10-20 (secretos de Vercel, `migration repair`, Turnstile real, decisiones abiertas).
+4. Publicar en Vercel (push a `main`) solo con la confirmación del usuario.
+5. Siguiente: 003 · Vehículos eléctricos.
+

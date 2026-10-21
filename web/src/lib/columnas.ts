@@ -23,6 +23,8 @@ export const ESQUEMA_DE_TABLA: Record<TablaPublicable, NombreEsquema> = {
 
 export type Columna = {
   nombre: string;
+  /** Nombre en la interfaz cuando difiere del de los datos (p. ej. «Servicios»). */
+  etiqueta?: string;
   sql: string;
   tipo: string;
   obligatorio?: boolean;

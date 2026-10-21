@@ -28,7 +28,7 @@ resulta de los filtros. Una vista filtrada se puede compartir por su URL y desca
 | RF-01 | `/mapa` debe mostrar un mapa de Colombia sobre teselas OSM (con su atribución) y un punto por cada proyecto aprobado que tenga coordenadas, coloreado según su estado, con una leyenda de estados. | HU-01 |
 | RF-02 | Debajo del mapa debe haber una tabla con los proyectos que resultan de los filtros: nombre, operador, estado, servicios, departamento, municipio, potencia [MW], energía [MWh] y año de FPO. Debe poder ordenarse por cada columna. | HU-01, HU-02 |
 | RF-03 | Los proyectos aprobados sin coordenadas deben aparecer en la tabla, marcados como «sin ubicación en el mapa», y no en el mapa. | HU-01 |
-| RF-04 | Cada punto debe abrir una tarjeta del proyecto al pasar el mouse (escritorio), al tocarlo (pantalla táctil) y al recibir el foco del teclado. La tarjeta debe cerrarse con Escape o al salir del punto. | HU-01 |
+| RF-04 | Cada punto debe abrir una tarjeta del proyecto al pasar el mouse (escritorio), al tocarlo (pantalla táctil) y al recibir el foco del teclado. La tarjeta abierta con el mouse sigue abierta mientras el puntero esté sobre el punto o sobre la tarjeta, y se cierra al salir de ambos. En pantalla táctil solo se abre con el toque. Con el teclado, Enter deja la tarjeta abierta y Tab entra a ella. Siempre se cierra con Escape o con «Cerrar». | HU-01, HU-04 |
 | RF-05 | La tarjeta debe mostrar el nombre, el operador, el estado, la tecnología, el año de FPO, los servicios, el departamento y el municipio, el punto de conexión [kV], la potencia [MW], la energía [MWh] y la duración [h] (energía ÷ potencia), y un enlace «Proponer corrección». No muestra los enlaces de la fuente: la fuente de cada proyecto sigue en los datos y en la descarga CSV (RF-13). Los campos vacíos no se muestran, salvo servicios, que muestra «Sin dato». | HU-01, HU-03 |
 | RF-06 | «Proponer corrección» debe llevar a `/aportar` con el tipo *corrección* y el proyecto ya indicados. El cambio sigue el flujo de moderación de la 001. | HU-04 |
 | RF-07 | Al elegir una fila de la tabla, el mapa debe centrarse en el proyecto y abrir su tarjeta. Si el proyecto no tiene ubicación, se informa. | HU-01 |
@@ -58,11 +58,14 @@ resulta de los filtros. Una vista filtrada se puede compartir por su URL y desca
 
 **RF-04**
 - **CA-04.1** Dado `/mapa` en escritorio, cuando el mouse pasa sobre un punto, entonces se abre
-  la tarjeta de ese proyecto, y se cierra al salir del punto.
+  la tarjeta de ese proyecto, y se cierra al salir del punto sin pasar a la tarjeta.
 - **CA-04.2** Dado `/mapa` a 375 px en una pantalla táctil, cuando se toca un punto, entonces se
   abre su tarjeta completa y legible, sin desplazamiento horizontal.
 - **CA-04.3** Dado `/mapa` usado solo con el teclado, cuando se llega con Tab a un punto, entonces
   se abre su tarjeta y se cierra con Escape.
+- **CA-04.4** Dada la tarjeta de un punto, cuando se llega a «Proponer corrección» con el mouse
+  (moviéndolo del punto a la tarjeta), con un toque o con el teclado (Enter sobre el punto y
+  luego Tab), entonces el enlace se puede pulsar y lleva a `/aportar` prellenado.
 
 **RF-05**
 - **CA-05.1** Dado un proyecto con 50 MW y 195 MWh (dato de prueba), cuando se abre su tarjeta,
@@ -168,3 +171,4 @@ Resueltas por el usuario el 2026-10-21:
 | 2026-10-21 | Primera versión | Brainstorm 002 aprobado (enfoque A) |
 | 2026-10-21 | Aclaraciones 1–5 resueltas; separador coma; conversión de los textos actuales | Respuestas del usuario |
 | 2026-10-21 | RF-05 y CA-05.1: la tarjeta no muestra los enlaces de fuente | Decisión del usuario |
+| 2026-10-21 | RF-04: la tarjeta sigue abierta mientras el puntero esté sobre el punto o sobre la tarjeta, en pantalla táctil solo se abre con el toque y con el teclado Enter la deja abierta. CA-04.1 ajustado y CA-04.4 nuevo | Informe E2E (F1: E2E-06; F2: E2E-10b, que señaló el choque entre RF-04 y RF-06); aprobado por el usuario |
