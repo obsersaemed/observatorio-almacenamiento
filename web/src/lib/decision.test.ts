@@ -112,3 +112,18 @@ describe("camposDecision (RNF-04, CA-16.1)", () => {
     expect(campos.find((c) => c.sql === "nombre")?.valores).toBeUndefined();
   });
 });
+
+describe("camposDecision · fuente del cambio (CA-11.1)", () => {
+  test("en una corrección, la fuente prellenada suma la del aporte a la del registro", () => {
+    const campos = camposDecision(aporte({ fuente: "https://ejemplo.co/fuente" }), actual);
+    expect(campos.find((c) => c.sql === "fuente")?.valor).toBe("https://ejemplo.co/original https://ejemplo.co/fuente");
+  });
+  test("si el registro ya cita esa fuente no se duplica", () => {
+    const campos = camposDecision(aporte({ fuente: "https://ejemplo.co/original" }), actual);
+    expect(campos.find((c) => c.sql === "fuente")?.valor).toBe("https://ejemplo.co/original");
+  });
+  test("en un proyecto nuevo sin fuente en los datos, se usa la del aporte", () => {
+    const campos = camposDecision(aporte({ tipo: "Proyecto nuevo", registro_afectado: null, datos: {}, fuente: "https://ejemplo.co/n" }), null);
+    expect(campos.find((c) => c.sql === "fuente")?.valor).toBe("https://ejemplo.co/n");
+  });
+});

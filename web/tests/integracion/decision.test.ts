@@ -66,7 +66,8 @@ describe("aplicar_aporte", () => {
       .eq("registro", nombreProyecto)
       .eq("aporte_id", id)
       .single();
-    expect(h).toMatchObject({ operacion: "UPDATE", editor: correoEditor, aporte_id: id, fuente: "https://ejemplo.co/original" });
+    // CA-11.1: el historial cita la fuente del aporte que justificó el cambio (0003).
+    expect(h).toMatchObject({ operacion: "UPDATE", editor: correoEditor, aporte_id: id, fuente: "https://ejemplo.co/f" });
     expect(Number(h?.antes.potencia_nominal_mw)).toBe(7);
     expect(Number(h?.despues.potencia_nominal_mw)).toBe(11.5);
   });

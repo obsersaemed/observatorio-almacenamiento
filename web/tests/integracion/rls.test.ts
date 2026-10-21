@@ -1,6 +1,8 @@
 // CA-01.1, CA-04.1, CA-16.1 y RNF-10 contra la base real del proyecto "pruebas".
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import definicion from "@/generado/esquemas.json";
+import { mensaje } from "@/lib/esquemas";
 import { fetchConReintento } from "@/lib/fetch-con-reintento";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -82,9 +84,11 @@ describe("RLS para visitantes anónimos", () => {
 });
 
 describe("restricciones de la base (CA-16.1)", () => {
-  test("un Estado fuera de la lista se rechaza incluso con la llave de servicio", async () => {
+  test("un Estado fuera de la lista se rechaza incluso con la llave de servicio, con el mensaje compartido", async () => {
     const { error } = await servicio.from("proyectos").insert(proyecto("estado inválido", "Pendiente", "Planeado"));
     expect(error?.code).toBe("23514"); // check_violation
+    const valores = definicion.proyectos.columnas.find((c) => c.nombre === "Estado")!.valores!.join(", ");
+    expect(error?.message).toBe(mensaje("valores", { columna: "Estado", valor: "Planeado", valores }));
   });
 
   test("una latitud fuera de Colombia se rechaza", async () => {

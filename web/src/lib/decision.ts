@@ -32,13 +32,24 @@ export type CampoDecision = { sql: string; etiqueta: string; obligatorio: boolea
 /** Campos del formulario de aprobación: lo propuesto sobre lo actual, en es-CO, con listas
  *  para los campos de valores permitidos (CA-16.1, RNF-04). */
 export function camposDecision(aporte: AporteFila, actual: Record<string, unknown> | null): CampoDecision[] {
-  return columnasDe(tablaDestino(aporte)).map((c) => ({
-    sql: c.sql,
-    etiqueta: c.nombre,
-    obligatorio: Boolean(c.obligatorio),
-    valor: valorEsCo(c, (aporte.datos ?? {})[c.sql] ?? actual?.[c.sql]),
-    ...(c.tipo === "enum" && c.valores ? { valores: c.valores } : {}),
-  }));
+  return columnasDe(tablaDestino(aporte)).map((c) => {
+    let valor = valorEsCo(c, (aporte.datos ?? {})[c.sql] ?? actual?.[c.sql]);
+    // CA-11.1: la cifra publicada debe citar la fuente que la respalda. La del aporte se suma
+    // a la del registro (sin duplicar); en un registro nuevo sin fuente, se usa la del aporte.
+    if (c.sql === "fuente") valor = unirFuentes(valor, aporte.fuente);
+    return {
+      sql: c.sql,
+      etiqueta: c.nombre,
+      obligatorio: Boolean(c.obligatorio),
+      valor,
+      ...(c.tipo === "enum" && c.valores ? { valores: c.valores } : {}),
+    };
+  });
+}
+
+function unirFuentes(...fuentes: string[]): string {
+  const enlaces = fuentes.flatMap((f) => (f ?? "").split(/\s+/)).filter(Boolean);
+  return [...new Set(enlaces)].join(" ");
 }
 
 export async function rechazarAporte(id: number, motivo: string, deps: DependenciasDecision): Promise<ResultadoDecision> {
