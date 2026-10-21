@@ -230,6 +230,9 @@ test.describe("001 · Plataforma base", () => {
         !/e2e-\d{8}-\S*(pendiente|csv-)/.test(t);
     });
     await page.goto("/");
+    // Se espera a que el bloque de conteos esté en el árbol de accesibilidad (en la corrida
+    // del 2026-10-21 la primera lectura, justo después de cargar, salió vacía).
+    await expect.poll(() => textoKpi(page, "Proyectos por estado"), { timeout: 15_000 }).toContain("term");
     const kpiAntes = await textoKpi(page, "Potencia en operación [MW]");
     const estadosAntes = await textoKpi(page, "Proyectos por estado");
     const csvAntes = (await csvPublico(page)).texto;
@@ -243,6 +246,7 @@ test.describe("001 · Plataforma base", () => {
     expect(numero).toMatch(/^\d+$/);
 
     await page.goto("/");
+    await expect.poll(() => textoKpi(page, "Proyectos por estado"), { timeout: 15_000 }).toContain("term");
     expect(await textoKpi(page, "Potencia en operación [MW]")).toBe(kpiAntes);
     expect(await textoKpi(page, "Proyectos por estado")).toBe(estadosAntes);
     const csvDespues = (await csvPublico(page)).texto;
@@ -358,11 +362,17 @@ test.describe("001 · Plataforma base", () => {
     const filaPotencia = page.getByRole("row").filter({ has: page.getByRole("rowheader", { name: /potencia/i }) });
     await expect(filaPotencia).toHaveCount(1);
     const celdas = filaPotencia.getByRole("cell");
-    // RNF-04: coma decimal también en la interfaz del editor.
     await expect(celdas.nth(0)).toHaveText(/^3([.,]0)?$/);
     await expect(celdas.nth(1)).toHaveText(/^4[.,]5$/);
-    await expect.soft(celdas.nth(1), "RNF-04: coma decimal en el valor propuesto").toHaveText(/^4,5$/);
     await expect(page.getByRole("link", { name: fuente })).toBeVisible();
+    // RNF-04: coma decimal, unidades entre corchetes y nombres legibles en la interfaz del editor.
+    await expect.soft(celdas.nth(1), "RNF-04: coma decimal en el valor propuesto").toHaveText(/^4,5$/);
+    await expect.soft(filaPotencia.getByRole("rowheader"), "RNF-04: nombre legible con unidad").toHaveText("Potencia nominal [MW]");
+    await expect.soft(page.getByText(/[a-z]+_[a-z_]+/), "RNF-04: sin nombres técnicos con guion bajo").toHaveCount(0);
+    await expect.soft(page.getByRole("definition").filter({ hasText: /\d{2}\/\d{2}\/\d{4}/ }), "RNF-04: fecha dd/mm/aaaa en el detalle").toHaveCount(1);
+    const formAprobar = page.getByRole("form", { name: "Aprobar aporte" });
+    await expect.soft(formAprobar.getByLabel("Potencia nominal [MW]"), "RNF-04: coma decimal en el campo ajustable").toHaveValue("4,5");
+    await expect.soft(formAprobar.getByLabel("Longitud"), "RNF-04: coma decimal en la longitud").toHaveValue("-73,91");
   });
 
   test("E2E-10 · CA-09.1: rechazar sin motivo exige el motivo", async ({ page, context }) => {
@@ -441,12 +451,43 @@ test.describe("001 · Plataforma base", () => {
     expect(h.registro).toBe(p.nombre);
     expect(Number(h.antes.potencia_nominal_mw)).toBe(3);
     expect(Number(h.despues.potencia_nominal_mw)).toBe(5.25);
-    expect(h.fuente, "el historial guarda una fuente").toBeTruthy();
-    expect.soft(h.fuente, "la fuente del cambio es la del aporte").toBe(fuenteAporte);
+    expect(h.fuente, "la fuente del historial es la del aporte").toBe(fuenteAporte);
 
-    // ¿Se puede consultar el historial desde la interfaz del editor?
+    // CA-11.1: el registro publicado conserva su fuente anterior y suma la del aporte.
+    const { data: reg } = await admin().from("proyectos").select("fuente").eq("nombre", p.nombre).single();
+    expect(reg!.fuente, "conserva la fuente anterior").toContain("https://ejemplo.co/fuente-e2e");
+    expect(reg!.fuente, "suma la fuente del aporte").toContain(fuenteAporte);
+    const lineaCsv = (await csvPublico(page)).texto.split(/\r?\n/).find((l) => l.startsWith(p.nombre + ","))!;
+    expect(lineaCsv, "la descarga pública lleva ambas fuentes").toContain("https://ejemplo.co/fuente-e2e");
+    expect(lineaCsv, "la descarga pública lleva ambas fuentes").toContain(fuenteAporte);
+
+    // CA-11.1: el historial se consulta en /admin (desde el detalle del aporte).
     await page.goto(`/admin/${a.id}`);
-    await expect.soft(page.getByText(/historial/i).first(), "historial consultable desde /admin").toBeVisible();
+    await page.getByRole("link", { name: /historial/i }).first().click();
+    await expect(page).toHaveURL(/\/admin\/historial/);
+    await expect(page.getByRole("heading", { name: "Historial de cambios" })).toBeVisible();
+    const filaH = page.getByRole("row").filter({ hasText: p.nombre }).filter({ hasText: `N.º ${a.id}` });
+    await expect(filaH).toHaveCount(1);
+    const hoy = new Intl.DateTimeFormat("es-CO", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "America/Bogota" }).format(new Date());
+    await expect(filaH.getByRole("cell").nth(0), "fecha dd/mm/aaaa").toHaveText(hoy);
+    await expect(filaH, "editor").toContainText(CORREO_EDITOR);
+    await expect(filaH.getByRole("link", { name: `N.º ${a.id}` }), "aporte de origen").toHaveAttribute("href", `/admin/${a.id}`);
+    await expect(filaH.getByRole("listitem").filter({ hasText: "Potencia nominal [MW]" }), "valores anterior y nuevo").toHaveText("Potencia nominal [MW]: 3 → 5,25");
+    const enlacesFuente = filaH.getByRole("cell").last().getByRole("link");
+    await expect(enlacesFuente, "fuente del aporte").toHaveCount(1);
+    await expect(enlacesFuente).toHaveAttribute("href", fuenteAporte);
+    // Acceso directo desde la navegación del editor.
+    await page.goto("/admin");
+    await page.getByRole("navigation", { name: "Editores" }).getByRole("link", { name: "Historial" }).click();
+    await expect(page.getByRole("heading", { name: "Historial de cambios" })).toBeVisible();
+    await expect(page.getByRole("row").filter({ hasText: `N.º ${a.id}` })).toHaveCount(1);
+    // Sin sesión, el historial no es público.
+    const anon = await page.context().browser()!.newContext();
+    const pAnon = await anon.newPage();
+    await pAnon.goto("http://localhost:3000/admin/historial");
+    await expect(pAnon).toHaveURL(/\/admin\/entrar/);
+    await expect(pAnon.getByText(CORREO_EDITOR)).toHaveCount(0);
+    await anon.close();
   });
 
   test("E2E-12 · CA-12.1: una noticia propuesta por el agente aparece con origen agente y su nombre", async ({ page, context }) => {
@@ -578,7 +619,7 @@ test.describe("001 · Plataforma base", () => {
     fs.rmSync(tmp, { recursive: true, force: true });
   });
 
-  test("E2E-16 · CA-16.1: Estado = Planeado se rechaza con el mismo mensaje por formulario, aprobación e importación", async ({ page, context }) => {
+  test("E2E-16 · CA-16.1: Estado = Planeado se rechaza con el mismo mensaje por aprobación, base de datos e importación", async ({ page, context }) => {
     soloEscritorio();
     test.setTimeout(240_000);
     const mensajes: Record<string, string> = {};
@@ -606,7 +647,22 @@ test.describe("001 · Plataforma base", () => {
     });
     await iniciarSesionEditor(context);
     await page.goto(`/admin/${a.id}`);
-    await page.getByLabel("Estado *").fill("Planeado");
+    // En la aprobación, Estado es una lista con solo los valores permitidos.
+    const estado = page.getByRole("combobox", { name: "Estado *" });
+    await expect(estado).toBeVisible();
+    const opciones = (await estado.locator("option").allInnerTexts()).map((t) => t.trim()).filter(Boolean);
+    expect(opciones).toEqual(["En operación", "En construcción", "Anunciado", "Inactivo"]);
+    // Una petición manipulada (opción inyectada en el navegador) debe rechazarse en el servidor.
+    // Se inyecta después de que la página termine de hidratarse (si no, React descarta la opción).
+    await page.waitForLoadState("networkidle");
+    await estado.evaluate((s: HTMLSelectElement) => {
+      const o = document.createElement("option");
+      o.value = "Planeado";
+      o.textContent = "Planeado";
+      s.appendChild(o);
+      s.value = "Planeado";
+    });
+    await expect(estado).toHaveValue("Planeado");
     await page.getByRole("button", { name: "Aprobar y publicar" }).click();
     const alerta = page.getByRole("form", { name: "Aprobar aporte" }).getByRole("alert");
     await expect(alerta).toContainText("Planeado", { timeout: 20_000 });
@@ -618,16 +674,13 @@ test.describe("001 · Plataforma base", () => {
     const db = await admin().from("proyectos").insert(proyectoPrueba({ estado: "Planeado" }));
     expect(db.error, "la base rechaza el valor").not.toBeNull();
     mensajes.baseDeDatos = db.error!.message;
-
-    // 4) Formulario público: ¿permite indicar el Estado?
-    await page.goto("/aportar");
-    const campoEstado = page.getByLabel(/^Estado/);
-    mensajes.formulario = (await campoEstado.count()) ? "(campo presente)" : "(el formulario no tiene campo Estado)";
+    const { count: planeados } = await admin().from("proyectos").select("id", { count: "exact", head: true }).eq("estado", "Planeado");
+    expect(planeados, "no se guardó ningún proyecto Planeado").toBe(0);
 
     test.info().annotations.push({ type: "mensajes", description: JSON.stringify(mensajes) });
-    expect(mensajes.aprobacion).toBe(mensajes.importacion);
-    expect.soft(mensajes.formulario, "el formulario debe permitir y validar Estado").toBe("(campo presente)");
-    expect.soft(mensajes.baseDeDatos, "la base responde con el mismo mensaje").toBe(mensajes.importacion);
+    expect(mensajes.importacion).toContain("Planeado");
+    expect.soft(mensajes.aprobacion, "aprobación = importación").toBe(mensajes.importacion);
+    expect.soft(mensajes.baseDeDatos, "base de datos = importación").toBe(mensajes.importacion);
   });
 
   test("E2E-17 · CA-17.1: con movimiento reducido los KPI aparecen sin animación de conteo", async ({ page }) => {

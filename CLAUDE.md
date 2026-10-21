@@ -45,9 +45,11 @@ para lectores que no son abogados.
 | Evolución normativa | `sitio/normativa/` | `datos/normativa.csv` | — |
 | Noticias | `sitio/noticias/` | `datos/noticias.csv` | — |
 
-**Implementación en el país**: filtros por tecnología, ubicación (departamento,
-municipio, mapa), dimensiones (MW, MWh, duración), servicios, clasificación según la
-resolución que habilita el proyecto y tipo de uso o conexión.
+**Implementación en el país** (brainstorm 002 aprobado el 2026-10-21): mapa + tabla con
+los mismos filtros (estado, departamento, municipio, servicios = `Tipo uso/conexión` como
+lista cerrada, operador, tecnología y año de FPO) y una tarjeta por proyecto sobre el punto.
+Después del MVP: filtros por dimensiones (MW, MWh, duración) y clasificación según la
+resolución que habilita el proyecto.
 
 **Evolución normativa**: línea de tiempo. Cada norma se *condensa* (`resumen`) y se
 *explica* (`explicacion`). Emisores: CREG, MME y CNO (y UPME o XM cuando aplique).
@@ -161,7 +163,8 @@ Claude los recibe y debe resolverlos o reportarlos.
   fuente (`Base de datos SAEB`).
 - MW (potencia) y MWh (energía) nunca se suman ni comparten eje. Los KPI de "instalado"
   cuentan solo proyectos `En operación`.
-- Toda cifra publicada tiene fuente (columna `Fuente` o `enlace`).
+- Toda cifra publicada tiene fuente (columna `Fuente` o `enlace`) en los datos y en la
+  descarga CSV. La tarjeta del mapa no muestra los enlaces de fuente (decisión del 2026-10-21).
 - Columnas: agregar o renombrar una columna exige actualizar a la vez
   `datos/esquemas.json`, el CSV y la página que lo lee (las páginas leen por posición).
 - Visual: usar los tokens semánticos de `sitio/assets/ds/` (`--brand`, `--surface-header`,
@@ -193,8 +196,8 @@ Claude los recibe y debe resolverlos o reportarlos.
 |---|---|---|
 | 10-19 | Arnés: CLAUDE.md, datos, validador, hook, skills, esqueleto del sitio | Hecho |
 | 10-20 | Plataforma base 001: T01–T09 (app, tema, formato, esquemas, base de datos, importación, inicio, aportes) | Hecho |
-| 10-21 | Plataforma base 001: T10–T17 + E2E limpio | Hecho el 10-20 (T10–T21); falta repetir el E2E limpio |
-| 10-22 | 002 · Implementación en el país (mapa, filtros, KPI) | |
+| 10-21 | Plataforma base 001: T10–T17 + E2E limpio | Hecho (E2E limpio 19/19 el 10-21; 001 terminada) |
+| 10-22 | 002 · Implementación en el país (mapa, filtros, KPI) | Brainstorm y spec aprobados el 10-21; plan en borrador |
 | 10-23 | 003 · Vehículos eléctricos | |
 | 10-24 | 004 · Evolución normativa | |
 | 10-25 | 005 · Noticias | |

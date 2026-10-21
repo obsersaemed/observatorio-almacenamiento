@@ -1,6 +1,6 @@
 # 001 · Arquitectura y plataforma base — Plan
 
-Estado: En curso (correcciones del E2E)
+Estado: Terminado (2026-10-21)
 Fecha: 2026-10-19
 Spec: [spec.md](spec.md)
 
@@ -299,4 +299,4 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-20 | T20 | Sí: la base respondía "violates check constraint"; test_validacion_sql sin generador | Python OK, integración 24/24 | Validación SQL generada desde esquemas.json (generar_validacion_sql.py --escribir); la migración debe coincidir con lo generado |
 
 ## Informe E2E
-Pendiente (`e2e-informe.md`).
+[e2e-informe.md](e2e-informe.md): segunda corrida del 2026-10-21, 19/19 escenarios en verde. Cerrada con aprobación del usuario.

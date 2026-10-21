@@ -16,4 +16,5 @@ documento aprobado por el usuario.
 
 | # | Funcionalidad | Fase | Estado |
 |---|---|---|---|
-| 001 | [Arquitectura y plataforma base](001-arquitectura/) | 4. Implementación | 21/21 tareas; repetir E2E limpio para cerrar |
+| 001 | [Arquitectura y plataforma base](001-arquitectura/) | Terminada | 21/21 tareas; E2E limpio 19/19 (2026-10-21) |
+| 002 | [Implementación en el país](002-implementacion/) | 3. Plan | Plan en borrador (14 tareas) |
