@@ -68,3 +68,28 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
   Directory `web`, 6 variables (4 públicas marcadas como seguras, 2 privadas). Dominio
   https://observatorio-almacenamiento.vercel.app con datos de Supabase **pruebas** y llaves de
   prueba de Turnstile. No se usa la integración de Supabase de Vercel.
+
+## 2026-10-20 — Cierre de sesión
+
+### Hecho hoy
+- Plataforma base 001 completa: T01–T17 y las correcciones del E2E T18–T21 (21/21 tareas).
+- E2E limpio (agente independiente): 17/19 escenarios en verde en la primera corrida; las 3
+  fallas (fuente e historial, mensaje de la base, formato es-CO en /admin) se corrigieron con
+  TDD. Spec ajustada con aprobación: el formulario público no captura Estado (CA-16.1) y el
+  historial se consulta en /admin con la fuente del aporte (CA-11.1).
+- Migraciones aplicadas en Supabase pruebas (SQL Editor): 0001, 0002 y 0003.
+- Sitio de prueba publicado: https://observatorio-almacenamiento.vercel.app (despliegue
+  automático desde main). Respaldo diario activo en GitHub Actions.
+- Pruebas: 123 web, 24 de integración, Python en verde; validador: 0 errores.
+
+### Pendiente para la próxima sesión
+1. **Volver a correr el E2E limpio** sobre la spec 001 para confirmar F1–F3 corregidas y cerrar
+   la spec (puerta: E2E en verde + aprobación del usuario).
+2. Vercel: confirmar que `SUPABASE_SERVICE_ROLE_KEY` y `TURNSTILE_SECRET_KEY` quedaron como Secret.
+3. Supabase CLI: `npx supabase migration repair --status applied 0001 0002 0003` cuando el
+   pooler conecte (hoy falla "failed to connect as temp role").
+4. Antes del 27: llaves reales de Turnstile (P5) y decidir si producción usa el proyecto
+   `observatorio` o se mantiene `observatorio-pruebas`.
+5. Spec 002 · Implementación en el país (mapa, filtros, KPI): empezar con `brainstorm`.
+6. Decisiones abiertas: preguntas 5–20 (clasificación por resolución, servicios, fuentes de
+   noticias, bilingüe, mantenimiento).

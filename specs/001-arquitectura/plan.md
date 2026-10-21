@@ -177,7 +177,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Depende de: T16, P4, P5
   - Archivos: `web/tests/secretos.test.ts`, `web/vercel.json` (si hace falta)
 
-- [ ] **T18 · S** · Fuente del cambio en el registro y en el historial (F1)
+- [x] **T18 · S** · Fuente del cambio en el registro y en el historial (F1)
   - Cubre: RF-11 · CA-11.1
   - Prueba primero (RED): `web/src/lib/decision.test.ts`: al aprobar una corrección, la fuente propuesta del registro suma la del aporte a la anterior sin duplicar; integración `tests/integracion/decision.test.ts`: `historial.fuente` es la fuente del aporte
   - Hecho cuando (GREEN): pruebas en verde con la migración 0003 aplicada
@@ -189,7 +189,7 @@ Crear cuentas e ingresar credenciales le corresponde al usuario; Claude no lo ha
   - Hecho cuando (GREEN): pruebas en verde; enlace al historial desde el encabezado de `/admin`
   - Depende de: T11
   - Archivos: `web/src/components/aportes/historial.tsx`, `web/src/lib/historial.ts`, `web/src/app/admin/(protegido)/historial/page.tsx`
-- [ ] **T20 · M** · Mismo mensaje cuando la base rechaza un valor (F2)
+- [x] **T20 · M** · Mismo mensaje cuando la base rechaza un valor (F2)
   - Cubre: RF-16 · CA-16.1
   - Prueba primero (RED): `pruebas/test_sql_esquemas.py`: la migración 0003 valida cada enum y rango con el mensaje de la plantilla; integración `tests/integracion/rls.test.ts`: insertar `Estado = Planeado` con la llave de servicio devuelve el mensaje compartido
   - Hecho cuando (GREEN): pruebas en verde con 0003 aplicada; la migración se genera desde `datos/esquemas.json`
@@ -295,6 +295,8 @@ datos sembrados por el propio escenario y llaves de prueba de Turnstile.
 | 2026-10-19 | T17 | — | Sitio publicado en https://observatorio-almacenamiento.vercel.app: 12 rutas con el código esperado (/admin→307, aportes.csv→404), KPI 17,0 MW y 12,8 MWh, CSV con 7 proyectos, robots con dominio real; 11 scripts publicados sin llaves privadas | Despliegue automático desde main; Vercel con datos de Supabase pruebas y llaves de prueba de Turnstile |
 | 2026-10-20 | T21 | Sí: comparación con nombres técnicos y punto decimal; Estado como texto libre; prellenado con separador de miles leído como decimal | 115/115 web | columnas.ts concentra etiquetas, tipos y formato es-CO (sin separador de miles para que el valor se lea de vuelta igual) |
 | 2026-10-20 | T19 | Sí: no existían historial.ts ni la tabla | 120/120 web | /admin/historial con filtros por registro o aporte; enlace desde el encabezado de /admin y desde el aporte aprobado |
+| 2026-10-20 | T18 | Sí: la fuente prellenada no sumaba la del aporte; integración: historial citaba la fuente del registro | 123/123 web, integración 24/24 (dos corridas) con 0003 aplicada | La fuente del registro acumula la del aporte; aplicar_aporte fija app.fuente para el historial |
+| 2026-10-20 | T20 | Sí: la base respondía "violates check constraint"; test_validacion_sql sin generador | Python OK, integración 24/24 | Validación SQL generada desde esquemas.json (generar_validacion_sql.py --escribir); la migración debe coincidir con lo generado |
 
 ## Informe E2E
 Pendiente (`e2e-informe.md`).
