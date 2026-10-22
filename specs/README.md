@@ -18,3 +18,4 @@ documento aprobado por el usuario.
 |---|---|---|---|
 | 001 | [Arquitectura y plataforma base](001-arquitectura/) | Terminada | 21/21 tareas; E2E limpio 19/19 (2026-10-21) |
 | 002 | [Implementación en el país](002-implementacion/) | Terminada | 23/23 tareas; E2E limpio 23/23 (2026-10-21) |
+| 006 | [Gráficas de implementación](006-graficas-implementacion/) | Terminada | 8/8 tareas; E2E limpio 12/12 (2026-10-22) |

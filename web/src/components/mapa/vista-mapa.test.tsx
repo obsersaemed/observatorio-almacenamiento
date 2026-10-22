@@ -15,6 +15,10 @@ vi.mock("./mapa-diferido", () => ({
   ),
 }));
 
+// 006 · T07: las gráficas se cargan diferidas; aquí se usan directamente, con Recharts de tamaño fijo.
+vi.mock("recharts", async (original) => (await import("../graficas/prueba-recharts")).rechartsConTamano(original as () => Promise<Record<string, unknown>>));
+vi.mock("../graficas/graficas-diferidas", async () => ({ GraficasDiferidas: (await import("../graficas/graficas")).Graficas }));
+
 const { VistaMapa } = await import("./vista-mapa");
 
 const fila = (f: Partial<FilaPublica>): FilaPublica => ({
@@ -99,5 +103,33 @@ describe("VistaMapa", () => {
     expect(screen.getByText("Ningún proyecto cumple estos filtros")).toBeInTheDocument();
     expect(puntos()).toEqual([]);
     expect(proyectosFiltrados()).toContain("0");
+  });
+
+  test("006 · las gráficas van después de los filtros y antes del mapa (CA-01.1)", () => {
+    render(<VistaMapa filas={filas} />);
+    const graficas = screen.getByRole("region", { name: "Gráficas" });
+    const filtros = screen.getByText(/^Filtros/, { selector: "summary" });
+    const mapa = screen.getByRole("list", { name: "Puntos del mapa" });
+    expect(filtros.compareDocumentPosition(graficas) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(graficas.compareDocumentPosition(mapa) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(graficas).getAllByRole("heading").map((h) => h.textContent)).toEqual([
+      "Capacidad por estado", "Evolución por año de FPO", "Tecnología",
+    ]);
+  });
+
+  test("006 · al filtrar, barras y dona suman lo mismo que los KPI «según filtros» (CA-02.1)", () => {
+    render(<VistaMapa filas={filas} />);
+    abrirFiltro("Departamento");
+    fireEvent.click(screen.getByRole("checkbox", { name: "Sucre (1)" }));
+    fireEvent.keyDown(document.body, { key: "Escape" });
+    const kpiMw = screen.getByRole("group", { name: "Potencia según filtros [MW] (todos los estados)" });
+    expect(kpiMw).toHaveTextContent("50,0 MW");
+    const graficas = screen.getByRole("region", { name: "Gráficas" });
+    const estados = within(graficas).getByRole("region", { name: "Capacidad por estado" });
+    fireEvent.click(within(estados).getByRole("button", { name: "Ver como tabla" }));
+    const filasEstados = within(estados).getAllByRole("row").slice(1).map((r) => r.textContent);
+    expect(filasEstados).toEqual(["En operación0,0", "En construcción0,0", "Anunciado50,0", "Inactivo0,0"]);
+    const dona = within(graficas).getByRole("region", { name: "Tecnología" });
+    expect(within(dona).getByTestId("total-dona")).toHaveTextContent("50,0 MW");
   });
 });

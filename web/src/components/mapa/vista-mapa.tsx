@@ -10,6 +10,7 @@ import { aProyectoMapa, filtrar, kpiSeccion, type FilaPublica, type Filtros as T
 import { Filtros } from "./filtros";
 import { KpiMapa } from "./kpi-mapa";
 import { MapaDiferido } from "./mapa-diferido";
+import { GraficasDiferidas } from "../graficas/graficas-diferidas";
 import { TablaProyectos } from "./tabla-proyectos";
 
 // La consulta de la URL como almacén externo: en el servidor (y al hidratar) no hay filtros;
@@ -66,6 +67,7 @@ export function VistaMapa({ filas }: { filas: FilaPublica[] }) {
           </Button>
         </div>
       </div>
+      <GraficasDiferidas proyectos={resultado} />
       <MapaDiferido proyectos={resultado} seleccionado={seleccionado} onSeleccionar={setSeleccionado} />
       <TablaProyectos proyectos={resultado} seleccionado={seleccionado} onElegir={setSeleccionado} />
     </div>

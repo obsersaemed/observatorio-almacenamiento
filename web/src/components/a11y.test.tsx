@@ -10,6 +10,7 @@ import { Inicio, PanelKpi } from "./inicio";
 import { MapaProyectos } from "./mapa/mapa-proyectos";
 import { TarjetaProyecto } from "./mapa/tarjeta-proyecto";
 import { VistaMapa } from "./mapa/vista-mapa";
+import { Graficas } from "./graficas/graficas";
 import { aProyectoMapa, type FilaPublica } from "@/lib/proyectos-mapa";
 
 // /mapa (spec 002): MapLibre necesita WebGL; se simula con un mapa que solo sabe proyectar.
@@ -30,6 +31,9 @@ vi.mock("maplibre-gl", () => {
   return { default: { Map: Mapa }, Map: Mapa };
 });
 vi.mock("./mapa/mapa-diferido", () => ({ MapaDiferido: () => null }));
+vi.mock("./graficas/graficas-diferidas", () => ({ GraficasDiferidas: () => null }));
+// 006: Recharts con tamaño fijo para que dibuje en jsdom.
+vi.mock("recharts", async (original) => (await import("./graficas/prueba-recharts")).rechartsConTamano(original as () => Promise<Record<string, unknown>>));
 
 const filaMapa = (f: Partial<FilaPublica>): FilaPublica => ({
   nombre: "Ficticio", operador: "Op", estado: "En operación", tecnologia: "Li-ion", fpo: "2024",
@@ -75,6 +79,7 @@ describe("axe sin violaciones", () => {
     ["formulario de aporte", <FormularioAporte key="f" accion={vi.fn()} siteKey="clave" />],
     ["lista de aportes", <ListaAportes key="l" aportes={[{ id: 1, tipo: "Noticia", registro_afectado: null, descripcion: "x", datos: {}, fuente: "https://e.co", origen: "usuario", agente: null, publicacion: "Pendiente", creado_en: "2026-10-20T00:00:00Z" }]} />],
     ["vista de /mapa (002 · RNF-03)", <VistaMapa key="v" filas={filasMapa} />],
+    ["gráficas de /mapa (006 · RNF-03)", <Graficas key="g" proyectos={filasMapa.map(aProyectoMapa)} />],
     ["tarjeta del proyecto (002)", <TarjetaProyecto key="t" proyecto={aProyectoMapa(filasMapa[0])} onCerrar={vi.fn()} />],
   ])("%s", async (_nombre, elemento) => {
     const { container } = render(<div>{elemento}</div>);

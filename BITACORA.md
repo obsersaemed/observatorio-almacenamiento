@@ -128,3 +128,28 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - A pedido del usuario, cada filtro pasó a ser un desplegable de selección múltiple: muestra «Todas», el valor elegido o «N seleccionados», y al abrirlo trae la casilla «Todas», un buscador y el conteo por opción. Sin cambio de spec (RF-08 no fija la forma del control).
 - TDD: 203 pruebas web en verde y build correcto. El E2E limpio adaptó sus pruebas y la cuarta corrida dio 23/23.
 
+## 2026-10-22 — 006 · Gráficas de implementación terminada
+
+### Hecho
+- Se pidió agregar a `/mapa` gráficas como las del «Real-time Energy Storage Dashboard» del JRC.
+  Brainstorm, spec y plan aprobados.
+- `/mapa` muestra tres gráficas (Recharts) entre los filtros y el mapa, todas con «Ver como
+  tabla» y con el mismo resultado filtrado:
+  - barras por estado con pestañas Potencia [MW] | Energía [MWh] | Duración [h];
+  - evolución acumulada por año de FPO, en orden, con las series «En operación y en
+    construcción» y «Anunciado (proyectado)»; los proyectos inactivos no suman;
+  - dona de tecnología.
+- 8 tareas con TDD. E2E limpio: 11/12 en la primera corrida (la falla se corrigió en T08) y
+  12/12 en la segunda.
+- Pruebas: 235 en la web; build correcto; LCP de `/mapa` con una mediana de 1,41 s.
+
+### Hallazgos
+- En jsdom la animación de Recharts no avanza: el dibujo final se prueba con movimiento reducido.
+- Recharts no dibuja la etiqueta de un valor nulo: la barra se dibuja en 0 y la etiqueta va aparte («—»).
+- Una curva `monotone` en un acumulado inventa bajadas: se usa `linear`.
+- Con 3,4 GB de RAM, Vitest necesita `testTimeout` de 20 s. Una corrida reportó 35 de 36 archivos sin ninguna falla.
+
+### Decisiones
+- RNF-04 de la 006: el decimal aplica a los valores; las marcas de los ejes de MW y MWh pueden ser enteras.
+- Barras por departamento y por servicio quedan para después del MVP.
+
