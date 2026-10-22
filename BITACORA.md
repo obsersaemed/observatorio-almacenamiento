@@ -206,3 +206,14 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - Observaciones menores del E2E: un elemento `g` sin nombre en el recorrido con Tab dentro de las gráficas, y el orden de foco de la región de la tabla frente al botón «Ver como gráfica».
 - Siguiente según el cronograma: 004 · Evolución normativa.
 
+
+## 2026-10-22 — Publicación de la 003 en el sitio de prueba
+- Antes del push: validador y Python en verde, y `origin` sin commits nuevos. Push de `1d2ad74` a `main`; Vercel desplegó correctamente.
+- Verificado en https://observatorio-almacenamiento.vercel.app/vehiculos (escritorio y 375 px):
+  - KPI: 45.346 vehículos y 2.426,5 MWh;
+  - tecnología: LFP 67,5 %;
+  - créditos con «Última actualización: 22/10/2026 · Ventas hasta el 17/09/2026»;
+  - el filtro Tesla da 7.760 y pone `?marca=Tesla` en la URL;
+  - sin errores de consola ni desplazamiento horizontal.
+  `/mapa` sigue igual después del cambio de componentes compartidos.
+- **LCP de `/vehiculos` publicado (4G lenta), cuatro medianas:** 2.048, 2.520, 1.700 y 2.100 ms. Una de las cuatro supera por 20 ms el umbral de 2.500 ms; la primera carga de cada corrida (caché en frío) llega a 2,5–3,7 s. En el build local fue 1,60 s. Pendiente: averiguar qué elemento es el LCP y aligerar la página, o confirmar que es variación de la red.
