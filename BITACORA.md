@@ -153,3 +153,14 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - RNF-04 de la 006: el decimal aplica a los valores; las marcas de los ejes de MW y MWh pueden ser enteras.
 - Barras por departamento y por servicio quedan para después del MVP.
 
+
+## 2026-10-22 — Publicación de la 002 y la 006 en el sitio de prueba
+- Antes del push: validador sin errores, Python OK y 235 pruebas web en verde. Se hizo rebase sobre el respaldo diario del bot (`5d34798`, que solo cambió `respaldo/proyectos.csv` con los textos de servicios de la 0004) y push de `ad74205` a `main`. Vercel desplegó correctamente.
+- Verificado en https://observatorio-almacenamiento.vercel.app/mapa, en escritorio y a 375 px:
+  - KPI de 17,0 MW instalados, 7 puntos, 7 filas y las 3 gráficas.
+  - El filtro «Anunciado» (desplegable) deja 2 filas y 2 puntos y pone `?estado=Anunciado` en la URL.
+  - La tarjeta se abre con clic o toque y sigue abierta al desplazar la página.
+  - «Proponer corrección» lleva a `/aportar` prellenado.
+  - Sin errores de consola y sin desplazamiento horizontal.
+- LCP del sitio publicado (4G lenta): `/mapa` 1,53 s y `/aportar` 1,75 s (medianas).
+- Observación: `/aportar` muestra un instante el formulario sin prellenar (el de espera del `Suspense`) antes del prellenado.
