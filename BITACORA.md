@@ -217,3 +217,4 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
   - sin errores de consola ni desplazamiento horizontal.
   `/mapa` sigue igual después del cambio de componentes compartidos.
 - **LCP de `/vehiculos` publicado (4G lenta), cuatro medianas:** 2.048, 2.520, 1.700 y 2.100 ms. Una de las cuatro supera por 20 ms el umbral de 2.500 ms; la primera carga de cada corrida (caché en frío) llega a 2,5–3,7 s. En el build local fue 1,60 s. Pendiente: averiguar qué elemento es el LCP y aligerar la página, o confirmar que es variación de la red.
+- **Decisión del usuario (2026-10-22):** revisó el LCP de `/vehiculos` y lo da por bueno; no se optimiza por ahora.
