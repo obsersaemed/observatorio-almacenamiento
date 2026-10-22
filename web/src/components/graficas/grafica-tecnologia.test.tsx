@@ -32,7 +32,7 @@ describe("GraficaTecnologia", () => {
 
   test("la leyenda trae cada tecnología con su porcentaje en texto (CA-07.1)", () => {
     render(<GraficaTecnologia proyectos={proyectos} />);
-    expect(screen.getByRole("list", { name: "Tecnologías" })).toHaveTextContent("Li-ion100 %");
+    expect(screen.getByRole("list", { name: "Tecnologías" })).toHaveTextContent("Li-ion100,0 %");
   });
 
   test("la tabla trae valor y porcentaje", () => {

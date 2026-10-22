@@ -86,3 +86,34 @@ describe("esquemas construidos desde datos/esquemas.json", () => {
     expect(esquemaDe("aportes").safeParse({ ...aporteValido, tipo: "Otro" }).success).toBe(false);
   });
 });
+
+describe("003 · T03: reglas de vehículos con el mismo mensaje que Python (CA-14.1)", () => {
+  const linea = {
+    Marca: "Marca A",
+    "Línea": "Linea 1",
+    "Tipo de batería": "LFP",
+    "Capacidad mínima [kWh]": "40",
+    "Capacidad máxima [kWh]": "60",
+  };
+
+  test("una línea válida pasa", () => {
+    expect(validar("vehiculos_lineas", linea).errores).toEqual([]);
+  });
+
+  test("capacidad máxima menor que la mínima se rechaza (min_de)", () => {
+    const r = validar("vehiculos_lineas", { ...linea, "Capacidad máxima [kWh]": "30" });
+    expect(r.errores).toEqual([
+      mensaje("min_de", { columna: "Capacidad máxima [kWh]", valor: "30", otra: "Capacidad mínima [kWh]" }),
+    ]);
+  });
+
+  test("unidades no enteras o negativas se rechazan (entero)", () => {
+    expect(validar("vehiculos_ventas", { "Línea": "Linea 1", "Año": "2024", Unidades: "2,5" }).errores).toEqual([
+      mensaje("entero", { columna: "Unidades", valor: "2,5" }),
+    ]);
+    expect(validar("vehiculos_ventas", { "Línea": "Linea 1", "Año": "2024", Unidades: "-3" }).errores).toEqual([
+      mensaje("rango", { columna: "Unidades", valor: "-3", min: "0", max: "inf" }),
+    ]);
+    expect(validar("vehiculos_ventas", { "Línea": "Linea 1", "Año": 2024, Unidades: 7 }).datos).toMatchObject({ "Año": 2024, Unidades: 7 });
+  });
+});

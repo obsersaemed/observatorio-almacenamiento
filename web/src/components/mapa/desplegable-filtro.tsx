@@ -5,6 +5,7 @@
 // opciones con su conteo. Escape o un clic afuera lo cierran.
 import { ChevronDown } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { formatoNumero } from "@/lib/formato";
 import type { Opcion } from "@/lib/proyectos-mapa";
 
 const casilla = "size-4 shrink-0 accent-[var(--primary)]";
@@ -96,12 +97,12 @@ export function DesplegableFiltro({
                 <input
                   type="checkbox"
                   className={`${casilla} mt-0.5`}
-                  aria-label={`${valor} (${cantidad})`}
+                  aria-label={`${valor} (${formatoNumero(cantidad)})`}
                   checked={elegidos.includes(valor)}
                   onChange={(e) => alternar(valor, e.target.checked)}
                 />
                 <span className="flex-1 break-words">{valor}</span>
-                <span className="text-muted-foreground">{cantidad}</span>
+                <span className="text-muted-foreground">{formatoNumero(cantidad)}</span>
               </label>
             ))}
             {!visibles.length && <p className="text-muted-foreground">Sin coincidencias</p>}

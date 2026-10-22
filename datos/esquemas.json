@@ -7,7 +7,9 @@
     "rango": "'{columna}' = {valor} fuera de rango [{min}, {max}]",
     "fecha": "'{columna}' = '{valor}' no es fecha AAAA-MM-DD",
     "urls": "'{columna}' tiene algo que no es un enlace http(s)",
-    "correo": "'{columna}' no es un correo válido"
+    "correo": "'{columna}' no es un correo válido",
+    "entero": "'{columna}' = '{valor}' no es un número entero",
+    "min_de": "'{columna}' = {valor} es menor que '{otra}'"
   },
   "proyectos": {
     "archivo": "proyectos.csv",
@@ -365,6 +367,88 @@
         "nombre": "motivo",
         "tipo": "texto",
         "_nota": "Obligatorio al rechazar"
+      }
+    ]
+  },
+  "vehiculos_lineas": {
+    "archivo": "vehiculos_lineas.csv",
+    "tabla": "vehiculos_lineas",
+    "descripcion": "Ficha de cada línea de vehículo eléctrico (spec 003). Se genera desde la hoja VEHICULOS_ELECTRICOS con scripts/convertir_vehiculos.py.",
+    "clave": "Línea",
+    "columnas": [
+      {
+        "nombre": "Marca",
+        "tipo": "texto",
+        "obligatorio": true
+      },
+      {
+        "nombre": "Línea",
+        "tipo": "texto",
+        "obligatorio": true
+      },
+      {
+        "nombre": "Tipo de batería",
+        "tipo": "enum",
+        "obligatorio": true,
+        "valores": [
+          "LFP",
+          "Lithium-ion",
+          "NMC Lithium-ion",
+          "ULTIUM"
+        ]
+      },
+      {
+        "nombre": "Capacidad mínima [kWh]",
+        "tipo": "numero",
+        "obligatorio": true,
+        "min": 0
+      },
+      {
+        "nombre": "Capacidad máxima [kWh]",
+        "tipo": "numero",
+        "obligatorio": true,
+        "min": 0,
+        "min_de": "Capacidad mínima [kWh]"
+      },
+      {
+        "nombre": "Potencia [kW]",
+        "tipo": "numero",
+        "min": 0
+      }
+    ]
+  },
+  "vehiculos_ventas": {
+    "archivo": "vehiculos_ventas.csv",
+    "tabla": "vehiculos_ventas",
+    "descripcion": "Unidades vendidas por línea y año (spec 003). Fuentes: ANDEMOS, RUNT y cálculos propios del Observatorio.",
+    "clave": [
+      "Línea",
+      "Año"
+    ],
+    "referencias": [
+      {
+        "columna": "Línea",
+        "esquema": "vehiculos_lineas"
+      }
+    ],
+    "columnas": [
+      {
+        "nombre": "Línea",
+        "tipo": "texto",
+        "obligatorio": true
+      },
+      {
+        "nombre": "Año",
+        "tipo": "entero",
+        "obligatorio": true,
+        "min": 2000,
+        "max": 2100
+      },
+      {
+        "nombre": "Unidades",
+        "tipo": "entero",
+        "obligatorio": true,
+        "min": 0
       }
     ]
   }

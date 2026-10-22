@@ -164,3 +164,45 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
   - Sin errores de consola y sin desplazamiento horizontal.
 - LCP del sitio publicado (4G lenta): `/mapa` 1,53 s y `/aportar` 1,75 s (medianas).
 - Observación: `/aportar` muestra un instante el formulario sin prellenar (el de espera del `Suspense`) antes del prellenado.
+
+## 2026-10-22 — 003 · Vehículos eléctricos terminada
+
+### Hecho
+- Brainstorm, spec y plan aprobados. Decisiones:
+  - publicar por línea;
+  - híbridos enchufables sin distinguir;
+  - datos en Supabase;
+  - contenido del tablero de Looker;
+  - fuentes: ANDEMOS, RUNT y cálculos propios del Observatorio, con «Última actualización» y «Ventas hasta»;
+  - solo dos KPI;
+  - sin aportes.
+- Datos (modelo B):
+  - `scripts/convertir_vehiculos.py` convierte la hoja con control de cuadre en `datos/vehiculos_lineas.csv` (49) y `datos/vehiculos_ventas.csv` (147);
+  - reglas `entero` y `min_de` y referencia venta → línea, iguales en Python, zod y SQL;
+  - migración 0005 (tablas, RLS e importación atómica `reemplazar_vehiculos`), aplicada por el usuario en **pruebas**;
+  - `scripts/importar_vehiculos.py` importó 49 líneas y 45.346 unidades (corte 2026-09-17);
+  - los vehículos entran al respaldo diario.
+- `/vehiculos`:
+  - filtros desplegables (Marca, Tipo de batería, Línea) en la URL;
+  - KPI: 45.346 vehículos y 2.426,5 MWh;
+  - tabla de tecnología (LFP 67,5 %);
+  - barras por marca y año (2026 parcial);
+  - donas de marcas y de tecnología;
+  - energía por tipo;
+  - créditos con las dos fechas;
+  - descarga CSV filtrada.
+- 17 tareas con TDD. E2E limpio en 3 corridas: 13/18, 17/18 y 18/18.
+- Pruebas: 274 web, 34 de integración y Python en verde; build correcto; LCP de `/vehiculos` con una mediana de 1,60 s.
+
+### Hallazgos
+- La paleta TEJ es casi toda gris. Las categorías necesitan una paleta probada con los valores reales de `colors.css`: 10 colores distintos, y los años como en Looker.
+- Los porcentajes redondeados a un decimal pueden sumar 99,9 %: la spec acepta ±0,1.
+- Con 3,4 GB y unos 300 MB libres, Vitest en paralelo completo fallaba al leer `node_modules` (errno -4094): `maxWorkers: 2`.
+- `/vehiculos` se prerenderiza leyendo la base: **la migración y la importación van antes del push**.
+
+### Pendiente
+- Publicar la 003 (push a `main`) cuando el usuario lo pida; la 0005 y los datos ya están en **pruebas**.
+- Licencia de ANDEMOS para el detalle por línea (el usuario decidió publicar con créditos).
+- Observaciones menores del E2E: un elemento `g` sin nombre en el recorrido con Tab dentro de las gráficas, y el orden de foco de la región de la tabla frente al botón «Ver como gráfica».
+- Siguiente según el cronograma: 004 · Evolución normativa.
+

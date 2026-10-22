@@ -16,7 +16,8 @@ export function TarjetaGrafica({
   children,
 }: {
   titulo: string;
-  pestanas: { etiqueta: string; opciones: OpcionPestana[]; activa: string; onCambiar: (id: string) => void };
+  /** Opcional: una gráfica de una sola medida no lleva pestañas (003). */
+  pestanas?: { etiqueta: string; opciones: OpcionPestana[]; activa: string; onCambiar: (id: string) => void };
   tabla: TablaEquivalente;
   vacia: boolean;
   nota?: string;
@@ -30,11 +31,14 @@ export function TarjetaGrafica({
       <h2 id={`${id}-titulo`} className="text-base font-bold text-[var(--text-heading)]">
         {titulo}
       </h2>
-      <Pestanas {...pestanas} idPanel={`${id}-panel`} />
-      <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-titulo`} className="min-w-0">
+      {pestanas && <Pestanas {...pestanas} idPanel={`${id}-panel`} />}
+      <div id={`${id}-panel`} role={pestanas ? "tabpanel" : undefined} aria-labelledby={pestanas ? `${id}-titulo` : undefined} className="min-w-0">
         {vacia ? (
           <p className="py-8 text-center text-sm text-muted-foreground">Sin datos para estos filtros</p>
         ) : comoTabla ? (
+          // Con desplazamiento propio: a 375 px una tabla ancha no mueve la página (RNF-01).
+          // Región con nombre y en el orden de Tab: así el desplazamiento también se usa con teclado (RNF-03).
+          <div className="overflow-x-auto" role="region" aria-label={`Tabla de ${titulo}`} tabIndex={0}>
           <table aria-labelledby={`${id}-titulo`} className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border">
@@ -57,6 +61,7 @@ export function TarjetaGrafica({
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           children
         )}

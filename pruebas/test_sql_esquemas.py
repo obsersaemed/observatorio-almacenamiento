@@ -11,6 +11,7 @@ sys.path.insert(0, str(RAIZ / "scripts"))
 from validar_datos import columna_sql  # noqa: E402
 
 MIGRACION = RAIZ / "supabase" / "migrations" / "0001_base.sql"
+MIGRACIONES = sorted((RAIZ / "supabase" / "migrations").glob("*.sql"))
 TABLAS_PRIVADAS = ("aportantes", "historial", "editores")
 
 
@@ -31,7 +32,8 @@ class TestMigracion(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.esquemas = json.loads((RAIZ / "datos" / "esquemas.json").read_text(encoding="utf-8"))
-        cls.sql = MIGRACION.read_text(encoding="utf-8") if MIGRACION.exists() else ""
+        # Todas las migraciones en orden: las tablas de vehículos (003) viven en la 0005.
+        cls.sql = chr(10).join(m.read_text(encoding="utf-8") for m in MIGRACIONES)
 
     def test_existe_la_migracion(self):
         self.assertTrue(MIGRACION.exists(), f"Falta {MIGRACION}")

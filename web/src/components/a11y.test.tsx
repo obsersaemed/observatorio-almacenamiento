@@ -11,6 +11,9 @@ import { MapaProyectos } from "./mapa/mapa-proyectos";
 import { TarjetaProyecto } from "./mapa/tarjeta-proyecto";
 import { VistaMapa } from "./mapa/vista-mapa";
 import { Graficas } from "./graficas/graficas";
+import { GraficasVehiculos } from "./vehiculos/graficas-vehiculos";
+import { VistaVehiculos } from "./vehiculos/vista-vehiculos";
+import { armarLineas } from "@/lib/vehiculos";
 import { aProyectoMapa, type FilaPublica } from "@/lib/proyectos-mapa";
 
 // /mapa (spec 002): MapLibre necesita WebGL; se simula con un mapa que solo sabe proyectar.
@@ -32,6 +35,7 @@ vi.mock("maplibre-gl", () => {
 });
 vi.mock("./mapa/mapa-diferido", () => ({ MapaDiferido: () => null }));
 vi.mock("./graficas/graficas-diferidas", () => ({ GraficasDiferidas: () => null }));
+vi.mock("./vehiculos/graficas-vehiculos-diferidas", () => ({ GraficasVehiculosDiferidas: () => null }));
 // 006: Recharts con tamaño fijo para que dibuje en jsdom.
 vi.mock("recharts", async (original) => (await import("./graficas/prueba-recharts")).rechartsConTamano(original as () => Promise<Record<string, unknown>>));
 
@@ -41,6 +45,14 @@ const filaMapa = (f: Partial<FilaPublica>): FilaPublica => ({
   municipio: "Villavicencio", latitud: 4.1, longitud: -73.6, potencia_nominal_mw: 50, capacidad_maxima_mwh: 195,
   fuente: "https://ejemplo.co", publicacion: "Aprobado", ...f,
 });
+const lineasVe = [
+  { marca: "A", linea: "A1", tipo_de_bateria: "LFP", capacidad_minima_kwh: 40, capacidad_maxima_kwh: 60, potencia_kw: null },
+  { marca: "B", linea: "B1", tipo_de_bateria: "Lithium-ion", capacidad_minima_kwh: 50, capacidad_maxima_kwh: 50, potencia_kw: 100 },
+];
+const ventasVe = [
+  { linea: "A1", ano: 2024, unidades: 100 },
+  { linea: "B1", ano: 2025, unidades: 20 },
+];
 const filasMapa = [filaMapa({}), filaMapa({ nombre: "Sin punto", estado: "Anunciado", latitud: null, longitud: null })];
 
 const kpi = { total: 2, porEstado: { "En operación": 1, "En construcción": 1, Anunciado: 0, Inactivo: 0 }, mwOperacion: 7, mwhOperacion: 3.9 };
@@ -80,6 +92,8 @@ describe("axe sin violaciones", () => {
     ["lista de aportes", <ListaAportes key="l" aportes={[{ id: 1, tipo: "Noticia", registro_afectado: null, descripcion: "x", datos: {}, fuente: "https://e.co", origen: "usuario", agente: null, publicacion: "Pendiente", creado_en: "2026-10-20T00:00:00Z" }]} />],
     ["vista de /mapa (002 · RNF-03)", <VistaMapa key="v" filas={filasMapa} />],
     ["gráficas de /mapa (006 · RNF-03)", <Graficas key="g" proyectos={filasMapa.map(aProyectoMapa)} />],
+    ["vista de /vehiculos (003 · RNF-03)", <VistaVehiculos key="vv" lineas={lineasVe} ventas={ventasVe} importacion={{ actualizado_en: "2026-10-22T15:00:00Z", corte: "2026-09-17" }} />],
+    ["gráficas de /vehiculos (003 · RNF-03)", <GraficasVehiculos key="gv" lineas={armarLineas(lineasVe, ventasVe)} corte="2026-09-17" />],
     ["tarjeta del proyecto (002)", <TarjetaProyecto key="t" proyecto={aProyectoMapa(filasMapa[0])} onCerrar={vi.fn()} />],
   ])("%s", async (_nombre, elemento) => {
     const { container } = render(<div>{elemento}</div>);

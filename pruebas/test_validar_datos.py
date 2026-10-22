@@ -26,7 +26,7 @@ class TestValidador(unittest.TestCase):
     def setUp(self):
         self.dir = Path(tempfile.mkdtemp())
         shutil.copy(RAIZ / "datos" / "esquemas.json", self.dir)
-        for n in ("normativa.csv", "noticias.csv"):
+        for n in ("normativa.csv", "noticias.csv", "vehiculos_lineas.csv", "vehiculos_ventas.csv"):
             shutil.copy(RAIZ / "datos" / n, self.dir)
 
     def tearDown(self):
@@ -103,6 +103,60 @@ class TestValidador(unittest.TestCase):
         errores, avisos = self.proyectos(ENC_PROY + fila_proyecto())
         self.assertEqual(errores, [])
         self.assertTrue(any("CREG-X" in a for a in avisos))
+
+
+ENC_LINEAS = "Marca,Línea,Tipo de batería,Capacidad mínima [kWh],Capacidad máxima [kWh],Potencia [kW]\n"
+ENC_VENTAS = "Línea,Año,Unidades\n"
+
+
+class TestVehiculos(unittest.TestCase):
+    """003 · T01 · RF-14, CA-14.1: reglas de vehículos (datos ficticios)."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp())
+        shutil.copy(RAIZ / "datos" / "esquemas.json", self.dir)
+        for n in ("proyectos.csv", "normativa.csv", "noticias.csv"):
+            shutil.copy(RAIZ / "datos" / n, self.dir)
+        self.esquemas = json.loads((self.dir / "esquemas.json").read_text(encoding="utf-8"))
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def validar(self, lineas, ventas):
+        (self.dir / "vehiculos_lineas.csv").write_text(ENC_LINEAS + lineas, encoding="utf-8")
+        (self.dir / "vehiculos_ventas.csv").write_text(ENC_VENTAS + ventas, encoding="utf-8")
+        return validar(self.dir)
+
+    def mensaje(self, clave, **datos):
+        return self.esquemas["_mensajes"][clave].format(**datos)
+
+    def test_caso_valido(self):
+        errores, _ = self.validar("Marca A,Linea 1,LFP,40,60,100\n", "Linea 1,2024,100\nLinea 1,2025,0\n")
+        self.assertEqual(errores, [])
+
+    def test_unidades_no_enteras_o_negativas(self):
+        errores, _ = self.validar("Marca A,Linea 1,LFP,40,60,\n", 'Linea 1,2024,"2,5"\nLinea 1,2025,-3\n')
+        self.assertTrue(any(e.endswith(self.mensaje("entero", columna="Unidades", valor="2,5")) for e in errores), errores)
+        self.assertTrue(any(e.endswith(self.mensaje("rango", columna="Unidades", valor="-3", min=0, max="inf")) for e in errores), errores)
+
+    def test_tipo_de_bateria_fuera_de_la_lista(self):
+        errores, _ = self.validar("Marca A,Linea 1,NMC,40,60,\n", "")
+        col = next(c for c in self.esquemas["vehiculos_lineas"]["columnas"] if c["nombre"] == "Tipo de batería")
+        self.assertEqual(col["valores"], ["LFP", "Lithium-ion", "NMC Lithium-ion", "ULTIUM"])
+        self.assertTrue(any("'Tipo de batería' = 'NMC'" in e for e in errores), errores)
+
+    def test_capacidad_maxima_menor_que_la_minima(self):
+        errores, _ = self.validar("Marca A,Linea 1,LFP,60,40,\n", "")
+        esperado = self.mensaje("min_de", columna="Capacidad máxima [kWh]", valor="40", otra="Capacidad mínima [kWh]")
+        self.assertTrue(any(e.endswith(esperado) for e in errores), errores)
+
+    def test_venta_de_una_linea_inexistente_es_error(self):
+        errores, _ = self.validar("Marca A,Linea 1,LFP,40,60,\n", "Linea 9,2024,10\n")
+        self.assertTrue(any("Linea 9" in e and "vehiculos_lineas" in e for e in errores), errores)
+
+    def test_linea_y_anio_repetidos(self):
+        errores, _ = self.validar("Marca A,Linea 1,LFP,40,60,\n", "Linea 1,2024,10\nLinea 1,2024,5\n")
+        self.assertTrue(any("repetido" in e for e in errores), errores)
 
 
 if __name__ == "__main__":

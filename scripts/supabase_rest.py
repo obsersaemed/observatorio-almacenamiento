@@ -74,5 +74,9 @@ class ClienteRest:
             prefer.append("resolution=merge-duplicates")
         return self._pedir("POST", ruta, filas, ",".join(prefer))
 
+    def rpc(self, funcion, argumentos):
+        """Llama a una función de la base (POST /rpc/<funcion>) y devuelve su resultado."""
+        return self._pedir("POST", f"rpc/{funcion}", argumentos)
+
     def seleccionar(self, tabla, consulta="select=*"):
         return self._pedir("GET", f"{tabla}?{consulta}")

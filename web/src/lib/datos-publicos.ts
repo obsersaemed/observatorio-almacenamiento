@@ -5,6 +5,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import type { ProyectoKpi } from "./kpi";
 import { columnasDeSeccion } from "./csv";
 import type { FilaPublica } from "./proyectos-mapa";
+import type { FilaLinea, FilaVenta, Importacion } from "./vehiculos";
 import { fetchConReintento } from "./fetch-con-reintento";
 
 export const ETIQUETA_PROYECTOS = "proyectos";
@@ -74,4 +75,35 @@ export async function proyectosParaMapa(): Promise<FilaPublica[]> {
     return [];
   }
   return leerProyectosMapa(supabase);
+}
+
+export const ETIQUETA_VEHICULOS = "vehiculos";
+
+/** Vehículos eléctricos (spec 003): líneas, ventas y la última importación (RF-12). */
+export async function leerVehiculos(supabase: SupabaseClient) {
+  const [lineas, ventas, importacion] = await Promise.all([
+    supabase.from("vehiculos_lineas").select("marca, linea, tipo_de_bateria, capacidad_minima_kwh, capacidad_maxima_kwh, potencia_kw").order("linea"),
+    supabase.from("vehiculos_ventas").select("linea, ano, unidades").order("linea").order("ano"),
+    supabase.from("vehiculos_importaciones").select("actualizado_en, corte").order("id", { ascending: false }).limit(1),
+  ]);
+  const error = lineas.error ?? ventas.error ?? importacion.error;
+  if (error) throw new Error(`No se pudieron leer los vehículos: ${error.message}`);
+  return {
+    lineas: (lineas.data ?? []) as FilaLinea[],
+    ventas: (ventas.data ?? []) as FilaVenta[],
+    importacion: (importacion.data?.[0] ?? null) as Importacion,
+  };
+}
+
+export async function vehiculosPublicos() {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag(ETIQUETA_VEHICULOS);
+
+  const supabase = clientePublico();
+  if (!supabase) {
+    console.warn("Sin NEXT_PUBLIC_SUPABASE_URL/ANON_KEY: /vehiculos se muestra sin datos.");
+    return { lineas: [], ventas: [], importacion: null };
+  }
+  return leerVehiculos(supabase);
 }

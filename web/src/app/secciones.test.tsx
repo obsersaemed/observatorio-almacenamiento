@@ -1,7 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 
-vi.mock("@/lib/datos-publicos", () => ({ proyectosParaMapa: () => new Promise(() => {}) }));
+vi.mock("@/lib/datos-publicos", () => ({
+  proyectosParaMapa: () => new Promise(() => {}),
+  vehiculosPublicos: () => new Promise(() => {}),
+}));
 
 import Mapa, { metadata as mMapa } from "./mapa/page";
 import Normativa, { metadata as mNormativa } from "./normativa/page";
@@ -19,9 +22,19 @@ describe("Implementación en el país (spec 002)", () => {
   });
 });
 
-describe("páginas de sección (placeholder hasta las specs 003–005)", () => {
+describe("Vehículos eléctricos (spec 003)", () => {
+  test("ya no es un aviso de construcción: título, metadatos y espacio para la vista con datos", () => {
+    render(<Vehiculos />);
+    expect(screen.getByRole("heading", { level: 1, name: "Vehículos eléctricos" })).toBeInTheDocument();
+    expect(screen.queryByText(/en construcción/i)).toBeNull();
+    expect(screen.getByText(/Cargando los datos de vehículos/)).toBeInTheDocument();
+    expect(mVehiculos.title).toBe("Vehículos eléctricos");
+    expect(String(mVehiculos.description ?? "").length).toBeGreaterThan(20);
+  });
+});
+
+describe("páginas de sección (placeholder hasta las specs 004–005)", () => {
   test.each([
-    [Vehiculos, mVehiculos, "Vehículos eléctricos"],
     [Normativa, mNormativa, "Evolución normativa"],
     [Noticias, mNoticias, "Noticias"],
   ])("%#: tiene título, aviso de construcción y metadatos propios", (Pagina, metadata, titulo) => {

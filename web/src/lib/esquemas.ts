@@ -7,19 +7,22 @@ import definicion from "@/generado/esquemas.json";
 
 type Columna = {
   nombre: string;
-  tipo: "texto" | "numero" | "fecha" | "urls" | "correo" | "enum" | "lista";
+  tipo: "texto" | "numero" | "entero" | "fecha" | "urls" | "correo" | "enum" | "lista";
   obligatorio?: boolean;
   valores?: string[];
   separador?: string;
   min?: number;
   max?: number;
+  /** Regla entre columnas: el valor no puede ser menor que el de esta otra columna. */
+  min_de?: string;
 };
 type Plantilla = keyof typeof definicion._mensajes;
-export type NombreEsquema = "proyectos" | "normativa" | "noticias" | "aportes";
+export type NombreEsquema = "proyectos" | "normativa" | "noticias" | "aportes" | "vehiculos_lineas" | "vehiculos_ventas";
 
 const URL_VALIDA = /^https?:\/\/\S+$/;
 const CORREO = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const FECHA = /^\d{4}-\d{2}-\d{2}$/;
+const ENTERO = /^-?\d+$/;
 
 export function mensaje(clave: Plantilla, datos: Record<string, string>): string {
   return definicion._mensajes[clave].replace(/\{(\w+)\}/g, (_, k: string) => datos[k] ?? "");
@@ -61,6 +64,14 @@ function campo(c: Columna) {
         }
         return x;
       }
+      case "entero": {
+        if (!ENTERO.test(texto)) return falla("entero");
+        const x = Number(texto);
+        if ((c.min !== undefined && x < c.min) || (c.max !== undefined && x > c.max)) {
+          return falla("rango", { min: String(c.min ?? "-inf"), max: String(c.max ?? "inf") });
+        }
+        return x;
+      }
       case "enum":
         return c.valores!.includes(texto) ? texto : falla("valores", { valores: c.valores!.join(", ") });
       case "lista": {
@@ -93,10 +104,17 @@ export function esquemaDe(nombre: NombreEsquema) {
       ...Object.fromEntries(columnas.map((c) => [c.nombre, ""])),
       ...(datos as Record<string, unknown>),
     });
-    cache.set(
-      nombre,
-      z.preprocess(completar, z.object(forma)) as unknown as z.ZodType<Record<string, unknown>>,
-    );
+    // Reglas entre columnas (min_de), como en validar_datos.py.
+    const conReglas = z.object(forma).superRefine((datos, ctx) => {
+      for (const c of columnas.filter((x) => x.min_de)) {
+        const v = datos[c.nombre];
+        const otra = datos[c.min_de!];
+        if (typeof v === "number" && typeof otra === "number" && v < otra) {
+          ctx.addIssue({ code: "custom", message: mensaje("min_de", { columna: c.nombre, valor: String(v), otra: c.min_de! }) });
+        }
+      }
+    });
+    cache.set(nombre, z.preprocess(completar, conReglas) as unknown as z.ZodType<Record<string, unknown>>);
   }
   return cache.get(nombre)!;
 }

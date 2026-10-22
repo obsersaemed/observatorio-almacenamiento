@@ -25,6 +25,10 @@ FILAS = {
     "normas": [],
     "noticias": [{"fecha": "2026-10-20", "titulo": "Subasta", "medio": "Ejemplo", "enlace": "https://e.co/n",
                   "publicacion": "Aprobado"}],
+    # 003 · T06: vehículos (sin estado de publicación; ficticios)
+    "vehiculos_lineas": [{"id": 1, "marca": "Marca A", "linea": "Linea 1", "tipo_de_bateria": "LFP",
+                          "capacidad_minima_kwh": 40, "capacidad_maxima_kwh": 60, "potencia_kw": None}],
+    "vehiculos_ventas": [{"linea": "Linea 1", "ano": 2024, "unidades": 100}],
 }
 
 
@@ -50,7 +54,8 @@ class TestRespaldo(unittest.TestCase):
     def test_escribe_un_csv_por_tabla_publicada_con_las_columnas_del_esquema(self):
         codigo, mensajes, peticiones = self.correr()
         self.assertEqual(codigo, 0, mensajes)
-        self.assertEqual(sorted(p.name for p in self.dir.iterdir()), ["normativa.csv", "noticias.csv", "proyectos.csv"])
+        self.assertEqual(sorted(p.name for p in self.dir.iterdir()), [
+            "normativa.csv", "noticias.csv", "proyectos.csv", "vehiculos_lineas.csv", "vehiculos_ventas.csv"])
         filas = self.leer("proyectos.csv")
         self.assertEqual(filas[0][0], "Nombre")
         self.assertEqual(filas[0][-1], "Fuente")
@@ -60,8 +65,18 @@ class TestRespaldo(unittest.TestCase):
     def test_solo_pide_lo_aprobado_y_en_orden_estable(self):
         _, _, peticiones = self.correr()
         for p in peticiones:
-            self.assertIn("publicacion=eq.Aprobado", p["ruta"])
+            if "/vehiculos_" not in p["ruta"]:  # los vehículos no tienen estado de publicación
+                self.assertIn("publicacion=eq.Aprobado", p["ruta"])
             self.assertIn("order=", p["ruta"])
+
+    def test_003_respalda_los_vehiculos_con_las_columnas_del_esquema(self):
+        codigo, mensajes, _ = self.correr()
+        self.assertEqual(codigo, 0, mensajes)
+        self.assertEqual(self.leer("vehiculos_lineas.csv"), [
+            ["Marca", "Línea", "Tipo de batería", "Capacidad mínima [kWh]", "Capacidad máxima [kWh]", "Potencia [kW]"],
+            ["Marca A", "Linea 1", "LFP", "40", "60", ""],
+        ])
+        self.assertEqual(self.leer("vehiculos_ventas.csv"), [["Línea", "Año", "Unidades"], ["Linea 1", "2024", "100"]])
 
     def test_nunca_escribe_correos_ni_columnas_internas(self):
         self.correr()

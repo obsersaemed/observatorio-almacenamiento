@@ -18,8 +18,8 @@ from validar_datos import RAIZ, columna_sql, limite  # noqa: E402
 
 INICIO = "-- >>> validación generada desde datos/esquemas.json con scripts/generar_validacion_sql.py (no editar a mano)"
 FIN = "-- <<< fin de la validación generada"
-MIGRACION = RAIZ / "supabase" / "migrations" / "0004_servicios.sql"  # la última que lo regenera
-ESQUEMAS = ("proyectos", "normativa", "noticias", "aportes")
+MIGRACION = RAIZ / "supabase" / "migrations" / "0005_vehiculos.sql"  # la última que lo regenera
+ESQUEMAS = ("proyectos", "normativa", "noticias", "aportes", "vehiculos_lineas", "vehiculos_ventas")
 
 
 def literal(texto):
@@ -52,7 +52,9 @@ def reglas_de(columna, mensajes):
             f"if {col} is not null and exists (select 1 from regexp_split_to_table({col}, {separador}) as v "
             f"where btrim(v) <> '' and btrim(v) not in ({valores})) then {lanzar(texto, col)} end if;"
         )
-    elif tipo == "numero" and ("min" in columna or "max" in columna):
+    if tipo == "entero":
+        lineas.append(f"if {col} is not null and {col} <> trunc({col}) then {lanzar(m('entero', valor='%s'), col)} end if;")
+    if tipo in ("numero", "entero") and ("min" in columna or "max" in columna):
         condiciones = []
         if "min" in columna:
             condiciones.append(f"{col} < {columna['min']}")
@@ -60,7 +62,11 @@ def reglas_de(columna, mensajes):
             condiciones.append(f"{col} > {columna['max']}")
         texto = m("rango", valor="%s", min=limite(columna.get("min", "-inf")), max=limite(columna.get("max", "inf")))
         lineas.append(f"if {col} is not null and ({' or '.join(condiciones)}) then {lanzar(texto, col)} end if;")
-    elif tipo == "urls":
+    if columna.get("min_de"):
+        otra = f"new.{columna_sql(columna['min_de'])}"
+        texto = m("min_de", valor="%s", otra=columna["min_de"])
+        lineas.append(f"if {col} is not null and {otra} is not null and {col} < {otra} then {lanzar(texto, col)} end if;")
+    if tipo == "urls":
         lineas.append(
             f"if {col} is not null and exists (select 1 from regexp_split_to_table(btrim({col}), '\\s+') as u "
             f"where u <> '' and u !~ '^https?://\\S+$') then {lanzar(m('urls'))} end if;"

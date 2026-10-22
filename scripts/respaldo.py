@@ -21,7 +21,15 @@ from supabase_rest import ErrorRest, cliente_de_entorno  # noqa: E402
 from validar_datos import RAIZ, columna_sql  # noqa: E402
 
 # esquema → (tabla en Supabase, columna para ordenar de forma estable)
-TABLAS = {"proyectos": ("proyectos", "nombre"), "normativa": ("normas", "id"), "noticias": ("noticias", "enlace")}
+TABLAS = {
+    "proyectos": ("proyectos", "nombre"),
+    "normativa": ("normas", "id"),
+    "noticias": ("noticias", "enlace"),
+    # Spec 003 (RF-15): vehículos. No tienen estado de publicación; se respalda todo.
+    "vehiculos_lineas": ("vehiculos_lineas", "linea"),
+    "vehiculos_ventas": ("vehiculos_ventas", "linea,ano"),
+}
+SIN_PUBLICACION = {"vehiculos_lineas", "vehiculos_ventas"}
 
 
 def a_csv(columnas, filas):
@@ -40,7 +48,9 @@ def respaldar(cliente, esquemas, carpeta):
     try:
         for nombre, (tabla, orden) in TABLAS.items():
             columnas = [c for c in esquemas[nombre]["columnas"] if columna_sql(c["nombre"]) != "publicacion"]
-            filas = cliente.seleccionar(tabla, f"select=*&publicacion=eq.Aprobado&order={orden}.asc")
+            publicadas = "" if nombre in SIN_PUBLICACION else "&publicacion=eq.Aprobado"
+            orden_estable = ",".join(f"{o}.asc" for o in orden.split(","))
+            filas = cliente.seleccionar(tabla, f"select=*{publicadas}&order={orden_estable}")
             contenidos[f"{nombre}.csv"] = (a_csv(columnas, filas or []), len(filas or []))
     except ErrorRest as e:
         return 1, [f"ERROR  {e}", "No se reescribió ningún archivo."]

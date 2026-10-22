@@ -32,3 +32,13 @@ describe("filtros en la URL", () => {
     });
   });
 });
+
+describe("003 · T08: filtros de /vehiculos con su propia lista de campos (CA-02.2)", () => {
+  const campos = ["marca", "tipo", "linea"] as const;
+  test("ida y vuelta con marca, tipo y línea; ignora los campos de /mapa", () => {
+    const filtros = { marca: ["Byd", "Tesla"], tipo: ["NMC Lithium-ion"], linea: ["Model 3"] };
+    const consulta = consultaDeFiltros(filtros, campos);
+    expect(filtrosDeConsulta(new URLSearchParams(consulta), campos)).toEqual(filtros);
+    expect(filtrosDeConsulta(new URLSearchParams("estado=Anunciado&marca=Byd"), campos)).toEqual({ marca: ["Byd"] });
+  });
+});

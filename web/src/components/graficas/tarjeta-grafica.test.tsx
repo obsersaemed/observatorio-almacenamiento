@@ -41,3 +41,33 @@ describe("TarjetaGrafica", () => {
     expect(screen.getByText("1 proyecto sin año de FPO no aparece en esta gráfica")).toBeInTheDocument();
   });
 });
+
+describe("003 · T10: tarjeta sin pestañas", () => {
+  test("sin pestañas no dibuja el tablist y el panel sigue accesible", () => {
+    render(
+      <TarjetaGrafica titulo="Energía por tipo" tabla={{ encabezados: ["Tipo", "Energía [MWh]"], filas: [["LFP", "1.540,0"]] }} vacia={false}>
+        <svg data-testid="dibujo" />
+      </TarjetaGrafica>,
+    );
+    expect(screen.queryByRole("tablist")).toBeNull();
+    expect(screen.getByRole("region", { name: "Energía por tipo" })).toContainElement(screen.getByTestId("dibujo"));
+  });
+});
+
+describe("003 · T16: la tabla equivalente no desborda la página (RNF-01)", () => {
+  test("va dentro de un contenedor con desplazamiento horizontal propio", () => {
+    render(<TarjetaGrafica titulo="T" tabla={{ encabezados: ["A", "B"], filas: [["1", "2"]] }} vacia={false}><svg /></TarjetaGrafica>);
+    fireEvent.click(screen.getByRole("button", { name: "Ver como tabla" }));
+    expect(screen.getByRole("table").parentElement).toHaveClass("overflow-x-auto");
+  });
+});
+
+describe("003 · T17: la tabla desplazable se alcanza con el teclado (RNF-03)", () => {
+  test("el contenedor con desplazamiento propio es una región con nombre y entra en el orden de Tab", () => {
+    render(<TarjetaGrafica titulo="Ventas por marca" tabla={{ encabezados: ["A", "B"], filas: [["1", "2"]] }} vacia={false}><svg /></TarjetaGrafica>);
+    fireEvent.click(screen.getByRole("button", { name: "Ver como tabla" }));
+    const contenedor = screen.getByRole("region", { name: "Tabla de Ventas por marca" });
+    expect(contenedor).toHaveAttribute("tabindex", "0");
+    expect(contenedor).toContainElement(screen.getByRole("table"));
+  });
+});

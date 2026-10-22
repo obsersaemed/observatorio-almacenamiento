@@ -65,6 +65,9 @@ def separar_lista(c, v):
     return [x.strip() for x in v.split(c.get("separador", ",")) if x.strip()]
 
 
+ENTERO = re.compile(r"^-?\d+$")
+
+
 def validar_valor(c, v, mensajes):
     """Mensaje de error para el valor v de la columna c, o None si es válido.
     Las plantillas vienen de esquemas.json (_mensajes) y las comparte la web."""
@@ -72,7 +75,13 @@ def validar_valor(c, v, mensajes):
     if v == "":
         return m("obligatorio") if c.get("obligatorio") else None
     t = c["tipo"]
-    if t == "numero":
+    if t == "entero":
+        if not ENTERO.match(v):
+            return m("entero")
+        x = int(v)
+        if ("min" in c and x < c["min"]) or ("max" in c and x > c["max"]):
+            return m("rango", min=limite(c.get("min", "-inf")), max=limite(c.get("max", "inf")))
+    elif t == "numero":
         x = numero(v)
         if x is None:
             return m("numero")
@@ -121,7 +130,8 @@ def validar_tabla(nombre, esquema, ruta, mensajes):
         fila = fila + [""] * (len(cols) - len(fila))
         reg = {c["nombre"]: fila[i].strip() for i, c in enumerate(cols)}
         registros.append(reg)
-        ident = reg.get(esquema.get("clave", ""), "") or f"fila {n}"
+        campos = esquema.get("clave", "")
+        ident = (" · ".join(reg.get(x, "") for x in campos) if isinstance(campos, list) else reg.get(campos, "")) or f"fila {n}"
         donde = f"{ruta.name} fila {n} ({ident})"
 
         for c in cols:
@@ -133,13 +143,34 @@ def validar_tabla(nombre, esquema, ruta, mensajes):
             problema = validar_valor(c, v, mensajes)
             if problema:
                 errores.append(f"{donde}: {problema}")
+            elif c.get("min_de") and v:
+                # Regla entre columnas (p. ej. Capacidad máxima ≥ Capacidad mínima).
+                otra = numero(reg.get(c["min_de"], ""))
+                if otra is not None and numero(v) < otra:
+                    errores.append(f"{donde}: " + mensajes["min_de"].format(columna=c["nombre"], valor=v, otra=c["min_de"]))
 
-        clave = reg.get(esquema.get("clave", ""))
+        campos = esquema.get("clave", "")
+        clave = " · ".join(reg.get(x, "") for x in campos) if isinstance(campos, list) else reg.get(campos)
         if clave:
             if clave in claves:
                 errores.append(f"{donde}: '{clave}' repetido (también en fila {claves[clave]})")
             claves[clave] = n
     return errores, avisos, registros
+
+
+def errores_de_referencias(esquemas, tablas):
+    """Referencias obligatorias declaradas en el esquema (p. ej. venta → línea)."""
+    errores = []
+    for nombre, esq in esquemas.items():
+        if nombre.startswith("_") or nombre not in tablas:
+            continue
+        for ref in esq.get("referencias", []):
+            destino = esquemas[ref["esquema"]]
+            existentes = {r.get(destino["clave"]) for r in tablas.get(ref["esquema"], [])}
+            for r in tablas[nombre]:
+                if r.get(ref["columna"]) and r[ref["columna"]] not in existentes:
+                    errores.append(f"{esq['archivo']}: '{ref['columna']}' = '{r[ref['columna']]}' no existe en {ref['esquema']}")
+    return errores
 
 
 def validar(dir_datos=RAIZ / "datos"):
@@ -153,6 +184,8 @@ def validar(dir_datos=RAIZ / "datos"):
         errores += e
         avisos += a
         tablas[nombre] = regs
+
+    errores += errores_de_referencias(esquemas, tablas)
 
     # Referencias cruzadas: avisos, no errores
     proyectos = {r["Nombre"] for r in tablas.get("proyectos", [])}
