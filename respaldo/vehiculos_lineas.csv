@@ -1,0 +1,50 @@
+Marca,Línea,Tipo de batería,Capacidad mínima [kWh],Capacidad máxima [kWh],Potencia [kW]
+Peugeot,2008,Lithium-ion,54,54,115
+Bmw,330e,Lithium-ion,12,12,80
+Gac,AION UT,LFP,44.12,44.12,100
+Gac,AION V,LFP,64.5,75.26,142
+Faw,Bestune xiaoma,LFP,13.9,13.9,20
+Faw,Bestune-ca7007bevd,LFP,55,55,120
+Chevrolet,Blazer,Lithium-ion,85,85,220
+Chevrolet,Bolt,NMC Lithium-ion,65,65,147
+Byd,Byd seagull,LFP,30.08,38,55
+Byd,Byd sealion,LFP,82.5,82.5,230
+Byd,Byd song plus dm-i,LFP,18.3,18.3,150
+Byd,BYD SONG PLUS EV,LFP,71.8,71.8,160
+Byd,Byd yuan pro,LFP,45,45,130
+Byd,Byd yuan up,LFP,45,45,130
+Volvo,C40,Lithium-ion,69,78,240
+Chevrolet,Captiva,LFP,60,60,150
+Mini,Cooper se,Lithium-ion,32.6,32.6,135
+Dongfeng,E-van 1.0t,LFP,41.86,41.86,60
+Jac,E10x,LFP,31.4,31.4,45
+Jac,E30X - HFC7002EWEV1,LFP,41,41,100
+Chery,Eq7,LFP,65.5,65.5,157
+Chevrolet,Equinox,ULTIUM,85,85,215
+Kia,EV3,NMC Lithium-ion,58.3,81.4,150
+Kia,Ev5,LFP,64,88,160
+Volvo,Ex30,LFP,51,69,200
+Volvo,EX40,NMC Lithium-ion,69,69,175
+Chery,ICAR 03,LFP,65.69,69.77,135
+Byd,Idolphin,LFP,44.9,44.9,70
+Bmw,Ix1 edrive20,Lithium-ion,66.5,66.5,152
+Bmw,Ix1 xdrive30,Lithium-ion,66.45,66.45,203
+Bmw,Ix2 xdrive30,Lithium-ion,66.5,66.5,233
+Bmw,Ix3 m sport,Lithium-ion,80,80,213
+Renault,Kwid e tech,Lithium-ion,26.8,26.8,49
+Mg,MG4 ELECTRIC 49KWH LUX 2WD,LFP,51,77,138
+Tesla,Model 3,Lithium-ion,62,78.4,194
+Tesla,Model Y,Lithium-ion,60,78.4,220
+Audi,Q6 E-TRON,Lithium-ion,100,100,232
+Byd,Qin plus dmi,LFP,8.32,8.32,132
+DEEPAL,S05,LFP,68.8,68.88,160
+Changan,S07,LFP,31.73,31.73,175
+Byd,Song plus dmi,LFP,18.3,18.3,150
+Chevrolet,Spark,Lithium-ion,41.9,41.9,75
+Byd,Tang ev,LFP,86.4,86.4,378.8
+Bmw,X3 xdrive30e,Lithium-ion,12,12,80
+Bmw,X5 xdrive50e,Lithium-ion,27,29.5,145
+Volvo,Xc60,Lithium-ion,18.8,18.8,108
+Volvo,Xc90,Lithium-ion,18.8,18.8,108
+Byd,Yuan plus ev,LFP,60.48,60.48,150
+Zeekr,Zeekr x,NMC Lithium-ion,69,69,268
