@@ -424,8 +424,9 @@ test.describe("006 · Gráficas (datos)", () => {
       const k = await kpis(page);
       await expect(tarjeta(page, TEC).getByRole("tab")).toHaveCount(0);
       const leyenda = tarjeta(page, TEC).getByRole("list", { name: "Tecnologías" });
-      await expect(leyenda.getByRole("listitem")).toHaveText([/^Li-ion\s*100 %$/]);
-      const centro = (await panel(page, TEC).getByRole("paragraph").allInnerTexts()).map((s) => s.trim());
+      await expect(leyenda.getByRole("listitem")).toHaveText([/^Li-ion\s*100(,0)? %$/]);
+      // El número y la unidad van en líneas distintas: se normalizan los espacios.
+      const centro = (await panel(page, TEC).getByRole("paragraph").allInnerTexts()).map((s) => s.replace(/\s+/g, " ").trim());
       test.info().annotations.push({ type: `centro${q ? "-depto" : ""}`, description: JSON.stringify(centro) });
       const esperado = new RegExp(`^${fmt1(k.mw).replace(".", "\\.")} MW$`);
       expect(centro.some((c) => esperado.test(c)), `centro: ${JSON.stringify(centro)}`).toBe(true);
