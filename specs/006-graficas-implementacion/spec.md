@@ -27,7 +27,7 @@ su equivalente en tabla.
 | RF-04 | La duración de un estado debe ser la energía total ÷ la potencia total de sus proyectos que tienen ambos datos. Las duraciones nunca se suman. Un estado sin datos muestra «—». | HU-01 |
 | RF-05 | La gráfica de evolución debe mostrar áreas acumuladas por año de FPO, en orden ascendente, con pestañas Potencia [MW] y Energía [MWh]. Tiene dos series: «En operación y en construcción» y «Anunciado (proyectado)». Los proyectos `Inactivo` no se suman, y el eje muestra solo años. | HU-02 |
 | RF-06 | Los proyectos sin año de FPO no entran en la evolución, y la gráfica debe decir cuántos quedaron fuera. | HU-02 |
-| RF-07 | La dona de tecnología debe tener pestañas Potencia [MW], Energía [MWh] y Proyectos, mostrar el porcentaje de cada tecnología en la leyenda y el total de la pestaña activa en el centro. | HU-03 |
+| RF-07 | La dona de tecnología muestra la potencia [MW], sin pestañas (ajuste del 2026-10-24); debe mostrar el porcentaje de cada tecnología en la leyenda y el total en el centro. | HU-03 |
 | RF-08 | Cada gráfica debe ofrecer «Ver como tabla», con las mismas cifras que dibuja. | HU-03 |
 | RF-09 | Si el resultado filtrado está vacío, cada gráfica debe mostrar «Sin datos para estos filtros» en lugar del dibujo. | HU-01 |
 
@@ -68,9 +68,9 @@ su equivalente en tabla.
   se lee «1 proyecto sin año de FPO no aparece en esta gráfica».
 
 **RF-07**
-- **CA-07.1** Dados los proyectos actuales (todos Li-ion), cuando se mira la dona en
-  cualquier pestaña, entonces Li-ion muestra «100 %». Al cambiar a Proyectos, el total
-  coincide con el KPI «Proyectos según filtros».
+- **CA-07.1** Dados los proyectos actuales (todos Li-ion), cuando se mira la dona,
+  entonces Li-ion muestra «100 %» y el total del centro coincide con el KPI «Potencia total
+  proyectada».
 
 **RF-08**
 - **CA-08.1** Dada cualquier gráfica, cuando se pulsa «Ver como tabla», entonces aparece una

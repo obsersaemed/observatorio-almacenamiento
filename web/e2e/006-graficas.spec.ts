@@ -72,7 +72,8 @@ const ESTADO = "Capacidad por estado";
 const EVOL = "Evolución por año de FPO";
 const TEC = "Tecnología";
 const pestana = (page: Page, t: string, nombre: string) => tarjeta(page, t).getByRole("tab", { name: nombre, exact: true });
-const panel = (page: Page, t: string) => tarjeta(page, t).getByRole("tabpanel");
+// La dona de tecnología no tiene pestañas (ajuste del 2026-10-24): su panel no es «tabpanel».
+const panel = (page: Page, t: string) => tarjeta(page, t).locator('[id$="-panel"]');
 const tablaDe = (page: Page, t: string) => panel(page, t).getByRole("table");
 const dibujo = (page: Page, t: string) => panel(page, t).locator("svg").first();
 
@@ -132,9 +133,9 @@ async function kpi(page: Page, nombre: string) {
   return (await page.getByRole("group", { name: nombre, exact: true }).innerText()).replace(/\s+/g, " ").trim();
 }
 async function kpis(page: Page) {
-  const k = await kpi(page, "Proyectos según filtros");
-  const mw = await kpi(page, "Potencia según filtros [MW] (todos los estados)");
-  const mwh = await kpi(page, "Energía según filtros [MWh] (todos los estados)");
+  const k = await kpi(page, "Proyectos identificados");
+  const mw = await kpi(page, "Potencia total proyectada");
+  const mwh = await kpi(page, "Capacidad energética total proyectada");
   const ult = (s: string, re: RegExp) => num((s.match(re) ?? ["0"]).pop()!);
   return {
     proyectos: ult(k, /\d[\d.]*/g),
@@ -251,7 +252,7 @@ test.describe("006 · Gráficas (datos)", () => {
     test.info().annotations.push({ type: "kpi", description: JSON.stringify(k) });
 
     const sumaCol = async (t: string, pest: string) => {
-      await pestana(page, t, pest).click();
+      if (t !== TEC) await pestana(page, t, pest).click(); // la dona no tiene pestañas
       await verTabla(page, t);
       await expect(tablaDe(page, t).getByRole("columnheader", { name: pest })).toBeVisible();
       const { filas } = await leerTabla(page, t);
@@ -260,12 +261,11 @@ test.describe("006 · Gráficas (datos)", () => {
     expect(await sumaCol(ESTADO, "Potencia [MW]"), "barras MW = KPI").toBeCloseTo(k.mw, 1);
     expect(await sumaCol(ESTADO, "Energía [MWh]"), "barras MWh = KPI").toBeCloseTo(k.mwh, 1);
     expect(await sumaCol(TEC, "Potencia [MW]"), "dona MW = KPI").toBeCloseTo(k.mw, 1);
-    expect(await sumaCol(TEC, "Energía [MWh]"), "dona MWh = KPI").toBeCloseTo(k.mwh, 1);
     expect(k.mw).toBeCloseTo(30, 1);
     expect(k.mwh).toBeCloseTo(52, 1);
 
     for (const t of [ESTADO, EVOL, TEC]) {
-      await pestana(page, t, "Potencia [MW]").click();
+      if (t !== TEC) await pestana(page, t, "Potencia [MW]").click();
       await verTabla(page, t);
       const ahora = JSON.stringify(await leerTabla(page, t));
       expect(ahora, `«${t}» cambió con el filtro`).not.toBe(sinFiltro[t]);
@@ -415,27 +415,20 @@ test.describe("006 · Gráficas (datos)", () => {
     await expect(tarjeta(page, EVOL).getByText(/sin año de FPO/)).toHaveCount(0);
   });
 
-  test("E2E-09 · CA-07.1: dona con Li-ion 100 % en cada pestaña; en Proyectos el centro coincide con el KPI", async ({ page }) => {
+  test("E2E-09 · CA-07.1: dona sin pestañas, con Li-ion 100 %; el centro coincide con el KPI de potencia", async ({ page }) => {
     soloEscritorio();
     const ps = await aprobados();
     expect(new Set(ps.map((p) => p.tecnologia))).toEqual(new Set(["Li-ion"]));
     for (const q of ["", qDepto]) {
       await abrirMapa(page, q);
       const k = await kpis(page);
-      const esperadoCentro: Record<string, RegExp> = {
-        "Potencia [MW]": new RegExp(`^${fmt1(k.mw).replace(".", "\\.")} MW$`),
-        "Energía [MWh]": new RegExp(`^${fmt1(k.mwh).replace(".", "\\.")} MWh$`),
-        Proyectos: new RegExp(`^${k.proyectos} proyectos?$`),
-      };
-      for (const pest of ["Potencia [MW]", "Energía [MWh]", "Proyectos"]) {
-        await pestana(page, TEC, pest).click();
-        await expect(pestana(page, TEC, pest)).toHaveAttribute("aria-selected", "true");
-        const leyenda = tarjeta(page, TEC).getByRole("list", { name: "Tecnologías" });
-        await expect(leyenda.getByRole("listitem")).toHaveText([/^Li-ion\s*100 %$/]);
-        const centro = (await panel(page, TEC).getByRole("paragraph").allInnerTexts()).map((s) => s.trim());
-        test.info().annotations.push({ type: `centro${q ? "-depto" : ""}-${pest}`, description: JSON.stringify(centro) });
-        expect(centro.some((c) => esperadoCentro[pest].test(c)), `centro de ${pest}: ${JSON.stringify(centro)}`).toBe(true);
-      }
+      await expect(tarjeta(page, TEC).getByRole("tab")).toHaveCount(0);
+      const leyenda = tarjeta(page, TEC).getByRole("list", { name: "Tecnologías" });
+      await expect(leyenda.getByRole("listitem")).toHaveText([/^Li-ion\s*100 %$/]);
+      const centro = (await panel(page, TEC).getByRole("paragraph").allInnerTexts()).map((s) => s.trim());
+      test.info().annotations.push({ type: `centro${q ? "-depto" : ""}`, description: JSON.stringify(centro) });
+      const esperado = new RegExp(`^${fmt1(k.mw).replace(".", "\\.")} MW$`);
+      expect(centro.some((c) => esperado.test(c)), `centro: ${JSON.stringify(centro)}`).toBe(true);
     }
   });
 
@@ -469,8 +462,7 @@ test.describe("006 · Gráficas (datos)", () => {
       for (const f of filas) for (const v of f.slice(1)) expect(v).toMatch(/^\d{1,3}(\.\d{3})*,\d$/);
     }
     // Tecnología: mismo total que el centro y mismo % que la leyenda.
-    for (const [pest, unidad] of [["Potencia [MW]", "[MW]"], ["Energía [MWh]", "[MWh]"], ["Proyectos", "Proyectos"]] as const) {
-      await pestana(page, TEC, pest).click();
+    for (const [pest, unidad] of [["Potencia [MW]", "[MW]"]] as const) {
       await verGrafica(page, TEC);
       const centro = (await panel(page, TEC).getByRole("paragraph").allInnerTexts()).join(" ");
       const leyenda = await tarjeta(page, TEC).getByRole("list", { name: "Tecnologías" }).getByRole("listitem").allInnerTexts();
@@ -488,7 +480,7 @@ test.describe("006 · Gráficas (datos)", () => {
     soloEscritorio();
     // Meta solo tiene un proyecto Anunciado: Meta + Inactivo no tiene resultados (se aplica por URL).
     await abrirMapa(page, `?departamento=Meta&estado=Inactivo`);
-    await expect.poll(() => kpi(page, "Proyectos según filtros"), { timeout: 15_000 }).toMatch(/(^|\s)0$/);
+    await expect.poll(() => kpi(page, "Proyectos identificados"), { timeout: 15_000 }).toMatch(/(^|\s)0$/);
     for (const t of [ESTADO, EVOL, TEC]) {
       await expect(tarjeta(page, t).getByText("Sin datos para estos filtros", { exact: true }), t).toBeVisible();
       await expect(panel(page, t).locator("svg"), `${t} sin dibujo`).toHaveCount(0);

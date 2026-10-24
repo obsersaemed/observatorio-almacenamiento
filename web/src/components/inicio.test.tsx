@@ -45,6 +45,16 @@ describe("inicio", () => {
     }
   });
 
+  test("las tarjetas de vehículos y normativa llevan su texto (ajuste del 2026-10-24)", () => {
+    render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
+    expect(screen.getByRole("link", { name: /vehículos eléctricos/ })).toHaveTextContent(
+      "Tecnologías y oportunidades de almacenamiento energético en la movilidad eléctrica",
+    );
+    expect(screen.getByRole("link", { name: /Evolución normativa/ })).toHaveTextContent(
+      "Consulta el marco regulatorio de los SAEB en Colombia",
+    );
+  });
+
   test("invita a aportar datos", () => {
     render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     expect(screen.getByRole("link", { name: /aportar/i })).toHaveAttribute("href", "/aportar");

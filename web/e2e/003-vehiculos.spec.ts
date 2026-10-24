@@ -458,7 +458,7 @@ test.describe("003 · Vehículos (filtros)", () => {
     await abrir(page);
     await elegir(page, "Marca", "Byd");
     const byd = LINEAS.filter((l) => l.marca === "Byd");
-    await expect(page.getByRole("button", { name: /^Descargar CSV/ })).toHaveAccessibleName(new RegExp(`\\(${byd.length} líneas?\\)`));
+    await expect(page.getByRole("button", { name: /^Descargar CSV/ })).toHaveAccessibleName("Descargar CSV");
     const [descarga] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /^Descargar CSV/ }).click()]);
     const ruta = path.join(test.info().outputDir, descarga.suggestedFilename());
     await descarga.saveAs(ruta);

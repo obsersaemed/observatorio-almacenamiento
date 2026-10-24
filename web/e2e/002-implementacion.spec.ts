@@ -688,7 +688,7 @@ test.describe("002 · Implementación en el país (datos)", () => {
     const enMapa = await nombresPuntos(page);
     const enTabla = await nombresFilas(page, ap.map((p) => p.nombre));
     await expect(filas(page)).toHaveCount(esperados.length);
-    const kpi = await textoKpi(page, "Proyectos según filtros");
+    const kpi = await textoKpi(page, "Proyectos identificados");
     const csv = registrosCsv(await descargarCsv(page)).datos.map((r) => r[0]).sort();
     test.info().annotations.push({ type: "comparacion", description: JSON.stringify({ enMapa, enTabla, kpi, csv }) });
     expect(enMapa).toEqual(esperados);
@@ -755,16 +755,16 @@ test.describe("002 · Implementación en el país (datos)", () => {
     await expect(mwhInst).toContainText(`${fmt1(suma(op, "capacidad_maxima_mwh"))} MWh`);
     const antes = [await textoKpi(page, "Potencia instalada [MW]"), await textoKpi(page, "Energía instalada [MWh]")];
     await marcar(page, "Estado", "Anunciado");
-    await expect(page.getByRole("group", { name: "Proyectos según filtros" })).toContainText(String(anun.length));
-    await expect(page.getByRole("group", { name: "Potencia según filtros [MW] (todos los estados)" })).toContainText(`${fmt1(suma(anun, "potencia_nominal_mw"))} MW`);
-    await expect(page.getByRole("group", { name: "Energía según filtros [MWh] (todos los estados)" })).toContainText(`${fmt1(suma(anun, "capacidad_maxima_mwh"))} MWh`);
+    await expect(page.getByRole("group", { name: "Proyectos identificados" })).toContainText(String(anun.length));
+    await expect(page.getByRole("group", { name: "Potencia total proyectada" })).toContainText(`${fmt1(suma(anun, "potencia_nominal_mw"))} MW`);
+    await expect(page.getByRole("group", { name: "Capacidad energética total proyectada" })).toContainText(`${fmt1(suma(anun, "capacidad_maxima_mwh"))} MWh`);
     await expect(page.getByRole("region", { name: "Según filtros (todos los estados)" })).toBeVisible();
     expect([await textoKpi(page, "Potencia instalada [MW]"), await textoKpi(page, "Energía instalada [MWh]")]).toEqual(antes);
     // MW y MWh en tarjetas distintas.
-    for (const g of ["Potencia instalada [MW]", "Potencia según filtros [MW] (todos los estados)"]) {
+    for (const g of ["Potencia instalada [MW]", "Potencia total proyectada"]) {
       expect(await textoKpi(page, g)).not.toMatch(/MWh/);
     }
-    for (const g of ["Energía instalada [MWh]", "Energía según filtros [MWh] (todos los estados)"]) {
+    for (const g of ["Energía instalada [MWh]", "Capacidad energética total proyectada"]) {
       expect(await textoKpi(page, g)).not.toMatch(/MW(?!h)/);
     }
   });
@@ -782,9 +782,9 @@ test.describe("002 · Implementación en el país (datos)", () => {
     await expect(page.getByText("Ningún proyecto cumple estos filtros")).toBeVisible();
     await expect(puntos(page)).toHaveCount(0);
     await expect(filas(page).filter({ hasText: PREFIJO })).toHaveCount(0);
-    expect(await textoKpi(page, "Proyectos según filtros")).toMatch(/text: "?0"?$/);
-    expect(await textoKpi(page, "Potencia según filtros [MW] (todos los estados)")).toMatch(/\b0(,0)? MW\b/);
-    expect(await textoKpi(page, "Energía según filtros [MWh] (todos los estados)")).toMatch(/\b0(,0)? MWh\b/);
+    expect(await textoKpi(page, "Proyectos identificados")).toMatch(/text: "?0"?$/);
+    expect(await textoKpi(page, "Potencia total proyectada")).toMatch(/\b0(,0)? MW\b/);
+    expect(await textoKpi(page, "Capacidad energética total proyectada")).toMatch(/\b0(,0)? MWh\b/);
     // Observación (no bloqueante): ¿se ve el filtro activo «Inactivo»?
     const boton = await botonFiltro(page, "Estado").innerText();
     await abrirFiltro(page, "Estado");

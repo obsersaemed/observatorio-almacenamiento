@@ -8,8 +8,8 @@ import { TEXTOS } from "@/lib/textos";
 
 export const SECCIONES = [
   { ruta: "/mapa", titulo: TEXTOS.mapa.titulo, texto: "Mapa e inventario de los SAEB en Colombia." },
-  { ruta: "/vehiculos", titulo: TEXTOS.vehiculos.titulo, texto: "Almacenamiento en la flota eléctrica." },
-  { ruta: "/normativa", titulo: TEXTOS.normativa.titulo, texto: "CREG, MME y CNO, condensado y explicado." },
+  { ruta: "/vehiculos", titulo: TEXTOS.vehiculos.titulo, texto: "Tecnologías y oportunidades de almacenamiento energético en la movilidad eléctrica" },
+  { ruta: "/normativa", titulo: TEXTOS.normativa.titulo, texto: "Consulta el marco regulatorio de los SAEB en Colombia" },
   { ruta: "/noticias", titulo: TEXTOS.noticias.titulo, texto: "Novedades relevantes del almacenamiento." },
 ];
 

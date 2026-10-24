@@ -20,14 +20,10 @@ const proyectos = [
 beforeEach(() => preferirMovimientoReducido(true));
 
 describe("GraficaTecnologia", () => {
-  test("pestañas MW, MWh y Proyectos; el centro muestra el total de la pestaña activa", () => {
+  test("sin pestañas: muestra la potencia y el centro lleva el total en MW (ajuste del 2026-10-24)", () => {
     render(<GraficaTecnologia proyectos={proyectos} />);
-    expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Potencia [MW]", "Energía [MWh]", "Proyectos"]);
+    expect(screen.queryAllByRole("tab")).toHaveLength(0);
     expect(screen.getByTestId("total-dona")).toHaveTextContent("185,2 MW");
-    fireEvent.click(screen.getByRole("tab", { name: "Energía [MWh]" }));
-    expect(screen.getByTestId("total-dona")).toHaveTextContent("472,8 MWh");
-    fireEvent.click(screen.getByRole("tab", { name: "Proyectos" }));
-    expect(screen.getByTestId("total-dona")).toHaveTextContent("2 proyectos");
   });
 
   test("la leyenda trae cada tecnología con su porcentaje en texto (CA-07.1)", () => {
@@ -40,11 +36,5 @@ describe("GraficaTecnologia", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ver como tabla" }));
     expect(screen.getAllByRole("columnheader").map((h) => h.textContent)).toEqual(["Tecnología", "Potencia [MW]", "Participación [%]"]);
     expect(screen.getAllByRole("row")[1]).toHaveTextContent("Li-ion185,2100,0");
-  });
-
-  test("un proyecto en singular", () => {
-    render(<GraficaTecnologia proyectos={proyectos.slice(0, 1)} />);
-    fireEvent.click(screen.getByRole("tab", { name: "Proyectos" }));
-    expect(screen.getByTestId("total-dona")).toHaveTextContent("1 proyecto");
   });
 });

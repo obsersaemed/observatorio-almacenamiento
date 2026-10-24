@@ -18,6 +18,11 @@ describe("FondoMapa", () => {
     expect(Number(fondo.style.opacity)).toBeLessThanOrEqual(0.15);
   });
 
+  test("el mapa es un 30 % más pequeño que la primera versión (620 px → 434 px; 70vw → 49vw)", () => {
+    const { container } = render(<FondoMapa />);
+    expect(container.firstElementChild).toHaveClass("bg-[length:min(49vw,434px)_auto]");
+  });
+
   test("con impresión no se muestra", () => {
     const { container } = render(<FondoMapa />);
     expect(container.firstElementChild).toHaveClass("print:hidden");

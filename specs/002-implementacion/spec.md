@@ -161,7 +161,8 @@ Resueltas por el usuario el 2026-10-21:
 3. Rótulo en la interfaz: **«Servicios»**. La columna conserva el nombre `Tipo uso/conexión`.
 4. Canadian solar queda «Sin dato».
 5. Los KPI «según filtros» suman todos los estados del resultado y llevan el rótulo «(todos
-   los estados)». «Instalado» cuenta solo `En operación`.
+   los estados)» en el título del grupo. Desde el 2026-10-24 las tarjetas se llaman «Proyectos
+   identificados», «Potencia total proyectada» y «Capacidad energética total proyectada». «Instalado» cuenta solo `En operación`.
 6. La tarjeta **no muestra los enlaces de fuente**. La fuente se conserva en los datos y en
    la descarga CSV de la sección.
 

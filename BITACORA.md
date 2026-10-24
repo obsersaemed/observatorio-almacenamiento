@@ -226,3 +226,12 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - Mapa de Colombia como fondo tenue en todas las páginas (`web/src/components/fondo-mapa.tsx`, en `layout.tsx`). La imagen la envió el usuario: es de uso libre y no exige créditos. Se recortó y se redujo a 800 px en PNG de 8 colores (`web/public/fondo-colombia.png`, 47 KB). Queda fijo, detrás del contenido (z -10), con opacidad 0,12, sin clics, oculto para lectores de pantalla y al imprimir. Revisado en las seis páginas en escritorio y a 375 px: sin desborde horizontal ni errores de consola.
 - El nombre del sitio en el encabezado y en la pestaña sigue siendo «Observatorio de Almacenamiento de Energía», por decisión del usuario.
 - Verificación: 283 pruebas de Vitest en verde, tsc sin errores, eslint sin errores (4 avisos previos). LCP local (mediana de 3): inicio 2,0 s, `/mapa` 2,4 s, `/vehiculos` 2,4 s, `/aportar` 1,8 s, `/normativa` 1,6 s, `/noticias` 1,6 s.
+
+## 2026-10-24 · Segundo ajuste de diseño (arreglos pequeños)
+
+- Fondo: el mapa de Colombia es un 30 % más pequeño (`min(49vw, 434px)`, antes `min(70vw, 620px)`) y de mejor calidad: tamaño nativo del recorte (781 × 1040 px) en PNG de 64 colores (100 KB; antes 8 colores y 47 KB).
+- Tarjetas del inicio: vehículos dice «Tecnologías y oportunidades de almacenamiento energético en la movilidad eléctrica» y normativa «Consulta el marco regulatorio de los SAEB en Colombia».
+- Los botones «Descargar CSV» de `/mapa` y `/vehiculos` ya no muestran el número de proyectos o líneas.
+- La dona de tecnología de `/mapa` no tiene pestañas: muestra la potencia [MW]. Se actualizaron RF-07 y CA-07.1 de la spec 006.
+- KPI de `/mapa`: «Proyectos identificados», «Potencia total proyectada» y «Capacidad energética total proyectada». El grupo sigue titulado «Según filtros (todos los estados)». Se anotó en la aclaración 5 de la spec 002. Las dos tarjetas de «Instalado» van en dos columnas para que quepa el título.
+- TDD: pruebas de inicio, KPI, vistas de mapa y vehículos, dona y fondo actualizadas primero (9 en rojo). Suite: 285 pruebas en verde. E2E de 002, 003 y 006 ajustados a los rótulos nuevos y a la dona sin pestañas.

@@ -29,7 +29,7 @@ export function VistaVehiculos({ lineas, ventas, importacion }: { lineas: FilaLi
             variant="outline"
             onClick={() => descargarTexto(csvVehiculos(resultado, importacion), "observatorio-vehiculos-filtrados.csv")}
           >
-            Descargar CSV ({resultado.length} {resultado.length === 1 ? "línea" : "líneas"})
+            Descargar CSV
           </Button>
         </div>
         <Creditos importacion={importacion} />

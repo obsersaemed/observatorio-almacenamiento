@@ -75,7 +75,7 @@ describe("VistaVehiculos", () => {
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
     window.history.replaceState(null, "", "/vehiculos?marca=Byd");
     render(<VistaVehiculos lineas={lineas} ventas={ventas} importacion={importacion} />);
-    fireEvent.click(screen.getByRole("button", { name: /Descargar CSV/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Descargar CSV" }));
     const lineasCsv = (await blob!.text()).replace(/^﻿/, "").trim().split(/\r\n/);
     expect(lineasCsv[0]).toBe(LICENCIA);
     expect(lineasCsv[1]).toBe("# Fuentes: ANDEMOS, RUNT y cálculos propios del Observatorio · Última actualización: 22/10/2026 · Ventas hasta el 17/09/2026");

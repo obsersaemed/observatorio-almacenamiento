@@ -38,7 +38,7 @@ const filasDeTabla = () =>
 const puntos = () => within(screen.getByRole("list", { name: "Puntos del mapa" })).queryAllByRole("listitem").map((l) => l.textContent);
 // T23: las casillas de cada filtro están dentro de su desplegable.
 const abrirFiltro = (titulo: string) => fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
-const proyectosFiltrados = () => screen.getByRole("group", { name: "Proyectos según filtros" }).textContent;
+const proyectosFiltrados = () => screen.getByRole("group", { name: "Proyectos identificados" }).textContent;
 
 beforeEach(() => window.history.replaceState(null, "", "/mapa"));
 afterEach(() => vi.restoreAllMocks());
@@ -86,7 +86,7 @@ describe("VistaMapa", () => {
     render(<VistaMapa filas={filas} />);
     abrirFiltro("Departamento");
     fireEvent.click(screen.getByRole("checkbox", { name: "Sucre (1)" }));
-    fireEvent.click(screen.getByRole("button", { name: /Descargar CSV/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Descargar CSV" }));
 
     const texto = await blob!.text();
     const lineas = texto.replace(/^﻿/, "").trim().split(/\r\n/);
@@ -122,7 +122,7 @@ describe("VistaMapa", () => {
     abrirFiltro("Departamento");
     fireEvent.click(screen.getByRole("checkbox", { name: "Sucre (1)" }));
     fireEvent.keyDown(document.body, { key: "Escape" });
-    const kpiMw = screen.getByRole("group", { name: "Potencia según filtros [MW] (todos los estados)" });
+    const kpiMw = screen.getByRole("group", { name: "Potencia total proyectada" });
     expect(kpiMw).toHaveTextContent("50,0 MW");
     const graficas = screen.getByRole("region", { name: "Gráficas" });
     const estados = within(graficas).getByRole("region", { name: "Capacidad por estado" });

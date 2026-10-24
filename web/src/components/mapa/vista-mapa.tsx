@@ -39,7 +39,7 @@ export function VistaMapa({ filas }: { filas: FilaPublica[] }) {
             Limpiar filtros
           </Button>
           <Button type="button" variant="outline" onClick={() => descargarCsv(filasResultado())}>
-            Descargar CSV ({resultado.length} {resultado.length === 1 ? "proyecto" : "proyectos"})
+            Descargar CSV
           </Button>
         </div>
       </div>
