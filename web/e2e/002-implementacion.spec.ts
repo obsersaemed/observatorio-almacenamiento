@@ -668,7 +668,7 @@ test.describe("002 · Implementación en el país (datos)", () => {
     await page.waitForTimeout(300);
     extra.escape = String(await botonFiltro(page, "Municipio").getAttribute("aria-expanded"));
     await abrirFiltro(page, "Municipio");
-    await page.getByRole("heading", { name: "Implementación en el país", level: 1 }).click();
+    await page.getByRole("heading", { name: "Implementación de SAEB en Colombia", level: 1 }).click(); // título cambiado por el usuario (2026-10-23)
     await page.waitForTimeout(300);
     extra.clicAfuera = String(await botonFiltro(page, "Municipio").getAttribute("aria-expanded"));
     test.info().annotations.push({ type: "desplegable", description: JSON.stringify(extra) });

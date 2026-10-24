@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
 import { EncabezadoSitio } from "@/components/encabezado-sitio";
+import { FondoMapa } from "@/components/fondo-mapa";
 import { URL_SITIO } from "@/lib/sitio";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${raleway.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <FondoMapa />
         <EncabezadoSitio />
         <div id="contenido" tabIndex={-1} className="flex flex-1 flex-col outline-none">
           {children}

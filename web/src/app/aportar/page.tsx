@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { TEXTOS } from "@/lib/textos";
 import { FormularioAporte } from "@/components/formulario-aporte";
 import { enviarAporte } from "./acciones";
 
 export const metadata: Metadata = {
-  title: "Aportar al observatorio",
-  description:
-    "Propón un proyecto de almacenamiento, una corrección, una norma o una noticia. Cada aporte se revisa antes de publicarse.",
+  title: TEXTOS.aportar.titulo,
+  description: TEXTOS.aportar.intro,
 };
 
 const primero = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -25,12 +25,8 @@ async function FormularioPrellenado({ searchParams }: { searchParams: Parametros
 export default function PaginaAportar({ searchParams }: { searchParams: Parametros }) {
   return (
     <main className="mx-auto w-full max-w-[var(--page-max)] px-4 py-8">
-      <h1 className="text-2xl font-extrabold text-[var(--text-heading)] sm:text-3xl">Aportar al observatorio</h1>
-      <p className="mt-2 max-w-2xl">
-        ¿Conoces un proyecto de almacenamiento con baterías, una norma o una noticia que falte, o
-        un dato que deba corregirse? Cuéntanos con su fuente. Un editor revisa cada aporte antes
-        de publicarlo.
-      </p>
+      <h1 className="text-2xl font-extrabold text-[var(--text-heading)] sm:text-3xl">{TEXTOS.aportar.titulo}</h1>
+      <p className="mt-2 max-w-3xl">{TEXTOS.aportar.intro}</p>
       <div className="mt-6">
         <Suspense fallback={<FormularioAporte accion={enviarAporte} siteKey={SITE_KEY} />}>
           <FormularioPrellenado searchParams={searchParams} />

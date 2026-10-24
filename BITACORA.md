@@ -218,3 +218,11 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
   `/mapa` sigue igual después del cambio de componentes compartidos.
 - **LCP de `/vehiculos` publicado (4G lenta), cuatro medianas:** 2.048, 2.520, 1.700 y 2.100 ms. Una de las cuatro supera por 20 ms el umbral de 2.500 ms; la primera carga de cada corrida (caché en frío) llega a 2,5–3,7 s. En el build local fue 1,60 s. Pendiente: averiguar qué elemento es el LCP y aligerar la página, o confirmar que es variación de la red.
 - **Decisión del usuario (2026-10-22):** revisó el LCP de `/vehiculos` y lo da por bueno; no se optimiza por ahora.
+
+## 2026-10-23 — Títulos y textos de las páginas (ajuste de diseño)
+- A pedido del usuario cambiaron los títulos y las introducciones de inicio, `/mapa`, `/vehiculos`, `/normativa`, `/noticias` y `/aportar`. Están en una sola fuente, `web/src/lib/textos.ts`, que usan la página, sus metadatos y las tarjetas del inicio. Es un arreglo pequeño, sin el flujo SDD completo (CLAUDE.md).
+- TDD: `textos.test.ts`, más `inicio.test.tsx` y `secciones.test.tsx` actualizados primero. Suite: 280 pruebas. También se actualizó un selector de `e2e/002-implementacion.spec.ts` que usaba el título anterior.
+- En `/mapa` el texto nuevo reemplaza las instrucciones de uso del mapa («pasa el mouse, toca o enfoca un punto…»).
+- Mapa de Colombia como fondo tenue en todas las páginas (`web/src/components/fondo-mapa.tsx`, en `layout.tsx`). La imagen la envió el usuario: es de uso libre y no exige créditos. Se recortó y se redujo a 800 px en PNG de 8 colores (`web/public/fondo-colombia.png`, 47 KB). Queda fijo, detrás del contenido (z -10), con opacidad 0,12, sin clics, oculto para lectores de pantalla y al imprimir. Revisado en las seis páginas en escritorio y a 375 px: sin desborde horizontal ni errores de consola.
+- El nombre del sitio en el encabezado y en la pestaña sigue siendo «Observatorio de Almacenamiento de Energía», por decisión del usuario.
+- Verificación: 283 pruebas de Vitest en verde, tsc sin errores, eslint sin errores (4 avisos previos). LCP local (mediana de 3): inicio 2,0 s, `/mapa` 2,4 s, `/vehiculos` 2,4 s, `/aportar` 1,8 s, `/normativa` 1,6 s, `/noticias` 1,6 s.

@@ -14,10 +14,10 @@ import Vehiculos, { metadata as mVehiculos } from "./vehiculos/page";
 describe("Implementación en el país (spec 002)", () => {
   test("ya no es un aviso de construcción: título, metadatos y espacio para la vista con datos", () => {
     render(<Mapa />);
-    expect(screen.getByRole("heading", { level: 1, name: "Implementación en el país" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Implementación de SAEB en Colombia" })).toBeInTheDocument();
     expect(screen.queryByText(/en construcción/i)).toBeNull();
     expect(screen.getByText(/Cargando los proyectos/)).toBeInTheDocument();
-    expect(mMapa.title).toBe("Implementación en el país");
+    expect(mMapa.title).toBe("Implementación de SAEB en Colombia");
     expect(String(mMapa.description ?? "").length).toBeGreaterThan(20);
   });
 });
@@ -25,17 +25,17 @@ describe("Implementación en el país (spec 002)", () => {
 describe("Vehículos eléctricos (spec 003)", () => {
   test("ya no es un aviso de construcción: título, metadatos y espacio para la vista con datos", () => {
     render(<Vehiculos />);
-    expect(screen.getByRole("heading", { level: 1, name: "Vehículos eléctricos" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Almacenamiento de energía en vehículos eléctricos" })).toBeInTheDocument();
     expect(screen.queryByText(/en construcción/i)).toBeNull();
     expect(screen.getByText(/Cargando los datos de vehículos/)).toBeInTheDocument();
-    expect(mVehiculos.title).toBe("Vehículos eléctricos");
+    expect(mVehiculos.title).toBe("Almacenamiento de energía en vehículos eléctricos");
     expect(String(mVehiculos.description ?? "").length).toBeGreaterThan(20);
   });
 });
 
 describe("páginas de sección (placeholder hasta las specs 004–005)", () => {
   test.each([
-    [Normativa, mNormativa, "Evolución normativa"],
+    [Normativa, mNormativa, "Evolución normativa de los SAEB"],
     [Noticias, mNoticias, "Noticias"],
   ])("%#: tiene título, aviso de construcción y metadatos propios", (Pagina, metadata, titulo) => {
     render(<Pagina />);

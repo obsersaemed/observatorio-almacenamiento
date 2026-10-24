@@ -4,12 +4,13 @@ import { KpiTarjeta } from "@/components/kpi-tarjeta";
 import { KpiValor } from "@/components/kpi-valor";
 import type { ReactNode } from "react";
 import type { Kpi } from "@/lib/kpi";
+import { TEXTOS } from "@/lib/textos";
 
 export const SECCIONES = [
-  { ruta: "/mapa", titulo: "Implementación en el país", texto: "Mapa e inventario de los SAEB en Colombia." },
-  { ruta: "/vehiculos", titulo: "Vehículos eléctricos", texto: "Almacenamiento en la flota eléctrica." },
-  { ruta: "/normativa", titulo: "Evolución normativa", texto: "CREG, MME y CNO, condensado y explicado." },
-  { ruta: "/noticias", titulo: "Noticias", texto: "Novedades relevantes del almacenamiento." },
+  { ruta: "/mapa", titulo: TEXTOS.mapa.titulo, texto: "Mapa e inventario de los SAEB en Colombia." },
+  { ruta: "/vehiculos", titulo: TEXTOS.vehiculos.titulo, texto: "Almacenamiento en la flota eléctrica." },
+  { ruta: "/normativa", titulo: TEXTOS.normativa.titulo, texto: "CREG, MME y CNO, condensado y explicado." },
+  { ruta: "/noticias", titulo: TEXTOS.noticias.titulo, texto: "Novedades relevantes del almacenamiento." },
 ];
 
 // El panel de KPI llega como ranura para poder envolverlo en <Suspense> en la página:
@@ -18,12 +19,9 @@ export function Inicio({ panelKpi }: { panelKpi: ReactNode }) {
   return (
     <main className="mx-auto w-full max-w-[var(--page-max)] px-4 py-8">
       <h1 className="text-2xl font-extrabold uppercase tracking-[var(--ls-caps)] text-[var(--text-heading)] sm:text-3xl">
-        Observatorio de Almacenamiento de Energía
+        {TEXTOS.inicio.titulo}
       </h1>
-      <p className="mt-2 max-w-2xl">
-        Sistemas de almacenamiento de energía con baterías (SAEB) en Colombia: proyectos,
-        regulación y noticias, con fuente en cada dato.
-      </p>
+      <p className="mt-2 max-w-3xl">{TEXTOS.inicio.intro}</p>
 
       {panelKpi}
 

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { TEXTOS } from "@/lib/textos";
 import { SeccionEnConstruccion } from "@/components/seccion-en-construccion";
 
 export const metadata: Metadata = {
-  title: "Noticias",
-  description: "Noticias curadas sobre el almacenamiento de energía con baterías en Colombia, con fuente y fecha.",
+  title: TEXTOS.noticias.titulo,
+  description: TEXTOS.noticias.intro,
 };
 
 export default function Noticias() {
-  return <SeccionEnConstruccion titulo="Noticias" descripcion={metadata.description as string} descarga="/datos/noticias.csv" />;
+  return <SeccionEnConstruccion titulo={TEXTOS.noticias.titulo} descripcion={metadata.description as string} descarga="/datos/noticias.csv" />;
 }

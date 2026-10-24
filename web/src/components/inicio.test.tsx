@@ -13,7 +13,7 @@ describe("inicio", () => {
   test("muestra el título del observatorio", () => {
     render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     expect(
-      screen.getByRole("heading", { level: 1, name: "Observatorio de Almacenamiento de Energía" }),
+      screen.getByRole("heading", { level: 1, name: "Observatorio de Sistemas de Almacenamiento de Energía en Colombia" }),
     ).toBeInTheDocument();
   });
 
@@ -36,9 +36,9 @@ describe("inicio", () => {
   test("da acceso a las cuatro secciones", () => {
     render(<Inicio panelKpi={<PanelKpi kpi={kpi} />} />);
     for (const [nombre, ruta] of [
-      ["Implementación en el país", "/mapa"],
-      ["Vehículos eléctricos", "/vehiculos"],
-      ["Evolución normativa", "/normativa"],
+      ["Implementación de SAEB en Colombia", "/mapa"],
+      ["Almacenamiento de energía en vehículos eléctricos", "/vehiculos"],
+      ["Evolución normativa de los SAEB", "/normativa"],
       ["Noticias", "/noticias"],
     ]) {
       expect(screen.getByRole("link", { name: new RegExp(nombre) })).toHaveAttribute("href", ruta);
