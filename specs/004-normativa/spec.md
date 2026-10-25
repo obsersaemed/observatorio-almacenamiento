@@ -38,7 +38,7 @@ como documentos de referencia. Solo se publica lo que el editor aprueba.
 | RF-08 | Los filtros deben quedar en la URL: abrir la URL en otra pestaña reproduce los mismos filtros y el mismo resultado. | HU-02 |
 | RF-09 | Si ningún documento cumple los filtros, la línea de tiempo dice «Ninguna norma cumple estos filtros» y la barra de años queda vacía. | HU-02 |
 | RF-10 | La página debe mostrar cuántas normas cumplen los filtros («N normas»). | HU-02 |
-| RF-11 | La página debe permitir descargar en CSV las normas que cumplen los filtros, con todas sus columnas publicadas, la fuente y la licencia, como las descargas de `/mapa` y `/vehiculos`. | HU-05 |
+| RF-11 | La página no ofrece descargas CSV: ni del resultado filtrado ni de los datos completos (cambio del 2026-10-25). El lector llega al documento oficial de cada norma (RF-05). | HU-05 |
 | RF-12 | Los estudios académicos aprobados deben publicarse en una sección «Documentos de referencia», debajo de la línea de tiempo y fuera de ella, con título, autor o institución, año, resumen y enlace. No se ven afectados por los filtros. | HU-03, HU-05 |
 | RF-13 | Solo deben aparecer en la página las normas y los documentos con publicación `Aprobado`. Los `Pendiente` y `Rechazado` no se muestran ni se descargan. | HU-04 |
 | RF-14 | La carga inicial (documentos del usuario y faltantes verificados) debe entrar como aportes de tipo *Norma*, con origen *agente* y estado `Pendiente`, y el editor los aprueba o rechaza en `/admin`, como cualquier aporte. | HU-04 |
@@ -68,7 +68,7 @@ como documentos de referencia. Solo se publica lo que el editor aprueba.
   se ven la fecha en formato dd/mm/aaaa, la entidad como texto, el tipo y número, el
   título, el estado y el resumen.
 - **CA-04.3** Dada una norma cuya fecha solo tiene mes y año (o solo año), cuando se mira su
-  tarjeta o el CSV, entonces se ve «septiembre de 2026» (o «2025») y no un día inventado; en la
+  tarjeta, entonces se ve «septiembre de 2026» (o «2025») y no un día inventado; en la
   línea de tiempo se ordena como si fuera el primer día de ese mes o año.
 - **CA-04.2** Dadas normas de entidades distintas, cuando se comparan sus tarjetas,
   entonces cada entidad tiene un color propio y su nombre escrito; el color no es la única
@@ -112,8 +112,8 @@ como documentos de referencia. Solo se publica lo que el editor aprueba.
   «3 normas»; con una sola, «1 norma».
 
 **RF-11**
-- **CA-11.1** Dado el filtro entidad = CNO, cuando se descarga el CSV, entonces el archivo
-  trae la licencia, solo los acuerdos del CNO aprobados y la columna del enlace oficial.
+- **CA-11.1** Dada la página `/normativa`, con o sin filtros, cuando se busca una descarga,
+  entonces no hay botón «Descargar CSV» ni enlace «Descargar datos completos (CSV)».
 
 **RF-12**
 - **CA-12.1** Dados los dos estudios de la UNAL aprobados, cuando se abre la página,
@@ -121,7 +121,7 @@ como documentos de referencia. Solo se publica lo que el editor aprueba.
   con cualquier filtro aplicado.
 
 **RF-13**
-- **CA-13.1** Dada una norma `Pendiente`, cuando se abre la página o se descarga el CSV,
+- **CA-13.1** Dada una norma `Pendiente`, cuando se abre la página,
   entonces no aparece. Al aprobarla en `/admin`, aparece (ver CA-16.1).
 
 **RF-14**
@@ -186,6 +186,7 @@ Los proyectos de resolución cuya consulta cerró van como «Derogada». Quedan 
 MVP: UPME STR 01-2020 y 01-2021, MME 40042 de 2024, CREG 070 de 2021 y 101 097 de 2026.
 
 ## Fuera de alcance
+- Descargas CSV en `/normativa` (decisión del usuario, 2026-10-25).
 - Copia en PDF de los documentos: solo se enlaza el documento oficial.
 - Filtro o clasificación por tema.
 - Búsqueda de texto libre.
@@ -218,5 +219,6 @@ MVP: UPME STR 01-2020 y 01-2021, MME 40042 de 2024, CREG 070 de 2021 y 101 097 d
 |---|---|---|
 | 2026-10-24 | Versión inicial | Brainstorm 004 aprobado |
 | 2026-10-24 | Aclaraciones 1 a 5 resueltas con las propuestas; spec aprobada | Decisión del usuario |
+| 2026-10-25 | RF-11 y CA-11.1: `/normativa` no ofrece descargas CSV; CA-04.3 y CA-13.1 sin la parte del CSV | Decisión del usuario: simplificar la página |
 | 2026-10-25 | Carga inicial: CNO 1354 como «Derogada», CREG 074 de 2021 y MME 40178 de 2026; enlaces propios del CNO según el «Gestor enlaces» corregido | Decisión del usuario |
 | 2026-10-24 | Columna `precision_fecha` y CA-04.3 (mes y año, o solo año, sin día inventado). Carga inicial: solo los acuerdos CNO vigentes; proyectos cerrados como «Derogada»; faltantes restantes para después | Decisiones del usuario durante T12–T16 |

@@ -110,32 +110,6 @@ async function titulosLinea(page: Page) {
   return textos.map((t) => t.trim());
 }
 
-async function descargarCsv(page: Page) {
-  const [d] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /^Descargar CSV/ }).click()]);
-  return fs.readFileSync((await d.path())!, "utf8").replace(/^﻿/, "");
-}
-function parsearCsv(texto: string): string[][] {
-  const filas: string[][] = [];
-  let fila: string[] = []; let campo = ""; let q = false;
-  for (let i = 0; i < texto.length; i++) {
-    const c = texto[i];
-    if (q) { if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; } else if (c === '"') q = false; else campo += c; }
-    else if (c === '"') q = true;
-    else if (c === ",") { fila.push(campo); campo = ""; }
-    else if (c === "\n" || c === "\r") { if (c === "\r" && texto[i + 1] === "\n") i++; fila.push(campo); filas.push(fila); fila = []; campo = ""; }
-    else campo += c;
-  }
-  if (campo || fila.length) { fila.push(campo); filas.push(fila); }
-  return filas;
-}
-function registrosCsv(texto: string) {
-  const f = parsearCsv(texto);
-  const i = f.findIndex((r) => r[0] === "id");
-  const cab = f[i] ?? [];
-  const datos = f.slice(i + 1).filter((r) => r.length === cab.length && r[0].trim());
-  return { cab, datos };
-}
-
 function soloEscritorio() { test.skip(test.info().project.name !== "escritorio", "Escenario de datos: solo escritorio"); }
 function soloMovil() { test.skip(test.info().project.name !== "movil-375", "Escenario de 375 px"); }
 
@@ -251,7 +225,7 @@ test.describe("004 · Evolución normativa (datos)", () => {
     expect(await estilo(N.B)).toBe(colores.CREG);
   });
 
-  test("E2E-05b · CA-04.3: mes y año o solo año, sin día inventado, en la tarjeta y en el CSV; ordena como el día 1", async ({ page }) => {
+  test("E2E-05b · CA-04.3: mes y año o solo año, sin día inventado, en la tarjeta; ordena como el día 1", async ({ page }) => {
     soloEscritorio();
     await abrir(page);
     await expect(tarjeta(page, N.D).locator("time")).toHaveText("septiembre de 2022");
@@ -259,11 +233,6 @@ test.describe("004 · Evolución normativa (datos)", () => {
     // Orden: D (1/09/2022) antes de F (1/01/2022), ya comprobado en E2E-01; aquí, solo 2022.
     const reg = page.getByRole("region", { name: "2022", exact: true });
     expect((await reg.getByRole("heading", { level: 3 }).allInnerTexts()).map((s) => s.trim())).toEqual([N.D.titulo, N.F.titulo]);
-    const { cab, datos } = registrosCsv(await descargarCsv(page));
-    const iF = cab.indexOf("fecha");
-    const fila = (n: Norma) => datos.find((r) => r[0] === n.id);
-    expect(fila(N.D)?.[iF], "CSV: fecha de la norma con solo mes y año").toBe("septiembre de 2022");
-    expect(fila(N.F)?.[iF], "CSV: fecha de la norma con solo año").toBe("2022");
   });
 
   test("E2E-06 · CA-05.1, CA-05.2: al desplegar se ven explicación, «Aplica a», relacionadas y el enlace oficial abre en pestaña nueva", async ({ page, context }) => {
@@ -291,7 +260,7 @@ test.describe("004 · Evolución normativa (datos)", () => {
     const t = tarjeta(page, N.G);
     const b = botonDesplegar(t);
     // Llegar con Tab desde el control anterior de la página.
-    await page.getByRole("button", { name: /^Descargar CSV/ }).focus();
+    await page.getByRole("navigation", { name: "Ir al año" }).getByRole("link").last().focus();
     let llego = false;
     for (let i = 0; i < 30 && !llego; i++) {
       await page.keyboard.press("Tab");
@@ -420,22 +389,14 @@ test.describe("004 · Evolución normativa (datos)", () => {
     await expect(conteo(page)).toHaveText("1 norma");
   });
 
-  test("E2E-15 · CA-11.1: con entidad = CNO, el CSV trae licencia, solo los acuerdos del CNO y la columna del enlace", async ({ page }) => {
+  test("E2E-15 · CA-11.1: /normativa no ofrece descargas CSV, con o sin filtros (cambio del 2026-10-25)", async ({ page }) => {
     soloEscritorio();
     await abrir(page);
+    await expect(page.getByRole("button", { name: /Descargar CSV/ })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Descargar datos completos/ })).toHaveCount(0);
     await marcar(page, "Entidad", "CNO");
     await expect(conteo(page)).toHaveText("2 normas");
-    const texto = await descargarCsv(page);
-    expect(texto).toMatch(/CC BY 4\.0/);
-    const { cab, datos } = registrosCsv(texto);
-    test.info().annotations.push({ type: "cabecera", description: cab.join(",") });
-    expect(cab).toContain("enlace");
-    for (const c of ["id", "fecha", "emisor", "tipo", "numero", "titulo", "estado", "resumen", "explicacion", "aplica_a", "relacionada_con"]) expect(cab, `columna ${c}`).toContain(c);
-    expect(cab, "sin la columna interna de publicación").not.toContain("publicacion");
-    expect(datos.map((r) => r[0]).sort()).toEqual([N.C.id, N.F.id].sort());
-    const iE = cab.indexOf("enlace");
-    for (const r of datos) expect(r[iE]).toBe(Object.values(N).find((n) => n.id === r[0])!.enlace);
-    expect(texto, "la fuente de cada registro o la del observatorio").toMatch(/[Ff]uente/);
+    await expect(page.getByRole("button", { name: /Descargar/ })).toHaveCount(0);
   });
 
   test("E2E-16 · CA-12.1: el estudio está en «Documentos de referencia», fuera de la línea, con o sin filtro", async ({ page }) => {
@@ -470,34 +431,13 @@ test.describe("004 · Evolución normativa (datos)", () => {
     test.info().annotations.push({ type: "academia-en-filtro", description: String(await opcion(page, "Entidad", "Academia").count()) });
   });
 
-  test("E2E-17 · CA-13.1: la norma pendiente no aparece en la página ni en las descargas", async ({ page }) => {
+  test("E2E-17 · CA-13.1: la norma pendiente no aparece en la página", async ({ page }) => {
     soloEscritorio();
     await abrir(page);
     const html = await page.content();
     expect(html).not.toContain(P.titulo);
     expect(html).not.toContain(`Resumen de pendiente-999`);
-    const texto = await descargarCsv(page);
-    const { datos } = registrosCsv(texto);
-    expect(datos.map((r) => r[0]), "ninguna fila de la norma pendiente").not.toContain(P.id);
-    expect(datos.map((r) => r[0]).sort(), "solo las seis aprobadas").toEqual(ORDEN.map((n) => n.id).sort());
-    expect(texto).not.toContain(P.titulo);
-    // Descarga «datos completos»: tampoco debe traer lo que no está aprobado.
-    const completo = page.getByRole("link", { name: /Descargar datos completos/ });
-    if (await completo.count()) {
-      const href = (await completo.getAttribute("href"))!;
-      const r = await page.request.get(href);
-      const t = await r.text();
-      expect(registrosCsv(t).datos.map((r) => r[0])).not.toContain(P.id);
-      // Las normas de la carga inicial siguen pendientes en /admin: no deben descargarse.
-      const { data: pend } = await admin().from("aportes").select("id,datos").eq("tipo", "Norma").eq("publicacion", "Pendiente");
-      const { data: aprob } = await admin().from("normas").select("id").eq("publicacion", "Aprobado");
-      const idsAprob = new Set((aprob ?? []).map((n) => n.id));
-      const filtradas = (pend ?? []).map((a) => (a.datos as { id?: string })?.id).filter((id): id is string => !!id && !idsAprob.has(id));
-      const idsCsv = registrosCsv(t).datos.map((r) => r[0]);
-      const filtradasEnCsv = filtradas.filter((id) => idsCsv.includes(id));
-      test.info().annotations.push({ type: "datos-completos", description: `${href} · ${r.status()} · ${t.split(/\r?\n/).length} líneas · pendientes incluidas: ${filtradasEnCsv.join(", ") || "ninguna"}` });
-      expect(filtradasEnCsv, `«Descargar datos completos» (${href}) no incluye normas sin aprobar`).toEqual([]);
-    }
+    expect(await titulosLinea(page), "solo las seis aprobadas").toEqual(ORDEN.map((n) => n.titulo));
   });
 
   test("E2E-18 · CA-14.1: en /admin se ven las normas de la carga inicial como aportes Norma pendientes de origen agente, con enlace oficial, y no están en /normativa", async ({ page, context }) => {

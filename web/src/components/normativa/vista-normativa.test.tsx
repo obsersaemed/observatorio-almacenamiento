@@ -3,7 +3,6 @@
 // Datos ficticios.
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { LICENCIA } from "@/lib/csv";
 import type { Norma } from "@/lib/normativa";
 import { VistaNormativa } from "./vista-normativa";
 
@@ -76,18 +75,12 @@ describe("VistaNormativa", () => {
     expect(screen.getByRole("status")).toHaveTextContent("0 normas");
   });
 
-  test("la descarga trae la licencia y solo las normas filtradas, con su enlace (CA-11.1)", async () => {
-    let blob: Blob | undefined;
-    URL.createObjectURL = vi.fn((b: Blob) => ((blob = b), "blob:prueba"));
-    URL.revokeObjectURL = vi.fn();
-    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+  test("no ofrece descargas CSV, con o sin filtros (CA-11.1, cambio del 2026-10-25)", () => {
+    render(<VistaNormativa normas={NORMAS} />);
+    expect(screen.queryByRole("button", { name: /Descargar CSV/ })).not.toBeInTheDocument();
     window.history.replaceState(null, "", "/normativa?entidad=CNO");
     render(<VistaNormativa normas={NORMAS} />);
-    fireEvent.click(screen.getByRole("button", { name: "Descargar CSV" }));
-    const lineas = (await blob!.text()).replace(/^﻿/, "").trim().split(/\r\n/);
-    expect(lineas[0]).toBe(LICENCIA);
-    expect(lineas[1].split(",")).toContain("enlace");
-    expect(lineas.slice(2).map((l) => l.split(",")[0])).toEqual(["CNO-ACU-2-2022", "CNO-ACU-1-2020"]);
+    expect(screen.queryByRole("button", { name: /Descargar/ })).not.toBeInTheDocument();
   });
 
   test("los estudios van en «Documentos de referencia», fuera de la línea, con cualquier filtro (CA-12.1)", () => {

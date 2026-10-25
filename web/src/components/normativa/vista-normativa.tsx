@@ -1,13 +1,12 @@
 "use client";
 
 // Vista de /normativa (spec 004). Los filtros viven en la URL y un solo resultado filtrado
-// alimenta el conteo, la barra de años, la línea de tiempo y la descarga. Los estudios van
-// aparte, en «Documentos de referencia» (RF-12).
+// alimenta el conteo, la barra de años y la línea de tiempo. Sin descargas CSV (RF-11). Los
+// estudios van aparte, en «Documentos de referencia» (RF-12).
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { csvDe } from "@/lib/csv";
 import { aniosDe, CAMPOS_NORMATIVA, filtrar, ordenar, separar, textoConteo, type Norma } from "@/lib/normativa";
-import { descargarTexto, useFiltrosUrl } from "@/lib/use-filtros-url";
+import { useFiltrosUrl } from "@/lib/use-filtros-url";
 import { BarraAnios } from "./barra-anios";
 import { DocumentosReferencia } from "./documentos-referencia";
 import { FiltrosNormativa } from "./filtros-normativa";
@@ -32,18 +31,6 @@ export function VistaNormativa({ normas }: { normas: Norma[] }) {
         <div className="flex flex-wrap items-center gap-3">
           <Button type="button" variant="outline" onClick={() => escribir({})} disabled={!consulta}>
             Limpiar filtros
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              descargarTexto(
-                csvDe("normativa", resultado.map((n) => ({ ...n, publicacion: "Aprobado" }))),
-                "observatorio-normativa-filtrada.csv",
-              )
-            }
-          >
-            Descargar CSV
           </Button>
           <p role="status" className="font-semibold">
             {textoConteo(resultado.length)}

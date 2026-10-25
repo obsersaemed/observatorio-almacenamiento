@@ -43,6 +43,11 @@ describe("Evolución normativa (spec 004, RF-17)", () => {
     expect(mNormativa.title).toBe("Evolución normativa de los SAEB");
     expect(String(mNormativa.description ?? "").length).toBeGreaterThan(20);
   });
+
+  test("no ofrece la descarga de los datos completos (CA-11.1, cambio del 2026-10-25)", () => {
+    render(<Normativa />);
+    expect(screen.queryByRole("link", { name: /descargar datos/i })).toBeNull();
+  });
 });
 
 describe("páginas de sección (placeholder hasta la spec 005)", () => {
@@ -60,7 +65,6 @@ describe("páginas de sección (placeholder hasta la spec 005)", () => {
 describe("descarga de datos de cada sección (RF-14)", () => {
   test.each([
     [Mapa, "/datos/proyectos.csv"],
-    [Normativa, "/datos/normativa.csv"],
     [Noticias, "/datos/noticias.csv"],
   ])("%#: enlaza al CSV de la sección", (Pagina, ruta) => {
     render(<Pagina />);

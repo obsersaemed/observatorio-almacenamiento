@@ -60,3 +60,7 @@ Prueba: `web/e2e/004-normativa.spec.ts`. Los datos son ficticios y se sembraron 
 ## Repetición (2026-10-25)
 
 Con T20 (fecha sin día en el CSV) y T21 (unidad del desplegable), `npx playwright test e2e/004-normativa.spec.ts --workers=1` contra `next start` y Supabase «pruebas»: **27 pasan, 0 fallan** (escritorio y 375 px). E2E-05b ya pasa. E2E-24 (LCP) queda para medirlo en el sitio publicado.
+
+## Segunda repetición (2026-10-25)
+
+Con T22 (sin descargas CSV en `/normativa`, cambio de spec pedido por el usuario) y E2E-05b, E2E-07, E2E-15 y E2E-17 ajustados: **27 pasan, 0 fallan** (escritorio y 375 px).

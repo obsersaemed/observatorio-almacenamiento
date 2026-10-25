@@ -258,6 +258,13 @@ al final, como en la 006. Así no dependen de que la carga real esté aprobada.
   - Depende de: T07
   - Archivos: `desplegable-filtro.tsx`, `filtros-normativa.tsx`, `filtros-vehiculos.tsx`
 
+- [x] **T22 · XS** · Sin descargas CSV en `/normativa` (cambio de spec del 2026-10-25)
+  - Cubre: RF-11 · CA-11.1
+  - Prueba primero (RED): `vista-normativa.test.tsx` (no hay botón «Descargar CSV») y `secciones.test.tsx` (no hay enlace «Descargar datos completos»). Hoy fallan porque los dos existen.
+  - Hecho cuando (GREEN): ni el botón ni el enlace aparecen; el resto de la vista no cambia.
+  - Depende de: T08, T09
+  - Archivos: `vista-normativa.tsx`, `web/src/app/normativa/page.tsx`
+
 Estimación total: 18 tareas (2 XS, 11 S, 5 M), sin tareas L · de 12 a 16 h. La carga de datos
 (T12–T16) es la parte más larga, porque cada documento se lee completo.
 
@@ -285,9 +292,9 @@ Entrada del agente E2E limpio. Datos sembrados de prueba, ficticios:
 | E2E-12 | CA-08.1 | 1. Filtrar 2. Abrir la URL en otra pestaña | Mismos filtros y mismo resultado |
 | E2E-13 | CA-09.1 | 1. Aplicar filtros sin resultados | «Ninguna norma cumple estos filtros»; barra de años vacía |
 | E2E-14 | CA-10.1 | 1. Filtrar hasta dejar 3 normas 2. Luego 1 | «3 normas»; «1 norma» |
-| E2E-15 | CA-11.1 | 1. Filtrar CNO 2. «Descargar CSV» | Licencia, solo los acuerdos del CNO y la columna del enlace |
+| E2E-15 | CA-11.1 | 1. Abrir `/normativa` 2. Aplicar un filtro | No hay botón «Descargar CSV» ni enlace «Descargar datos completos (CSV)» |
 | E2E-16 | CA-12.1 | 1. Abrir la página 2. Aplicar un filtro | El estudio está en «Documentos de referencia», fuera de la línea, con o sin filtro |
-| E2E-17 | CA-13.1 | 1. Abrir la página 2. Descargar el CSV | La norma pendiente no aparece en ninguno |
+| E2E-17 | CA-13.1 | 1. Abrir la página | La norma pendiente no aparece |
 | E2E-18 | CA-14.1 | 1. Entrar a `/admin` como editor | Se ven los aportes *Norma* pendientes de origen agente; no están en `/normativa` |
 | E2E-19 | CA-15.1 | 1. Desplegar una norma 2. «Proponer corrección» | `/aportar` con tipo *Corrección* y el id de la norma |
 | E2E-20 | CA-16.1 | 1. Aprobar en `/admin` la norma pendiente 2. Esperar ≤ 5 min y recargar `/normativa` | La norma aparece |
@@ -309,7 +316,7 @@ Entrada del agente E2E limpio. Datos sembrados de prueba, ficticios:
 | RF-08 | CA-08.1 | T08 | E2E-12 |
 | RF-09 | CA-09.1 | T03, T08 | E2E-13 |
 | RF-10 | CA-10.1 | T03, T08 | E2E-14 |
-| RF-11 | CA-11.1 | T08 | E2E-15 |
+| RF-11 | CA-11.1 | T08, T22 | E2E-15 |
 | RF-12 | CA-12.1 | T01, T02, T03, T08, T16 | E2E-16 |
 | RF-13 | CA-13.1 | T04 | E2E-17 |
 | RF-14 | CA-14.1 | T11–T17 | E2E-18 |
@@ -356,6 +363,7 @@ Entrada del agente E2E limpio. Datos sembrados de prueba, ficticios:
 | 2026-10-25 | T21 | El encabezado del desplegable decía «Proyectos» en normativa y vehículos | Suite 340/340, tsc y lint sin errores | Prop `unidad` con «Proyectos» por defecto |
 | 2026-10-25 | Carga (ajuste) | `test_propuestas_normativa`: faltaban CNO 1354, CREG 074 de 2021 y MME 40178 de 2026 | 25 propuestas válidas (7/7) | Carpeta corregida por el usuario. Enlaces propios del CNO (1354, 1898, 2028, 2231) y CREG 110 en el gestor. Los 6 aportes pendientes que cambiaron se corrigieron en la cola (275, 276, 277, 286, 287, 288) y se enviaron 3 nuevos (299, 300, 301). El 2186 no se carga: lo sustituyó el 2234 |
 | 2026-10-25 | Repetición E2E | — | `004-normativa.spec.ts`: 27 pasan, 0 fallan (escritorio y 375 px) | El LCP (E2E-24) se mide en el sitio publicado |
+| 2026-10-25 | T22 | `vista-normativa.test.tsx` y `secciones.test.tsx`: el botón «Descargar CSV» y el enlace de datos completos existían | Suite 340/340; E2E 004 27/27 | Cambio de spec pedido por el usuario. E2E-05b, E2E-07, E2E-15 y E2E-17 ajustados (sin descarga). La ruta `/datos/normativa.csv` sigue existiendo, sin enlace desde la página |
 
 ## Informe E2E
 Enlace a `e2e-informe.md` cuando exista.
