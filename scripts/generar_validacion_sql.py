@@ -18,7 +18,7 @@ from validar_datos import RAIZ, columna_sql, limite  # noqa: E402
 
 INICIO = "-- >>> validación generada desde datos/esquemas.json con scripts/generar_validacion_sql.py (no editar a mano)"
 FIN = "-- <<< fin de la validación generada"
-MIGRACION = RAIZ / "supabase" / "migrations" / "0005_vehiculos.sql"  # la última que lo regenera
+MIGRACION = RAIZ / "supabase" / "migrations" / "0006_normativa.sql"  # la última que lo regenera
 ESQUEMAS = ("proyectos", "normativa", "noticias", "aportes", "vehiculos_lineas", "vehiculos_ventas")
 
 

@@ -169,6 +169,16 @@
         "obligatorio": true
       },
       {
+        "nombre": "precision_fecha",
+        "tipo": "enum",
+        "valores": [
+          "Día",
+          "Mes",
+          "Año"
+        ],
+        "_nota": "vacío = Día. Mes: fecha guarda el día 1 del mes. Año: fecha guarda el 1 de enero (004, CA-04.3)"
+      },
+      {
         "nombre": "emisor",
         "tipo": "enum",
         "obligatorio": true,
@@ -178,7 +188,8 @@
           "CNO",
           "UPME",
           "XM",
-          "Congreso"
+          "Congreso",
+          "Academia"
         ]
       },
       {
@@ -192,7 +203,8 @@
           "Proyecto de resolución",
           "Acuerdo",
           "Circular",
-          "Documento"
+          "Documento",
+          "Estudio"
         ]
       },
       {

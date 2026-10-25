@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Estudio Academia Documento de trabajo (2025)",
+  "fuente": "https://repositorio.unal.edu.co/items/b8a77f04-9f6a-4088-b4cc-c0a1c6d30e1f",
+  "datos": {
+    "id": "ACADEMIA-EST-CLAVES-2025",
+    "fecha": "2025-01-01",
+    "precision_fecha": "Año",
+    "emisor": "Academia",
+    "tipo": "Estudio",
+    "numero": "Documento de trabajo",
+    "titulo": "Almacenamiento de energía en Colombia: claves para una regulación que habilite los SAEB",
+    "estado": "Vigente",
+    "resumen": "Documento de trabajo con claves para una regulación que habilite los SAEB, basado en normativa, proyectos regulatorios y entrevistas y encuestas al sector hechas entre abril y mayo de 2025.",
+    "explicacion": "Es un resumen técnico con fines informativos y de análisis sectorial, con información disponible hasta septiembre de 2025. Los autores aclaran que no es asesoría regulatoria, lineamiento oficial ni recomendación de inversión.",
+    "aplica_a": "Universidad Nacional de Colombia, sede Medellín (Arango Aramburo, S.; Pérez Gonzáles, E.; Pérez Gutiérrez, J. F.; Valencia Hernández, V.; Espinosa, J.; Roveda, N.; Lozada, J. M.; Suárez, S.; Giraldo, J.)",
+    "enlace": "https://repositorio.unal.edu.co/items/b8a77f04-9f6a-4088-b4cc-c0a1c6d30e1f"
+  }
+}

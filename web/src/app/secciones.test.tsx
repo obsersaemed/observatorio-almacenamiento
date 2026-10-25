@@ -4,6 +4,7 @@ import { describe, expect, test, vi } from "vitest";
 vi.mock("@/lib/datos-publicos", () => ({
   proyectosParaMapa: () => new Promise(() => {}),
   vehiculosPublicos: () => new Promise(() => {}),
+  normasPublicas: () => new Promise(() => {}),
 }));
 
 import Mapa, { metadata as mMapa } from "./mapa/page";
@@ -33,9 +34,19 @@ describe("Vehículos eléctricos (spec 003)", () => {
   });
 });
 
-describe("páginas de sección (placeholder hasta las specs 004–005)", () => {
+describe("Evolución normativa (spec 004, RF-17)", () => {
+  test("ya no es un aviso de construcción: título, metadatos y espacio para la línea de tiempo", () => {
+    render(<Normativa />);
+    expect(screen.getByRole("heading", { level: 1, name: "Evolución normativa de los SAEB" })).toBeInTheDocument();
+    expect(screen.queryByText(/en construcción/i)).toBeNull();
+    expect(screen.getByText(/Cargando las normas/)).toBeInTheDocument();
+    expect(mNormativa.title).toBe("Evolución normativa de los SAEB");
+    expect(String(mNormativa.description ?? "").length).toBeGreaterThan(20);
+  });
+});
+
+describe("páginas de sección (placeholder hasta la spec 005)", () => {
   test.each([
-    [Normativa, mNormativa, "Evolución normativa de los SAEB"],
     [Noticias, mNoticias, "Noticias"],
   ])("%#: tiene título, aviso de construcción y metadatos propios", (Pagina, metadata, titulo) => {
     render(<Pagina />);

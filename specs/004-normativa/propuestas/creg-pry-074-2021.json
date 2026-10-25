@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Proyecto de resolución CREG 074 (2021)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0074_2021.htm",
+  "datos": {
+    "id": "CREG-PRY-074-2021",
+    "fecha": "2021-06-16",
+    "emisor": "CREG",
+    "tipo": "Proyecto de resolución",
+    "numero": "074",
+    "titulo": "Por la cual se definen las exigencias de calidad del servicio para los sistemas de almacenamiento de energía eléctrica aprobados en la Resolución CREG 098 de 2019",
+    "estado": "Derogada",
+    "resumen": "Proyecto que sometió a consulta las exigencias de calidad del servicio de los SAEB de la Resolución CREG 098 de 2019. Su consulta cerró y la versión definitiva es la Resolución CREG 101 023 de 2022.",
+    "explicacion": "Proponía que los SAEB construidos para atender necesidades del STN o de un STR cumplieran las exigencias de calidad del servicio de esos sistemas, con un tope de 73 horas al año de indisponibilidad programada y 2 horas por año calendario de eventos no programados, y compensación al superarlos.\n\nLa consulta duró diez días hábiles. Hoy sirve como antecedente de la Resolución CREG 101 023 de 2022.",
+    "aplica_a": "Adjudicatarios de SAEB de la Resolución CREG 098 de 2019 (como proyecto de consulta)",
+    "relacionada_con": "CREG-RES-098-2019; CREG-RES-101023-2022",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0074_2021.htm"
+  }
+}

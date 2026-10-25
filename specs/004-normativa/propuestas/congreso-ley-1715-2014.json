@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Ley Congreso 1715 (2014)",
+  "fuente": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=57353",
+  "datos": {
+    "id": "CONGRESO-LEY-1715-2014",
+    "fecha": "2014-05-13",
+    "emisor": "Congreso",
+    "tipo": "Ley",
+    "numero": "1715",
+    "titulo": "Por medio de la cual se regula la integración de las energías renovables no convencionales al Sistema Energético Nacional",
+    "estado": "Modificada",
+    "resumen": "Ley que promueve las fuentes no convencionales de energía y los sistemas de almacenamiento de tales fuentes. Modificada por las Leyes 2099 de 2021 y 2294 de 2023.",
+    "explicacion": "Su objeto incluye promover el desarrollo y la utilización de los sistemas de almacenamiento de las fuentes no convencionales de energía, principalmente las renovables, y su integración al mercado eléctrico y a las zonas no interconectadas.\n\nEs el marco legal de base: la regulación específica de los SAEB la desarrollan después el Ministerio de Minas y Energía y la CREG.",
+    "aplica_a": "Sector energético en general",
+    "relacionada_con": "CONGRESO-LEY-2099-2021",
+    "enlace": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=57353"
+  }
+}

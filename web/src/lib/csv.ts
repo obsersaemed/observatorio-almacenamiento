@@ -3,6 +3,7 @@
 // primera línea y marca UTF-8 para que Excel lea bien las tildes. Punto decimal.
 import definicion from "@/generado/esquemas.json";
 import { columnaSql } from "./columnas";
+import { fechaDeNorma } from "./normativa";
 import { anios, type Importacion, type LineaVehiculo } from "./vehiculos";
 
 export const FUENTES_VEHICULOS = "Fuentes: ANDEMOS, RUNT y cálculos propios del Observatorio";
@@ -35,6 +36,15 @@ export function columnasDeSeccion(seccion: SeccionDescargable) {
     .map((c) => ({ nombre: c.nombre, sql: columnaSql(c.nombre) }));
 }
 
+/** Una norma sin día publica su fecha como mes y año, o solo año: nunca un día inventado
+ *  (spec 004, CA-04.3). La base guarda el día 1 solo para ordenar. */
+function valorPublico(seccion: SeccionDescargable, fila: Record<string, unknown>, columna: string): unknown {
+  if (seccion === "normativa" && columna === "fecha" && (fila.precision_fecha === "Mes" || fila.precision_fecha === "Año")) {
+    return fechaDeNorma({ fecha: String(fila.fecha), precision_fecha: String(fila.precision_fecha) });
+  }
+  return fila[columna];
+}
+
 export function csvDe(seccion: SeccionDescargable, filas: Record<string, unknown>[]): string {
   const columnas = columnasDeSeccion(seccion);
   const lineas = [
@@ -42,7 +52,7 @@ export function csvDe(seccion: SeccionDescargable, filas: Record<string, unknown
     columnas.map((c) => celda(c.nombre)).join(","),
     ...filas
       .filter((f) => f.publicacion === "Aprobado")
-      .map((f) => columnas.map((c) => celda(f[c.sql])).join(",")),
+      .map((f) => columnas.map((c) => celda(valorPublico(seccion, f, c.sql))).join(",")),
   ];
   return `﻿${lineas.join("\r\n")}\r\n`;
 }

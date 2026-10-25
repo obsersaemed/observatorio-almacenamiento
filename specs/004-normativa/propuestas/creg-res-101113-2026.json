@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Resolución CREG 101 113 (2026)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_101-113_2026.htm",
+  "datos": {
+    "id": "CREG-RES-101113-2026",
+    "fecha": "2026-06-19",
+    "emisor": "CREG",
+    "tipo": "Resolución",
+    "numero": "101 113",
+    "titulo": "Por la cual se definen los mecanismos para incorporar sistemas de almacenamiento de energía eléctrica con baterías -SAEB- en el Sistema Interconectado Nacional",
+    "estado": "Vigente",
+    "resumen": "Marco vigente para incorporar SAEB al SIN: como activos de red, como SAEB independientes y en recursos de generación híbridos. Deroga la Resolución CREG 098 de 2019.",
+    "explicacion": "Organiza los SAEB en tres títulos. El primero trata los SAEB como activos de red: identificación de la necesidad, selección del adjudicatario, Ingreso Anual Esperado, interventoría, calidad del servicio y operación de carga y descarga por el CND. El segundo trata los SAEB independientes y los servicios que pueden comercializar. El tercero, los SAEB en recursos de generación híbridos.\n\nUn cuarto título reúne reglas para todos: asignación de capacidad de transporte, arranque autónomo y responsabilidades del agente que instala el SAEB. Según el CNO, con ella quedó derogado el Acuerdo CNO 1354 de 2020, que fijaba las condiciones técnicas de conexión de los SAEB de la Resolución 098.",
+    "aplica_a": "Agentes interesados en implementar un SAEB conectado al SIN y agentes y entidades del sector que interactúan con estos sistemas",
+    "relacionada_con": "CREG-RES-098-2019; CREG-PRY-701103-2025; CNO-ACU-1354-2020",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_101-113_2026.htm"
+  }
+}

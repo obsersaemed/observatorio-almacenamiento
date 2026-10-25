@@ -10,8 +10,9 @@ RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "scripts"))
 from generar_validacion_sql import INICIO, FIN, generar  # noqa: E402
 
-MIGRACION = RAIZ / "supabase" / "migrations" / "0005_vehiculos.sql"  # la última que regenera la validación
+MIGRACION = RAIZ / "supabase" / "migrations" / "0006_normativa.sql"  # la última que regenera la validación
 MIGRACION_0004 = RAIZ / "supabase" / "migrations" / "0004_servicios.sql"
+MIGRACION_0005 = RAIZ / "supabase" / "migrations" / "0005_vehiculos.sql"  # tablas de vehículos (003)
 ESQUEMAS = json.loads((RAIZ / "datos" / "esquemas.json").read_text(encoding="utf-8"))
 
 
@@ -75,7 +76,7 @@ class TestMigracionVehiculos(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.sql = MIGRACION.read_text(encoding="utf-8") if MIGRACION.exists() else ""
+        cls.sql = MIGRACION_0005.read_text(encoding="utf-8") if MIGRACION_0005.exists() else ""
 
     def test_registro_de_importaciones_con_actualizacion_y_corte(self):
         self.assertRegex(self.sql, r"create table public\.vehiculos_importaciones")

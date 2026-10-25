@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Acuerdo CNO 2231 (2026)",
+  "fuente": "https://www.cno.org.co/index.php/node/304580",
+  "datos": {
+    "id": "CNO-ACU-2231-2026",
+    "fecha": "2026-09-01",
+    "emisor": "CNO",
+    "tipo": "Acuerdo",
+    "numero": "2231",
+    "titulo": "Por el cual se establecen y actualizan las definiciones y los formatos de reporte de los parámetros técnicos de las unidades y plantas hidráulicas, térmicas, eólicas y solares y de los activos del STN y del STR para el planeamiento operativo y la operación del SIN",
+    "estado": "Vigente",
+    "resumen": "Define y actualiza los parámetros técnicos que se reportan al CND y sus formatos. Sustituye el Acuerdo 1816 de 2024.",
+    "explicacion": "Fija las definiciones y los formatos con que se reportan al CND los parámetros técnicos de las plantas y de los activos del STN y del STR, y los plazos de reporte. Es una norma general de operación, no exclusiva de los SAEB.\n\nEntre sus acuerdos relacionados figura el Acuerdo 1898 de 2024, que regula el cambio de parámetros técnicos de los SAEB.",
+    "aplica_a": "Agentes que reportan parámetros técnicos al CND",
+    "relacionada_con": "CNO-ACU-1898-2024",
+    "enlace": "https://www.cno.org.co/index.php/node/304580"
+  }
+}

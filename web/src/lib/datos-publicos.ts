@@ -6,6 +6,7 @@ import type { ProyectoKpi } from "./kpi";
 import { columnasDeSeccion } from "./csv";
 import type { FilaPublica } from "./proyectos-mapa";
 import type { FilaLinea, FilaVenta, Importacion } from "./vehiculos";
+import type { Norma } from "./normativa";
 import { fetchConReintento } from "./fetch-con-reintento";
 
 export const ETIQUETA_PROYECTOS = "proyectos";
@@ -106,4 +107,29 @@ export async function vehiculosPublicos() {
     return { lineas: [], ventas: [], importacion: null };
   }
   return leerVehiculos(supabase);
+}
+
+/** Etiqueta de caché de /normativa: la misma tabla que /admin revalida al aprobar (spec 004, RF-16). */
+export const ETIQUETA_NORMAS = "normas";
+
+const COLUMNAS_NORMAS = "id, fecha, precision_fecha, emisor, tipo, numero, titulo, estado, resumen, explicacion, aplica_a, relacionada_con, enlace";
+
+/** Normas aprobadas (spec 004, RF-13); el orden de la línea de tiempo lo da lib/normativa. */
+export async function leerNormas(supabase: SupabaseClient): Promise<Norma[]> {
+  const { data, error } = await supabase.from("normas").select(COLUMNAS_NORMAS).eq("publicacion", "Aprobado").order("fecha", { ascending: false });
+  if (error) throw new Error(`No se pudieron leer las normas: ${error.message}`);
+  return (data ?? []) as Norma[];
+}
+
+export async function normasPublicas(): Promise<Norma[]> {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag(ETIQUETA_NORMAS);
+
+  const supabase = clientePublico();
+  if (!supabase) {
+    console.warn("Sin NEXT_PUBLIC_SUPABASE_URL/ANON_KEY: /normativa se muestra sin datos.");
+    return [];
+  }
+  return leerNormas(supabase);
 }

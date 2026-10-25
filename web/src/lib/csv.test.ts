@@ -56,6 +56,19 @@ describe("csvDe", () => {
   });
 });
 
+describe("csvDe de normativa (004 · T20 · CA-04.3)", () => {
+  test("una fecha sin día sale como mes y año, o solo año; una completa queda igual", () => {
+    const base = { emisor: "XM", tipo: "Documento", numero: "X", titulo: "T", estado: "Vigente", enlace: "https://e.co", publicacion: "Aprobado" };
+    const csv = csvDe("normativa", [
+      { ...base, id: "A", fecha: "2022-09-01", precision_fecha: "Mes" },
+      { ...base, id: "B", fecha: "2022-01-01", precision_fecha: "Año" },
+      { ...base, id: "C", fecha: "2026-06-19", precision_fecha: null },
+    ]);
+    const filas = csv.trim().split(/\r\n/).slice(2).map((l) => l.split(",").slice(0, 3).join(","));
+    expect(filas).toEqual(["A,septiembre de 2022,Mes", "B,2022,Año", "C,2026-06-19,"]);
+  });
+});
+
 describe("seccionDescargable", () => {
   test("acepta solo las secciones públicas", () => {
     expect(seccionDescargable("proyectos.csv")).toBe("proyectos");

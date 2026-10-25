@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Proyecto de resolución CREG 127 (2018)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0127_2018.htm",
+  "datos": {
+    "id": "CREG-PRY-127-2018",
+    "fecha": "2018-10-18",
+    "emisor": "CREG",
+    "tipo": "Proyecto de resolución",
+    "numero": "127",
+    "titulo": "Por la cual se ordena hacer público el proyecto de resolución «Por la cual se definen los mecanismos para incorporar sistemas de almacenamiento en el Sistema Interconectado Nacional»",
+    "estado": "Derogada",
+    "resumen": "Primer proyecto de la CREG para permitir sistemas de almacenamiento con baterías en el SIN como solución a la falta o insuficiencia de redes de transporte. Su consulta cerró y la versión definitiva es la Resolución CREG 098 de 2019.",
+    "explicacion": "Es el punto de partida de la regulación de los SAEB en Colombia. El proyecto proponía que los SAEB los ejecutaran los transmisores u operadores de red existentes, o un adjudicatario seleccionado por la UPME, con un Ingreso Anual Esperado como remuneración y la carga y descarga operadas por el CND.\n\nComo acto de trámite no modificó normas vigentes: abrió una consulta de veinte días. Hoy sirve como antecedente histórico; las reglas que se aplicaron quedaron en la Resolución CREG 098 de 2019.",
+    "aplica_a": "Transmisores, operadores de red, UPME y CND (como proyecto de consulta)",
+    "relacionada_con": "CREG-RES-098-2019",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0127_2018.htm"
+  }
+}

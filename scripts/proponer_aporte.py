@@ -6,6 +6,7 @@ lo publica desde /admin. Usa la llave de servicio de web/.env.local y nunca la i
 
 Uso:
     python scripts/proponer_aporte.py --entorno pruebas --archivo propuesta.json
+    python scripts/proponer_aporte.py --entorno pruebas --carpeta specs/004-normativa/propuestas
     python scripts/proponer_aporte.py --entorno pruebas --tipo Noticia --agente buscar-noticias \\
         --descripcion "..." --fuente https://... --datos '{"fecha": "2026-10-20", ...}'
 
@@ -63,17 +64,32 @@ def proponer(propuesta, cliente, esquemas):
     return 0, [f"Aporte {seguimiento} propuesto como Pendiente por el agente '{fila['agente']}'. Revísalo en /admin."]
 
 
+def proponer_carpeta(carpeta, cliente, esquemas):
+    """Un aporte por cada .json de la carpeta, en orden de nombre (004 · RF-14). Se detiene en el
+    primer rechazo o error para no dejar la carga a medias sin aviso."""
+    salida = []
+    for archivo in sorted(Path(carpeta).glob("*.json")):
+        codigo, mensajes = proponer(json.loads(archivo.read_text(encoding="utf-8")), cliente, esquemas)
+        salida += [f"{archivo.name}: {m}" for m in mensajes]
+        if codigo:
+            return codigo, salida
+    return 0, salida
+
+
 def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--entorno", required=True, help="'pruebas' o ruta a un archivo .env")
     p.add_argument("--archivo", help="propuesta en JSON")
+    p.add_argument("--carpeta", help="carpeta con una propuesta JSON por archivo")
     for campo in ("tipo", "agente", "descripcion", "fuente", "registro-afectado", "datos"):
         p.add_argument(f"--{campo}")
     a = p.parse_args()
 
-    if a.archivo:
+    if a.carpeta:
+        propuesta = None
+    elif a.archivo:
         propuesta = json.loads(Path(a.archivo).read_text(encoding="utf-8"))
     else:
         try:
@@ -90,7 +106,10 @@ def main():
     except ErrorRest as e:
         print(f"ERROR  {e}")
         sys.exit(2)
-    codigo, mensajes = proponer(propuesta, cliente, esquemas)
+    if a.carpeta:
+        codigo, mensajes = proponer_carpeta(a.carpeta, cliente, esquemas)
+    else:
+        codigo, mensajes = proponer(propuesta, cliente, esquemas)
     print("\n".join(mensajes))
     sys.exit(codigo)
 

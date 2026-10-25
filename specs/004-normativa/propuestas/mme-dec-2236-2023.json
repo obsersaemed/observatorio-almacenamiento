@@ -1,0 +1,19 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Decreto MME 2236 (2023)",
+  "fuente": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=227230",
+  "datos": {
+    "id": "MME-DEC-2236-2023",
+    "fecha": "2023-12-22",
+    "emisor": "MME",
+    "tipo": "Decreto",
+    "numero": "2236",
+    "titulo": "Por el cual se adiciona al Decreto 1073 de 2015 con el fin de reglamentar parcialmente el artículo 235 de la Ley 2294 de 2023 del Plan Nacional de Desarrollo 2022 - 2026 en lo relacionado con las Comunidades Energéticas en el marco de la Transición Energética Justa en Colombia",
+    "estado": "Vigente",
+    "resumen": "Reglamenta las comunidades energéticas, que pueden generar, almacenar y consumir energía de forma descentralizada.",
+    "explicacion": "Entre los objetivos de las comunidades energéticas está descentralizar la generación, el almacenamiento y el consumo de energía hacia las comunidades, y desarrollar la economía local a partir de esas actividades.\n\nNo regula los SAEB en detalle, pero abre la puerta a que comunidades organizadas incorporen almacenamiento en sus proyectos.",
+    "aplica_a": "Comunidades energéticas y entidades que las apoyan",
+    "enlace": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=227230"
+  }
+}

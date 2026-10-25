@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Documento CREG D-064-19 (2019)",
+  "fuente": "https://gestornormativo.creg.gov.co/Publicac.nsf/1c09d18d2d5ffb5b05256eee00709c02/28669c6087eb69be0525846c006e9690.html",
+  "datos": {
+    "id": "CREG-DOC-064-2019",
+    "fecha": "2019-09-05",
+    "emisor": "CREG",
+    "tipo": "Documento",
+    "numero": "D-064-19",
+    "titulo": "Mecanismo para incorporar sistema de almacenamiento con baterías en el SIN",
+    "estado": "Vigente",
+    "resumen": "Documento soporte de la CREG publicado junto con la Resolución CREG 098 de 2019.",
+    "explicacion": "Los documentos CREG explican el análisis y las razones de una resolución. Este acompaña la Resolución CREG 098 de 2019 y sirve para entender por qué se eligió el mecanismo de SAEB como solución temporal a los atrasos en las redes de transporte.\n\nNo crea obligaciones por sí mismo. Se mantiene publicado como referencia en el gestor normativo de la CREG.",
+    "aplica_a": "Consulta de antecedentes regulatorios",
+    "relacionada_con": "CREG-RES-098-2019",
+    "enlace": "https://gestornormativo.creg.gov.co/Publicac.nsf/1c09d18d2d5ffb5b05256eee00709c02/28669c6087eb69be0525846c006e9690.html"
+  }
+}

@@ -52,6 +52,7 @@ export function FiltrosVehiculos({
             onAbrir={() => setAbierto(campo)}
             onCerrar={() => setAbierto((a) => (a === campo ? null : a))}
             onCambiar={(nuevos) => cambiar(campo, nuevos)}
+            unidad="Vehículos"
           />
         ))}
       </div>

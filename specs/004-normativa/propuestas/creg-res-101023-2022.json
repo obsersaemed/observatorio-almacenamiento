@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Resolución CREG 101 023 (2022)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_101-23_2022.htm",
+  "datos": {
+    "id": "CREG-RES-101023-2022",
+    "fecha": "2022-07-19",
+    "emisor": "CREG",
+    "tipo": "Resolución",
+    "numero": "101 023",
+    "titulo": "Por la cual se definen las exigencias de calidad del servicio para los sistemas de almacenamiento de energía eléctrica, SAEB, aprobados en la Resolución CREG 098 de 2019",
+    "estado": "Vigente",
+    "resumen": "Define las exigencias de calidad del servicio de los SAEB construidos con la Resolución CREG 098 de 2019.",
+    "explicacion": "Fija cómo se mide y se compensa la calidad del servicio de los SAEB adjudicados bajo la Resolución 098: reporte de eventos con las reglas de los activos de uso del STN o del STR, horas máximas de indisponibilidad y compensación por eventos no programados.\n\nAplica a los SAEB ya aprobados con la Resolución 098. Para los nuevos SAEB como activos de red, la calidad del servicio está en la Resolución CREG 101 113 de 2026. Su proyecto de consulta fue la Resolución CREG 074 de 2021.",
+    "aplica_a": "Adjudicatarios de SAEB aprobados con la Resolución CREG 098 de 2019, LAC y CND",
+    "relacionada_con": "CREG-RES-098-2019; CREG-PRY-074-2021",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_101-23_2022.htm"
+  }
+}

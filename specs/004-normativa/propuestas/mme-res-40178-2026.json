@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Resolución MME 40178 (2026)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_minminas_40178_2026.htm",
+  "datos": {
+    "id": "MME-RES-40178-2026",
+    "fecha": "2026-03-30",
+    "emisor": "MME",
+    "tipo": "Resolución",
+    "numero": "40178",
+    "titulo": "Por la cual se definen las reglas generales para la implementación de mecanismos de contratación a largo plazo de energía eléctrica, en cumplimiento de los objetivos y lineamientos establecidos en el artículo primero del Decreto número 1091 de 2025",
+    "estado": "Vigente",
+    "resumen": "Reglas generales de los mecanismos de contratación a largo plazo de proyectos de generación, almacenamiento, transmisión y distribución de energía eléctrica.",
+    "explicacion": "Permite que el Ministerio de Minas y Energía, directamente o a través de una persona jurídica designada, adelante mecanismos de contratación a largo plazo en los que también participan proyectos de almacenamiento. Define a compradores y vendedores, el contrato de energía a largo plazo, la administración centralizada de contratos y garantías, y la plataforma del mecanismo.\n\nLa entrada en operación comercial de los proyectos adjudicados se respalda con las garantías de la regulación de la CREG y de las Resoluciones MME 40311 de 2020 y 40042 de 2024.",
+    "aplica_a": "Compradores y vendedores del Mercado de Energía Mayorista, desarrolladores de proyectos de generación y almacenamiento",
+    "relacionada_con": "CONGRESO-LEY-1715-2014; MME-RES-40042-2024",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_minminas_40178_2026.htm"
+  }
+}

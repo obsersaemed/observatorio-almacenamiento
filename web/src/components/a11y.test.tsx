@@ -13,6 +13,9 @@ import { VistaMapa } from "./mapa/vista-mapa";
 import { Graficas } from "./graficas/graficas";
 import { GraficasVehiculos } from "./vehiculos/graficas-vehiculos";
 import { VistaVehiculos } from "./vehiculos/vista-vehiculos";
+import { VistaNormativa } from "./normativa/vista-normativa";
+import { TarjetaNorma } from "./normativa/tarjeta-norma";
+import type { Norma } from "@/lib/normativa";
 import { armarLineas } from "@/lib/vehiculos";
 import { aProyectoMapa, type FilaPublica } from "@/lib/proyectos-mapa";
 
@@ -84,6 +87,22 @@ describe("encabezado del sitio", () => {
   });
 });
 
+// /normativa (spec 004): normas ficticias de varias entidades y un estudio.
+const norma = (id: string, emisor: string, fecha: string, n: Partial<Norma> = {}): Norma => ({
+  id, fecha, emisor, tipo: "Resolución", numero: id.split("-")[2], titulo: `Título ficticio ${id}`, estado: "Vigente",
+  resumen: "Resumen ficticio.", explicacion: "Explicación ficticia.", aplica_a: "Operadores ficticios",
+  relacionada_con: null, enlace: "https://ejemplo.co/a https://ejemplo.co/b", ...n,
+});
+const normasFicticias: Norma[] = [
+  norma("CREG-RES-3-2022", "CREG", "2022-02-01", { relacionada_con: "CNO-ACU-1-2020" }),
+  norma("CNO-ACU-1-2020", "CNO", "2020-01-01", { tipo: "Acuerdo" }),
+  norma("XM-DOC-2-2024", "XM", "2024-01-01", { tipo: "Documento", estado: "En consulta" }),
+  norma("MME-RES-4-2022", "MME", "2022-03-01"),
+  norma("CONGRESO-LEY-5-2014", "Congreso", "2014-05-13", { tipo: "Ley" }),
+  norma("UPME-DOC-6-2021", "UPME", "2021-01-01", { tipo: "Documento" }),
+  norma("ACADEMIA-EST-7-2023", "Academia", "2023-01-01", { tipo: "Estudio" }),
+];
+
 describe("axe sin violaciones", () => {
   test.each([
     ["encabezado", <EncabezadoSitio key="e" />],
@@ -95,6 +114,8 @@ describe("axe sin violaciones", () => {
     ["vista de /vehiculos (003 · RNF-03)", <VistaVehiculos key="vv" lineas={lineasVe} ventas={ventasVe} importacion={{ actualizado_en: "2026-10-22T15:00:00Z", corte: "2026-09-17" }} />],
     ["gráficas de /vehiculos (003 · RNF-03)", <GraficasVehiculos key="gv" lineas={armarLineas(lineasVe, ventasVe)} corte="2026-09-17" />],
     ["tarjeta del proyecto (002)", <TarjetaProyecto key="t" proyecto={aProyectoMapa(filasMapa[0])} onCerrar={vi.fn()} />],
+    ["vista de /normativa (004 · RNF-04)", <VistaNormativa key="vn" normas={normasFicticias} />],
+    ["tarjeta de norma desplegada (004 · RNF-04)", <TarjetaNorma key="tn" norma={normasFicticias[0]} relacionadas={[{ id: "CNO-ACU-1-2020", norma: normasFicticias[1], texto: "Acuerdo CNO 1 de 2020" }, { id: "MME-RES-9-2021", norma: null, texto: "Resolución MME 9 de 2021" }]} abierta onAlternar={vi.fn()} onIrA={vi.fn()} />],
   ])("%s", async (_nombre, elemento) => {
     const { container } = render(<div>{elemento}</div>);
     expect(await violaciones(container)).toEqual([]);

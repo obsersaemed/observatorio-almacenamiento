@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Resolución CREG 110 (2021)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0110_2021.htm",
+  "datos": {
+    "id": "CREG-RES-110-2021",
+    "fecha": "2021-08-25",
+    "emisor": "CREG",
+    "tipo": "Resolución",
+    "numero": "110",
+    "titulo": "Por la cual se oficializan los ingresos anuales esperados para SAEB La Arenosa S.A.S. E.S.P. por el diseño, suministro, construcción, operación y mantenimiento del Sistema de Almacenamiento de Energía Eléctrica con Baterías en el departamento del Atlántico, de acuerdo con la convocatoria UPME STR 01-2021",
+    "estado": "Vigente",
+    "resumen": "Oficializa los ingresos anuales esperados del SAEB del Atlántico, adjudicado en la convocatoria UPME STR 01-2021.",
+    "explicacion": "Es el paso que permite remunerar un SAEB adjudicado bajo la Resolución CREG 098 de 2019: la CREG oficializa el ingreso anual que ofertó el adjudicatario, SAEB La Arenosa S.A.S. E.S.P.\n\nSegún el Documento CREG 901 225 de 2025, este SAEB (45 MW / 45 MWh, subestación Silencio 34,5 kV) fue el único proyecto identificado por la UPME y llevado a convocatoria durante la vigencia de la Resolución 098.",
+    "aplica_a": "SAEB La Arenosa S.A.S. E.S.P., LAC y usuarios del STR del Atlántico",
+    "relacionada_con": "CREG-RES-098-2019",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0110_2021.htm"
+  }
+}

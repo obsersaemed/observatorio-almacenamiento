@@ -1,1 +1,1 @@
-id,fecha,emisor,tipo,numero,titulo,estado,resumen,explicacion,aplica_a,relacionada_con,enlace
+id,fecha,precision_fecha,emisor,tipo,numero,titulo,estado,resumen,explicacion,aplica_a,relacionada_con,enlace

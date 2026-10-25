@@ -46,6 +46,9 @@ class TestMigracion(unittest.TestCase):
                 tabla = "aportantes" if c.get("privado") else esq["tabla"]
                 bloque = bloque_tabla(self.sql, tabla)
                 self.assertIsNotNone(bloque, f"Falta la tabla {tabla}")
+                # Columnas agregadas después con «alter table … add column» (004 · 0006).
+                bloque += "".join("\n  " + l.split(" add column ", 1)[1] for l in self.sql.split("\n")
+                                  if l.startswith(f"alter table public.{tabla} add column "))
                 col = columna_sql(c["nombre"])
                 self.assertRegex(bloque, rf"\n\s*{col}\s", f"{tabla}.{col} no está en la migración")
                 if c.get("obligatorio"):
@@ -60,6 +63,10 @@ class TestMigracion(unittest.TestCase):
                 bloque = bloque_tabla(self.sql, tabla) or ""
                 col = columna_sql(c["nombre"])
                 linea = next((l for l in bloque.split("\n") if re.match(rf"\s*{col}\s", l)), "")
+                # Una migración posterior puede reemplazar el check (004 · 0006): vale el último.
+                nuevos = [l for l in self.sql.split("\n") if l.startswith(f"alter table public.{tabla} ") and f"check ({col} in" in l]
+                if nuevos:
+                    linea = nuevos[-1]
                 # Las columnas tipo lista se validan valor por valor en el disparador (0004), no con check.
                 for v in (c.get("valores", []) if c["tipo"] == "enum" else []):
                     self.assertIn(f"'{v}'", linea, f"{tabla}.{col}: falta el valor '{v}' en el check")

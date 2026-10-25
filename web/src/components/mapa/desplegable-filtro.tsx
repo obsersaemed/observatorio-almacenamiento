@@ -18,8 +18,11 @@ export function DesplegableFiltro({
   onAbrir,
   onCerrar,
   onCambiar,
+  unidad = "Proyectos",
 }: {
   titulo: string;
+  /** Qué cuentan los números de cada opción (004: «Normas»; 003: «Vehículos»). */
+  unidad?: string;
   opciones: Opcion[];
   elegidos: string[];
   abierto: boolean;
@@ -81,7 +84,7 @@ export function DesplegableFiltro({
               <input type="checkbox" className={casilla} checked={elegidos.length === 0} onChange={() => onCambiar([])} />
               Todas
             </label>
-            <span className="text-xs text-muted-foreground">Proyectos</span>
+            <span className="text-xs text-muted-foreground">{unidad}</span>
           </div>
           <input
             type="search"

@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Documento XM CND 020 de 2019 (2020)",
+  "fuente": "https://www.xm.com.co/generaci%C3%B3n/informes-despacho/procedimientos-aplicables-al-despacho",
+  "datos": {
+    "id": "XM-DOC-CND020-2020",
+    "fecha": "2020-09-02",
+    "emisor": "XM",
+    "tipo": "Documento",
+    "numero": "CND 020 de 2019",
+    "titulo": "Procedimiento para la determinación de los procesos de carga y descarga de los sistemas de almacenamiento de energía eléctrica con baterías",
+    "estado": "Vigente",
+    "resumen": "Procedimiento del CND para programar la carga y la descarga de los SAEB de la Resolución CREG 098 de 2019. Versión 2, del 2 de septiembre de 2020.",
+    "explicacion": "Explica cómo el CND determina cuándo carga y cuándo descarga un SAEB que se instaló para mitigar atrasos en la expansión de la red. La versión 2 recoge comentarios de los agentes, del CNO y de la CREG.\n\nSe elaboró para los SAEB de la Resolución CREG 098 de 2019, hoy derogada. Sigue publicado en la página de procedimientos aplicables al despacho de XM.",
+    "aplica_a": "CND y adjudicatarios de SAEB de la Resolución CREG 098 de 2019",
+    "relacionada_con": "CREG-RES-098-2019",
+    "enlace": "https://www.xm.com.co/generaci%C3%B3n/informes-despacho/procedimientos-aplicables-al-despacho"
+  }
+}

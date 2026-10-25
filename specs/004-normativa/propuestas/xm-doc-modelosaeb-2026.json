@@ -1,0 +1,21 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Documento XM Modelo de optimización del despacho (2026)",
+  "fuente": "https://www.xm.com.co/generaci%C3%B3n/informes-despacho/procedimientos-aplicables-al-despacho",
+  "datos": {
+    "id": "XM-DOC-MODELOSAEB-2026",
+    "fecha": "2026-09-01",
+    "precision_fecha": "Mes",
+    "emisor": "XM",
+    "tipo": "Documento",
+    "numero": "Modelo de optimización del despacho",
+    "titulo": "Modelo de optimización del despacho: Sistema de Almacenamiento de Baterías Eléctrica (SAEB)",
+    "estado": "Vigente",
+    "resumen": "Modelo con que el CND incluye en el despacho la carga y la descarga de los SAEB como activos de red de la Resolución CREG 101 113 de 2026.",
+    "explicacion": "El CND lo publica en cumplimiento del artículo 21 de la Resolución CREG 101 113 de 2026, según el cual la toma y entrega de energía de un SAEB como activo de red del STN o del STR la opera el CND de forma remota o automática.\n\nSirve para entender cómo se programará un SAEB de red dentro del despacho diario.",
+    "aplica_a": "CND y agentes con SAEB como activos de red",
+    "relacionada_con": "CREG-RES-101113-2026",
+    "enlace": "https://www.xm.com.co/generaci%C3%B3n/informes-despacho/procedimientos-aplicables-al-despacho"
+  }
+}

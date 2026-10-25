@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Resolución CREG 098 (2019)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0098_2019.htm",
+  "datos": {
+    "id": "CREG-RES-098-2019",
+    "fecha": "2019-08-30",
+    "emisor": "CREG",
+    "tipo": "Resolución",
+    "numero": "098",
+    "titulo": "Por la cual se definen los mecanismos para incorporar sistemas de almacenamiento con el propósito de mitigar inconvenientes presentados por la falta o insuficiencia de redes de transporte de energía en el Sistema Interconectado Nacional",
+    "estado": "Derogada",
+    "resumen": "Primera resolución que permitió instalar SAEB en el SIN para mitigar la falta o insuficiencia de redes de transporte. Fue derogada por el artículo 108 de la Resolución CREG 101 113 de 2026.",
+    "explicacion": "La necesidad de un SAEB la identificaba un agente o la UPME. La UPME seleccionaba al adjudicatario mediante una invitación abierta y este recibía como remuneración el Ingreso Anual Esperado (IAE) que ofertó, pagado mensualmente por el LAC. El CND programaba la carga y la descarga, y el SAEB debía cumplir una eficiencia mínima.\n\nEl mecanismo aplicaba hasta el 31 de diciembre de 2022, aunque los proyectos adjudicados antes conservaban sus condiciones. Con ella se adjudicó el SAEB del Atlántico (convocatoria UPME STR 01-2021). La reemplaza la Resolución CREG 101 113 de 2026.",
+    "aplica_a": "Transmisores, operadores de red, UPME, CND, LAC y adjudicatarios de SAEB",
+    "relacionada_con": "CREG-PRY-127-2018; CREG-DOC-064-2019; CREG-RES-101113-2026",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_0098_2019.htm"
+  }
+}

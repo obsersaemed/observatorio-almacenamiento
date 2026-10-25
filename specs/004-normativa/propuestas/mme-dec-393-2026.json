@@ -1,0 +1,19 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Decreto MME 393 (2026)",
+  "fuente": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=275657",
+  "datos": {
+    "id": "MME-DEC-393-2026",
+    "fecha": "2026-04-10",
+    "emisor": "MME",
+    "tipo": "Decreto",
+    "numero": "393",
+    "titulo": "Por el cual se adicionan los lineamientos de política pública para la integración de los Sistemas de Almacenamiento de Energía (SAE) en el Sistema Interconectado Nacional (SIN) y en las Zonas No Interconectadas (ZNI) en la Sección 11 del Capítulo 8 del Título III de la Parte 2, del Libro 2 del Decreto número 1073 de 2015 Único Reglamentario del Sector Administrativo de Minas y Energía",
+    "estado": "Vigente",
+    "resumen": "Lineamientos de política pública para habilitar la incorporación y remuneración de los sistemas de almacenamiento de energía en el SIN y en las ZNI.",
+    "explicacion": "Define qué es un sistema de almacenamiento de energía, el apilamiento de servicios y el arbitraje de energía. Enumera los servicios que puede prestar: desplazamiento de carga, servicios complementarios (regulación de frecuencia, control de tensión, arranque autónomo, aporte de inercia con grid-forming) y servicios para la red, como mitigar restricciones y gestionar congestiones.\n\nEs la política del Gobierno que orienta la regulación de la CREG. Aplica a entidades públicas y privadas, a los agentes del mercado mayorista y a los agentes de las ZNI.",
+    "aplica_a": "Entidades públicas y privadas, agentes del Mercado de Energía Mayorista y agentes de las ZNI",
+    "enlace": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=275657"
+  }
+}

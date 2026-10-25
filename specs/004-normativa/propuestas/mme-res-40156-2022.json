@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Resolución MME 40156 (2022)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_minminas_40156_2022.htm",
+  "datos": {
+    "id": "MME-RES-40156-2022",
+    "fecha": "2022-04-29",
+    "emisor": "MME",
+    "tipo": "Resolución",
+    "numero": "40156",
+    "titulo": "Por la cual se adopta el Plan de Acción Indicativo 2022-2030 para el desarrollo del Programa de Uso Racional y Eficiente de la Energía, PROURE, que define objetivos y metas indicativas de eficiencia energética, acciones y medidas sectoriales y estrategias base para el cumplimiento de metas y se adoptan otras disposiciones",
+    "estado": "Modificada",
+    "resumen": "Adopta el plan de acción del PROURE 2022-2030, que incluye el almacenamiento de energía eléctrica entre sus medidas. Modificada por la Resolución MME 40042 de 2024.",
+    "explicacion": "El PROURE fija metas de eficiencia energética y las medidas para cumplirlas. Entre ellas está el almacenamiento de energía eléctrica, un literal que luego modificó la Resolución MME 40042 de 2024.\n\nLa Resolución 40042 de 2024 también fija lineamientos sobre la fecha de puesta en operación y las garantías de proyectos, incluido el almacenamiento con baterías.",
+    "aplica_a": "Sector energético; proyectos de eficiencia energética y almacenamiento",
+    "relacionada_con": "MME-RES-40042-2024",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_minminas_40156_2022.htm"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Estudio Academia Documento de trabajo (2025)",
+  "fuente": "https://repositorio.unal.edu.co/items/abb83ce8-e5fc-44b2-ae69-6126f42c02f9",
+  "datos": {
+    "id": "ACADEMIA-EST-BARRERAS-2025",
+    "fecha": "2025-01-01",
+    "precision_fecha": "Año",
+    "emisor": "Academia",
+    "tipo": "Estudio",
+    "numero": "Documento de trabajo",
+    "titulo": "Barreras para la integración de los sistemas de almacenamiento de energía (SAE) en Colombia",
+    "estado": "Vigente",
+    "resumen": "Documento de trabajo que analiza las barreras para integrar los sistemas de almacenamiento de energía en Colombia, con información disponible hasta septiembre de 2025.",
+    "explicacion": "Es un resumen técnico con fines informativos y de análisis sectorial. Los autores aclaran que no es asesoría regulatoria, lineamiento oficial ni recomendación de inversión.",
+    "aplica_a": "Universidad Nacional de Colombia, sede Medellín (Arango Aramburo, S.; Pérez Gonzáles, E.; Pérez Gutiérrez, J. F.; Valencia Hernández, V.; Espinosa, J.; Roveda, N.; Lozada, J. M.; Suárez, S.; Giraldo, J.)",
+    "enlace": "https://repositorio.unal.edu.co/items/abb83ce8-e5fc-44b2-ae69-6126f42c02f9"
+  }
+}

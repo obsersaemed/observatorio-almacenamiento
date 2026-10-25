@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Acuerdo CNO 1354 (2020)",
+  "fuente": "https://www.cno.org.co/node/87865",
+  "datos": {
+    "id": "CNO-ACU-1354-2020",
+    "fecha": "2020-10-01",
+    "emisor": "CNO",
+    "tipo": "Acuerdo",
+    "numero": "1354",
+    "titulo": "Por el cual se aprueban los capítulos de los Sistemas de Almacenamiento de Energía Eléctrica con Baterías (SAEB) que se conecten al SIN: «Definiciones», «Condiciones técnicas para la conexión y pruebas que deben cumplir antes de su entrada en operación comercial», «Definición y formato de reporte de los parámetros técnicos (SAEB)» y «Requisitos de entrada en operación comercial de los SAEB»",
+    "estado": "Derogada",
+    "resumen": "Primer acuerdo del CNO con las condiciones técnicas de conexión, pruebas, reporte de parámetros y entrada en operación comercial de los SAEB. Derogado por el artículo 108 de la Resolución CREG 101 113 de 2026.",
+    "explicacion": "Desarrolló los aspectos técnicos que la Resolución CREG 098 de 2019 delegó en el CNO: definiciones, condiciones para conectar un SAEB y las pruebas antes de su operación comercial, el formato para reportar sus parámetros técnicos y los requisitos de entrada en operación comercial. Sustituyó al Acuerdo 1300 de 2020.\n\nSegún el propio CNO, quedó derogado por el artículo 108 de la Resolución CREG 101 113 de 2026. Se mantiene en la línea de tiempo como antecedente.",
+    "aplica_a": "Agentes que conectaban SAEB al SIN bajo la Resolución CREG 098 de 2019; CND",
+    "relacionada_con": "CREG-RES-098-2019; CREG-RES-101113-2026",
+    "enlace": "https://www.cno.org.co/node/87865"
+  }
+}

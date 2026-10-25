@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Documento XM Propuesta grid-forming, versión 1 (2026)",
+  "fuente": "https://www.xm.com.co/noticias/8971-conversatorio-sobre-el-uso-del-control-formador-de-red-gfm-en-sistemas-de",
+  "datos": {
+    "id": "XM-DOC-GRIDFORMING-2026",
+    "fecha": "2026-04-01",
+    "precision_fecha": "Mes",
+    "emisor": "XM",
+    "tipo": "Documento",
+    "numero": "Propuesta grid-forming, versión 1",
+    "titulo": "Propuesta de uso del control formador de red (Grid-Forming) para recursos basados en inversores con énfasis en sistemas de almacenamiento de energía con baterías",
+    "estado": "En consulta",
+    "resumen": "Propuesta de XM sobre los requisitos para que los SAEB y otros recursos con inversores operen como formadores de red (grid-forming) en el SIN. No es regulación vigente.",
+    "explicacion": "Un convertidor grid-forming mantiene su propia referencia de tensión, lo que ayuda a la estabilidad de la red cuando hay poca generación síncrona. XM propone requisitos técnicos y operativos para integrar esta tecnología, con énfasis en los SAEB.\n\nEl propio documento aclara que es una propuesta y no la regulación vigente. La versión 1 ajusta, entre otros, el requisito de corriente máxima y la forma de medir los tiempos de respuesta.",
+    "aplica_a": "Desarrolladores y operadores de SAEB y de otros recursos basados en inversores; CND",
+    "enlace": "https://www.xm.com.co/noticias/8971-conversatorio-sobre-el-uso-del-control-formador-de-red-gfm-en-sistemas-de"
+  }
+}

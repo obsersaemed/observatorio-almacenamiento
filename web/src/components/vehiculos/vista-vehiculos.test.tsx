@@ -29,6 +29,13 @@ beforeEach(() => window.history.replaceState(null, "", "/vehiculos"));
 afterEach(() => vi.restoreAllMocks());
 
 describe("VistaVehiculos", () => {
+  test("el encabezado de las opciones del filtro dice «Vehículos», que es lo que cuenta (E2E 004, observación 1)", () => {
+    render(<VistaVehiculos lineas={lineas} ventas={ventas} importacion={importacion} />);
+    abrirFiltro("Marca");
+    expect(screen.getByText("Vehículos")).toBeInTheDocument();
+    expect(screen.queryByText("Proyectos")).not.toBeInTheDocument();
+  });
+
   test("muestra filtros, créditos, KPI, tabla de tecnología y las cuatro gráficas (CA-01.1)", () => {
     render(<VistaVehiculos lineas={lineas} ventas={ventas} importacion={importacion} />);
     for (const t of ["Marca", "Tipo de batería", "Línea"]) expect(screen.getByRole("button", { name: new RegExp(`^${t} Todas`) })).toBeInTheDocument();

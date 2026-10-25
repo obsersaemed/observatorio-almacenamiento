@@ -1,0 +1,19 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Acuerdo CNO 2028 (2025)",
+  "fuente": "https://www.cno.org.co/index.php/node/290031",
+  "datos": {
+    "id": "CNO-ACU-2028-2025",
+    "fecha": "2025-09-04",
+    "emisor": "CNO",
+    "tipo": "Acuerdo",
+    "numero": "2028",
+    "titulo": "Por el cual se actualiza el procedimiento para determinar la velocidad de toma de carga y descarga de las unidades de generación del SIN y el plan de pruebas para su determinación",
+    "estado": "Vigente",
+    "resumen": "Actualiza el procedimiento para determinar la velocidad de toma de carga y descarga (rampas) y su plan de pruebas. Sustituye el Acuerdo 1849 de 2024.",
+    "explicacion": "La velocidad de toma de carga y descarga es uno de los parámetros técnicos que se declaran al CND para el planeamiento operativo, según la Resolución CREG 025 de 1995. Este acuerdo define cómo se determina y cómo se prueba.\n\nEl acuerdo al que sustituye, el 1849 de 2024, está en el índice SAEB del CNO, y el 2028 hace parte de los documentos SAEB que reúne el Observatorio.",
+    "aplica_a": "Agentes que declaran parámetros técnicos al CND",
+    "enlace": "https://www.cno.org.co/index.php/node/290031"
+  }
+}

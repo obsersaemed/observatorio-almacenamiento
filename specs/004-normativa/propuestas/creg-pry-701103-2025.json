@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Proyecto de resolución CREG 701 103 (2025)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_701-103_2025.htm",
+  "datos": {
+    "id": "CREG-PRY-701103-2025",
+    "fecha": "2025-09-13",
+    "emisor": "CREG",
+    "tipo": "Proyecto de resolución",
+    "numero": "701 103",
+    "titulo": "Por la cual se definen los mecanismos para incorporar sistemas de almacenamiento de energía eléctrica con baterías en el Sistema Interconectado Nacional",
+    "estado": "Derogada",
+    "resumen": "Proyecto de la CREG que sometió a consulta el nuevo marco de los SAEB. Su consulta cerró y la versión definitiva es la Resolución CREG 101 113 de 2026.",
+    "explicacion": "La CREG lo aprobó en su sesión 1402 y lo publicó para comentarios durante treinta días, con solicitud de concepto al CNO.\n\nHoy sirve como antecedente: permite comparar lo que se propuso con lo que quedó en la Resolución CREG 101 113 de 2026. Su análisis está en el Documento CREG 901 225 de 2025.",
+    "aplica_a": "Agentes del mercado, CNO y demás interesados (como proyecto de consulta)",
+    "relacionada_con": "CREG-DOC-901225-2025; CREG-RES-101113-2026",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/resolucion_creg_701-103_2025.htm"
+  }
+}

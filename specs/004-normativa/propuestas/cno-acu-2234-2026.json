@@ -1,0 +1,19 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Acuerdo CNO 2234 (2026)",
+  "fuente": "https://www.cno.org.co/content/acuerdo-2234-por-el-cual-se-aprueba-la-actualizacion-del-procedimiento-para-la-declaracion",
+  "datos": {
+    "id": "CNO-ACU-2234-2026",
+    "fecha": "2026-09-01",
+    "emisor": "CNO",
+    "tipo": "Acuerdo",
+    "numero": "2234",
+    "titulo": "Por el cual se aprueba la actualización del «Procedimiento para la declaración de entrada en operación comercial de proyectos de transmisión que incluyan activos de uso del Sistema de Transmisión Nacional - STN -, del Sistema de Transmisión Regional - STR -, de usuarios conectados directamente al STN, al STR y de recursos de generación»",
+    "estado": "Vigente",
+    "resumen": "Procedimiento para declarar la entrada en operación comercial de proyectos de transmisión y de recursos de generación. Sustituye el Acuerdo 2186 de 2026, que a su vez sustituyó al 1937 de 2025.",
+    "explicacion": "Define los pasos y anexos para declarar la entrada en operación comercial de un proyecto conectado al STN o al STR. Es una norma general, no exclusiva de los SAEB.\n\nSe incluye porque el acuerdo que reemplaza en la cadena, el 1937 de 2025, aparece en el índice SAEB del CNO.",
+    "aplica_a": "Agentes que declaran la entrada en operación comercial de proyectos de transmisión o de generación; CND",
+    "enlace": "https://www.cno.org.co/content/acuerdo-2234-por-el-cual-se-aprueba-la-actualizacion-del-procedimiento-para-la-declaracion"
+  }
+}

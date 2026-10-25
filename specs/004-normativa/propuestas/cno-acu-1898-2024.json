@@ -1,0 +1,19 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Acuerdo CNO 1898 (2024)",
+  "fuente": "https://www.cno.org.co/index.php/node/276918",
+  "datos": {
+    "id": "CNO-ACU-1898-2024",
+    "fecha": "2024-11-14",
+    "emisor": "CNO",
+    "tipo": "Acuerdo",
+    "numero": "1898",
+    "titulo": "Por el cual se aprueba la actualización de los procedimientos para solicitar el cambio de parámetros técnicos de las plantas de generación, activos de uso del STN, activos de conexión al STN y sistemas de almacenamiento de energía con baterías SAEB",
+    "estado": "Vigente",
+    "resumen": "Procedimiento para solicitar el cambio de los parámetros técnicos de los SAEB, las plantas de generación y los activos del STN. Sustituye el Acuerdo 1585 de 2022.",
+    "explicacion": "Quien opera un SAEB y necesita cambiar uno de sus parámetros técnicos debe presentar la solicitud ante el CND antes del día 20 de cada mes, con los valores nuevos y su soporte técnico. El CND emite concepto y el CNO decide si expide el acuerdo que aprueba el cambio.\n\nLas solicitudes de los SAEB se envían al correo info@xm.com.co. Hay un trámite aparte para los cambios de emergencia que buscan preservar la seguridad de personas, equipos o instalaciones.",
+    "aplica_a": "Agentes generadores, transmisores y distribuidores con SAEB; CND",
+    "enlace": "https://www.cno.org.co/index.php/node/276918"
+  }
+}

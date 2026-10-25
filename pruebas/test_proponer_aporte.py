@@ -9,7 +9,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "scripts"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from proponer_aporte import proponer  # noqa: E402
+from proponer_aporte import proponer, proponer_carpeta  # noqa: E402
 from supabase_rest import ClienteRest  # noqa: E402
 from test_importar import ServidorFalso  # noqa: E402
 
@@ -78,3 +78,31 @@ class TestProponerAporte(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestProponerCarpeta(unittest.TestCase):
+    """004 · T17 · RF-14, CA-14.1: la carga inicial se envía como un aporte por archivo."""
+
+    def carpeta(self, propuestas):
+        import tempfile
+        d = Path(tempfile.mkdtemp())
+        for i, p in enumerate(propuestas):
+            (d / f"{i:02d}.json").write_text(json.dumps(p, ensure_ascii=False), encoding="utf-8")
+        return d
+
+    def test_envia_un_aporte_por_archivo_en_orden(self):
+        servidor = ServidorFalso(201, cuerpo=[{"id": 5}])
+        self.addCleanup(servidor.cerrar)
+        d = self.carpeta([NOTICIA, {**NOTICIA, "descripcion": "Otra"}])
+        codigo, mensajes = proponer_carpeta(d, ClienteRest(servidor.url, "llave-de-prueba"), ESQUEMAS)
+        self.assertEqual(codigo, 0, mensajes)
+        self.assertEqual([p["cuerpo"][0]["descripcion"] for p in servidor.peticiones], ["Nueva subasta de almacenamiento", "Otra"])
+
+    def test_se_detiene_en_el_primer_error(self):
+        servidor = ServidorFalso(201, cuerpo=[{"id": 5}])
+        self.addCleanup(servidor.cerrar)
+        d = self.carpeta([{**NOTICIA, "fuente": ""}, NOTICIA])
+        codigo, mensajes = proponer_carpeta(d, ClienteRest(servidor.url, "llave-de-prueba"), ESQUEMAS)
+        self.assertEqual(codigo, 1)
+        self.assertEqual(servidor.peticiones, [])
+        self.assertTrue(any("00.json" in m for m in mensajes))

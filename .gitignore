@@ -8,3 +8,4 @@ Vehiculos/data/raw/
 
 # Estado local de la CLI de Supabase (vínculo con el proyecto)
 supabase/.temp/
+fuentes/

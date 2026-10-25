@@ -104,6 +104,26 @@ class TestValidador(unittest.TestCase):
         self.assertEqual(errores, [])
         self.assertTrue(any("CREG-X" in a for a in avisos))
 
+    def test_estudio_academico_es_una_fila_valida(self):
+        """004 · T01 · aclaración 1: los estudios van en normativa con emisor Academia y tipo Estudio."""
+        (self.dir / "normativa.csv").write_text(
+            "id,fecha,precision_fecha,emisor,tipo,numero,titulo,estado,resumen,explicacion,aplica_a,relacionada_con,enlace\n"
+            "ACADEMIA-ESTUDIO-X-2024,2024-01-01,Año,Academia,Estudio,X,Estudio ficticio,Vigente,,,,,https://repositorio.unal.edu.co/x\n",
+            encoding="utf-8")
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto())
+        self.assertEqual(errores, [])
+
+    def test_precision_de_fecha(self):
+        """004 · T19 · CA-04.3: una norma sin día lleva precision_fecha Mes o Año."""
+        enc = "id,fecha,precision_fecha,emisor,tipo,numero,titulo,estado,resumen,explicacion,aplica_a,relacionada_con,enlace\n"
+        fila = "XM-DOC-X-2026,2026-04-01,{},XM,Documento,X,Doc ficticio,En consulta,,,,,https://www.xm.com.co/x\n"
+        (self.dir / "normativa.csv").write_text(enc + fila.format("Mes"), encoding="utf-8")
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto())
+        self.assertEqual(errores, [])
+        (self.dir / "normativa.csv").write_text(enc + fila.format("Semana"), encoding="utf-8")
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto())
+        self.assertTrue(any("precision_fecha" in e for e in errores))
+
 
 ENC_LINEAS = "Marca,Línea,Tipo de batería,Capacidad mínima [kWh],Capacidad máxima [kWh],Potencia [kW]\n"
 ENC_VENTAS = "Línea,Año,Unidades\n"

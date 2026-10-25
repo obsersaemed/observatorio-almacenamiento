@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Documento CREG 901 225 (2025)",
+  "fuente": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/originales/Proyecto_Resoluci%C3%B3n_CREG_701_103_2025/Documento_CREG_901_225_2025.pdf",
+  "datos": {
+    "id": "CREG-DOC-901225-2025",
+    "fecha": "2025-09-13",
+    "emisor": "CREG",
+    "tipo": "Documento",
+    "numero": "901 225",
+    "titulo": "Por la cual se definen los mecanismos para incorporar sistemas de almacenamiento de energía eléctrica con baterías en el Sistema Interconectado Nacional",
+    "estado": "Vigente",
+    "resumen": "Documento soporte del Proyecto de Resolución CREG 701 103 de 2025, con los antecedentes y el análisis del nuevo marco de los SAEB.",
+    "explicacion": "Resume la regulación que se ha aplicado a los SAEB en Colombia (Resoluciones CREG 098 de 2019 y 101 023 de 2022), la convocatoria UPME STR 01-2021 del Atlántico y los acuerdos del CNO relacionados, y explica las propuestas del nuevo marco.\n\nEs útil para entender por qué cambió la regulación. No crea obligaciones por sí mismo.",
+    "aplica_a": "Consulta de antecedentes y análisis regulatorio",
+    "relacionada_con": "CREG-PRY-701103-2025",
+    "enlace": "https://gestornormativo.creg.gov.co/gestor/entorno/docs/originales/Proyecto_Resoluci%C3%B3n_CREG_701_103_2025/Documento_CREG_901_225_2025.pdf"
+  }
+}

@@ -42,6 +42,7 @@ afterAll(async () => {
   await servicio.from("proyectos").delete().like("nombre", `${prefijo}%`);
   await servicio.from("aportes").delete().like("descripcion", `${prefijo}%`);
   await servicio.from("historial").delete().like("registro", `${prefijo}%`);
+  await servicio.from("normas").delete().like("id", `${prefijo}%`);
 });
 
 describe("RLS para visitantes anónimos", () => {
@@ -113,6 +114,24 @@ describe("restricciones de la base (CA-16.1)", () => {
       .from("proyectos")
       .insert({ ...proyecto("latitud", "Pendiente"), latitud: 49.653 });
     expect(error?.code).toBe("23514");
+  });
+});
+
+describe("normas (004 · T02, aclaración 1)", () => {
+  const norma = (id: string, emisor: string, tipo: string) => ({
+    id: `${prefijo}-${id}`, fecha: "2024-01-01", emisor, tipo, numero: "X", titulo: "Norma ficticia de prueba",
+    estado: "Vigente", enlace: "https://ejemplo.co/norma", publicacion: "Pendiente",
+  });
+
+  test("un estudio académico (emisor Academia, tipo Estudio) se acepta", async () => {
+    const { error } = await servicio.from("normas").insert(norma("estudio", "Academia", "Estudio"));
+    expect(error).toBeNull();
+  });
+
+  test("un emisor fuera de la lista se rechaza con el mensaje compartido", async () => {
+    const { error } = await servicio.from("normas").insert(norma("emisor", "Emisor X", "Resolución"));
+    const valores = definicion.normativa.columnas.find((c) => c.nombre === "emisor")!.valores!.join(", ");
+    expect(error?.message).toBe(mensaje("valores", { columna: "emisor", valor: "Emisor X", valores }));
   });
 });
 

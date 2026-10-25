@@ -1,0 +1,20 @@
+{
+  "tipo": "Norma",
+  "agente": "ficha-normativa",
+  "descripcion": "Carga inicial 004: Ley Congreso 2099 (2021)",
+  "fuente": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=166326",
+  "datos": {
+    "id": "CONGRESO-LEY-2099-2021",
+    "fecha": "2021-07-10",
+    "emisor": "Congreso",
+    "tipo": "Ley",
+    "numero": "2099",
+    "titulo": "Por medio de la cual se dictan disposiciones para la transición energética, la dinamización del mercado energético, la reactivación económica del país y se dictan otras disposiciones",
+    "estado": "Modificada",
+    "resumen": "Ley de transición energética que modifica y adiciona la Ley 1715 de 2014, incluido lo relativo al almacenamiento de energía.",
+    "explicacion": "Moderniza la Ley 1715 de 2014 y amplía su alcance a las fuentes no convencionales de energía. Mantiene el almacenamiento dentro de su objeto e incluye el hidrógeno como opción de almacenamiento de energía.\n\nSu artículo 48 fue derogado por la Ley 2294 de 2023 (Plan Nacional de Desarrollo).",
+    "aplica_a": "Sector energético en general",
+    "relacionada_con": "CONGRESO-LEY-1715-2014",
+    "enlace": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=166326"
+  }
+}
