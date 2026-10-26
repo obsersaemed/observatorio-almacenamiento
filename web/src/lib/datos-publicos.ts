@@ -7,6 +7,7 @@ import { columnasDeSeccion } from "./csv";
 import type { FilaPublica } from "./proyectos-mapa";
 import type { FilaLinea, FilaVenta, Importacion } from "./vehiculos";
 import type { Norma } from "./normativa";
+import type { Noticia } from "./noticias";
 import { fetchConReintento } from "./fetch-con-reintento";
 
 export const ETIQUETA_PROYECTOS = "proyectos";
@@ -132,4 +133,27 @@ export async function normasPublicas(): Promise<Norma[]> {
     return [];
   }
   return leerNormas(supabase);
+}
+
+/** Etiqueta de caché de /noticias: la misma tabla que /admin revalida al aprobar (spec 005, RF-08). */
+export const ETIQUETA_NOTICIAS = "noticias";
+
+/** Noticias aprobadas (spec 005, RF-05); el orden de la lista lo da lib/noticias. */
+export async function leerNoticias(supabase: SupabaseClient): Promise<Noticia[]> {
+  const { data, error } = await supabase.from("noticias").select("fecha, titulo, medio, enlace, resumen").eq("publicacion", "Aprobado").order("fecha", { ascending: false });
+  if (error) throw new Error(`No se pudieron leer las noticias: ${error.message}`);
+  return (data ?? []) as Noticia[];
+}
+
+export async function noticiasPublicas(): Promise<Noticia[]> {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 300, expire: 86_400 });
+  cacheTag(ETIQUETA_NOTICIAS);
+
+  const supabase = clientePublico();
+  if (!supabase) {
+    console.warn("Sin NEXT_PUBLIC_SUPABASE_URL/ANON_KEY: /noticias se muestra sin datos.");
+    return [];
+  }
+  return leerNoticias(supabase);
 }

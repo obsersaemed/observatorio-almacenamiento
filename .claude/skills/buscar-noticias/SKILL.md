@@ -3,8 +3,11 @@ name: buscar-noticias
 description: Busca noticias recientes de almacenamiento de energía (SAEB/BESS) en Colombia y las propone a la cola de revisión del observatorio (aportes Pendiente, origen agente) con scripts/proponer_aporte.py. Usar cuando el usuario pida actualizar o buscar noticias.
 ---
 
-Las noticias no se escriben en `datos/noticias.csv`: se **proponen** a la cola de aportes y
-un editor las aprueba en `/admin`. Nada se publica sin esa aprobación.
+No edites `datos/noticias.csv` (lo escribe el respaldo diario): las noticias se **proponen** a
+la cola de aportes y un editor las aprueba en `/admin`. Nada se publica sin esa aprobación.
+Alcance (spec 005): almacenamiento con baterías en Colombia (proyectos, subastas, regulación,
+empresas, red). Se excluyen el hidrógeno, el bombeo y las baterías de vehículos, salvo que
+traten de almacenamiento conectado a la red.
 
 1. Consulta qué hay para no repetir: descarga `http://localhost:3000/datos/noticias.csv`
    (o el sitio publicado) y revisa en `/admin` los aportes pendientes de tipo Noticia.
@@ -13,9 +16,10 @@ un editor las aprueba en `/admin`. Nada se publica sin esa aprobación.
    proyectos publicados (`/datos/proyectos.csv`).
 3. Prioriza fuentes primarias (CREG, MME, UPME, XM, CNO, empresas) y medios especializados.
    Descarta notas sin fecha o que solo repiten un comunicado ya incluido. No inventes
-   fechas, cifras ni titulares: todo sale de la nota.
-4. Por cada noticia, escribe un JSON temporal (en el scratchpad, no en el repositorio) y
-   propónlo:
+   fechas, cifras ni titulares: abre cada nota y verifica en ella la fecha, el medio, el
+   titular y el enlace. El resumen propio va en 1–2 frases y no copia el texto del medio.
+4. Por cada noticia, escribe un JSON (en una carga planeada, en `specs/NNN-…/propuestas/`;
+   en una búsqueda suelta, en el scratchpad) y propónlo:
 
    ```json
    {
@@ -38,6 +42,7 @@ un editor las aprueba en `/admin`. Nada se publica sin esa aprobación.
 
    ```bash
    python scripts/proponer_aporte.py --entorno pruebas --archivo <ruta-al-json>
+   python scripts/proponer_aporte.py --entorno pruebas --carpeta <carpeta-con-los-json>
    ```
 
    El script valida con las mismas reglas que el formulario y responde con el número de

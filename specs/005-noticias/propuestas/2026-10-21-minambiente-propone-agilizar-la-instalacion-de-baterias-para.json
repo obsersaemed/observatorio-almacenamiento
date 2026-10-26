@@ -1,0 +1,14 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Propuesta ambiental para acelerar la instalación de SAEB.",
+  "fuente": "https://www.minambiente.gov.co/minambiente-propone-agilizar-la-instalacion-de-baterias-para-almacenar-energia-de-cara-a-el-nino/",
+  "datos": {
+    "fecha": "2026-10-21",
+    "medio": "Ministerio de Ambiente y Desarrollo Sostenible",
+    "titulo": "MinAmbiente propone agilizar la instalación de baterías para almacenar energía de cara a El Niño",
+    "resumen": "MinAmbiente publicará para comentarios un proyecto de resolución para instalar baterías en proyectos de generación y transmisión sin modificar la licencia ambiental, cuando se ubiquen en áreas ya autorizadas. Lo plantea como una medida frente al posible fenómeno de El Niño.",
+    "enlace": "https://www.minambiente.gov.co/minambiente-propone-agilizar-la-instalacion-de-baterias-para-almacenar-energia-de-cara-a-el-nino/",
+    "etiquetas": "ambiental;licenciamiento;El Niño"
+  }
+}

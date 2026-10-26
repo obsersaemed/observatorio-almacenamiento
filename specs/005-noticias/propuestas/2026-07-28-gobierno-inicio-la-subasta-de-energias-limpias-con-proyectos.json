@@ -1,0 +1,14 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Primera subasta de largo plazo que incluye baterías: resultado de la primera jornada.",
+  "fuente": "https://www.larepublica.co/economia/gobierno-inicio-la-subasta-de-energias-limpias-con-proyectos-de-baterias-y-energia-solar-4446021",
+  "datos": {
+    "fecha": "2026-07-28",
+    "medio": "La República",
+    "titulo": "Gobierno inició la subasta de energías limpias con proyectos de baterías y energía solar",
+    "resumen": "En la primera jornada de la subasta de energía limpia del Ministerio de Minas y Energía se asignaron cerca de 100 MW de almacenamiento con baterías junto con unos 270 MW solares, con contratos de 15 años desde 2030.",
+    "enlace": "https://www.larepublica.co/economia/gobierno-inicio-la-subasta-de-energias-limpias-con-proyectos-de-baterias-y-energia-solar-4446021",
+    "etiquetas": "subasta;MME"
+  }
+}

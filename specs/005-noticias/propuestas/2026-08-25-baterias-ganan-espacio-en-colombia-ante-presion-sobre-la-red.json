@@ -1,0 +1,14 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Demanda empresarial de almacenamiento ante el riesgo de racionamiento.",
+  "fuente": "https://www.portafolio.co/energia/baterias-ganan-espacio-en-colombia-ante-presion-sobre-la-red-y-riesgo-de-racionamiento-electrico-para-2026-501149",
+  "datos": {
+    "fecha": "2026-08-25",
+    "medio": "Portafolio",
+    "titulo": "Baterías ganan espacio en Colombia ante presión sobre la red y riesgo de racionamiento eléctrico para 2026-2027",
+    "resumen": "Empresas con alto consumo evalúan combinar baterías y energía solar ante la presión prevista sobre la red a finales de 2026 y comienzos de 2027. La nota recoge ofertas de almacenamiento bajo modelos de pago por servicio.",
+    "enlace": "https://www.portafolio.co/energia/baterias-ganan-espacio-en-colombia-ante-presion-sobre-la-red-y-riesgo-de-racionamiento-electrico-para-2026-501149",
+    "etiquetas": "mercado;empresas;confiabilidad"
+  }
+}

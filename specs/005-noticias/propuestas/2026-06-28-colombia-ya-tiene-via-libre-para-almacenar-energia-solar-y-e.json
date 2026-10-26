@@ -1,0 +1,15 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Lectura regional (Caribe) de la Resolución CREG 101 113 de 2026.",
+  "fuente": "https://www.elheraldo.co/economia/2026/06/28/colombia-ya-tiene-via-libre-para-almacenar-energia-solar-y-eolica-con-baterias/",
+  "datos": {
+    "fecha": "2026-06-28",
+    "medio": "El Heraldo",
+    "titulo": "Colombia ya tiene vía libre para almacenar energía solar y eólica con baterías",
+    "resumen": "Con la nueva regulación de la CREG, la energía solar y eólica producida de día podrá guardarse en baterías y entregarse cuando sube la demanda. La nota recuerda que en el Caribe la generación solar ya cubre buena parte de la demanda en algunas horas.",
+    "enlace": "https://www.elheraldo.co/economia/2026/06/28/colombia-ya-tiene-via-libre-para-almacenar-energia-solar-y-eolica-con-baterias/",
+    "etiquetas": "regulación;solar;Caribe",
+    "norma_relacionada": "CREG-RES-101113-2026"
+  }
+}

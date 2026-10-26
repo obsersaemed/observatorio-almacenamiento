@@ -5,6 +5,7 @@ vi.mock("@/lib/datos-publicos", () => ({
   proyectosParaMapa: () => new Promise(() => {}),
   vehiculosPublicos: () => new Promise(() => {}),
   normasPublicas: () => new Promise(() => {}),
+  noticiasPublicas: () => new Promise(() => {}),
 }));
 
 import Mapa, { metadata as mMapa } from "./mapa/page";
@@ -50,22 +51,25 @@ describe("Evolución normativa (spec 004, RF-17)", () => {
   });
 });
 
-describe("páginas de sección (placeholder hasta la spec 005)", () => {
-  test.each([
-    [Noticias, mNoticias, "Noticias"],
-  ])("%#: tiene título, aviso de construcción y metadatos propios", (Pagina, metadata, titulo) => {
-    render(<Pagina />);
-    expect(screen.getByRole("heading", { level: 1, name: titulo })).toBeInTheDocument();
-    expect(screen.getByText(/en construcción/i)).toBeInTheDocument();
-    expect(metadata.title).toBe(titulo);
-    expect(String(metadata.description ?? "").length).toBeGreaterThan(20);
+describe("Noticias (spec 005, RF-10, RF-09)", () => {
+  test("ya no es un aviso de construcción: título, metadatos y espacio para la lista", () => {
+    render(<Noticias />);
+    expect(screen.getByRole("heading", { level: 1, name: "Noticias" })).toBeInTheDocument();
+    expect(screen.queryByText(/en construcción/i)).toBeNull();
+    expect(screen.getByText(/Cargando las noticias/)).toBeInTheDocument();
+    expect(mNoticias.title).toBe("Noticias");
+    expect(String(mNoticias.description ?? "").length).toBeGreaterThan(20);
+  });
+
+  test("no ofrece la descarga de los datos (CA-09.1)", () => {
+    render(<Noticias />);
+    expect(screen.queryByRole("link", { name: /descargar datos/i })).toBeNull();
   });
 });
 
 describe("descarga de datos de cada sección (RF-14)", () => {
   test.each([
     [Mapa, "/datos/proyectos.csv"],
-    [Noticias, "/datos/noticias.csv"],
   ])("%#: enlaza al CSV de la sección", (Pagina, ruta) => {
     render(<Pagina />);
     expect(screen.getByRole("link", { name: /descargar datos/i })).toHaveAttribute("href", ruta);

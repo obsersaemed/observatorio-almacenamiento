@@ -1,0 +1,15 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Anuncio oficial del proyecto de resolución de la CREG que dio origen a la 101 113 de 2026.",
+  "fuente": "https://www.minenergia.gov.co/es/sala-de-prensa/noticias-index/gobierno-da-luz-verde-regulacion-baterias-para-reducir-tarifas-fortalecer-transicion-energetica/",
+  "datos": {
+    "fecha": "2025-09-22",
+    "medio": "Ministerio de Minas y Energía",
+    "titulo": "Gobierno da luz verde a regulación de baterías para reducir tarifas y fortalecer la transición energética",
+    "resumen": "La CREG aprobó para comentarios el proyecto de resolución con el marco regulatorio de los sistemas de almacenamiento con baterías. El Gobierno lo presenta como una forma de respaldar las renovables, reducir costos asociados a las térmicas y estabilizar la red.",
+    "enlace": "https://www.minenergia.gov.co/es/sala-de-prensa/noticias-index/gobierno-da-luz-verde-regulacion-baterias-para-reducir-tarifas-fortalecer-transicion-energetica/",
+    "etiquetas": "regulación;CREG;consulta",
+    "norma_relacionada": "CREG-PRY-701103-2025"
+  }
+}

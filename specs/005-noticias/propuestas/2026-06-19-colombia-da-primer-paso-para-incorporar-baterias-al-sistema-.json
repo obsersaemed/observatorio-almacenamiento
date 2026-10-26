@@ -1,0 +1,15 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Expedición de la Resolución CREG 101 113 de 2026, marco vigente de los SAEB.",
+  "fuente": "https://www.portafolio.co/economia/gobierno/colombia-da-primer-paso-para-incorporar-baterias-al-sistema-electrico-con-nueva-regulacion-de-la-creg-496566",
+  "datos": {
+    "fecha": "2026-06-19",
+    "medio": "Portafolio",
+    "titulo": "Colombia da primer paso para incorporar baterías al sistema eléctrico con nueva regulación de la CREG",
+    "resumen": "La CREG expidió la resolución que permite integrar baterías al SIN de tres formas: como activos de la red, asociadas a plantas de generación y como sistemas independientes. La norma se apoya en el Decreto 393 de 2026.",
+    "enlace": "https://www.portafolio.co/economia/gobierno/colombia-da-primer-paso-para-incorporar-baterias-al-sistema-electrico-con-nueva-regulacion-de-la-creg-496566",
+    "etiquetas": "regulación;CREG",
+    "norma_relacionada": "CREG-RES-101113-2026"
+  }
+}

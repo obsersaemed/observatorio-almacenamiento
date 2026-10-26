@@ -252,3 +252,11 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - 2026-10-25: el editor aprobó las 25 normas en `/admin` del sitio publicado (base pruebas), con correcciones de texto (explicaciones de Ley 2099, D-064-19, MME 40178, CND 020, grid-forming y estudios; «Aplica a» más corto). La base es ahora la fuente de verdad: las propuestas de `specs/004-normativa/propuestas/` quedan como registro de la carga inicial. `/normativa` publicado: 23 normas + 2 estudios, LCP 1,54 y 1,70 s. Para entrar a `/admin` hubo que esperar el límite de correos de Supabase (servicio incluido).
 - Observación: en la explicación aprobada de la CREG 098 se perdió el salto de párrafo («…eficiencia mínima.El mecanismo…»). Se corrige desde `/admin` o con una corrección.
 - LCP publicado de las demás páginas (dos corridas, mediana): inicio 3,04/2,53 s; `/aportar` 2,94/2,68 s; `/mapa` 3,02/2,55 s; `/vehiculos` 2,49/2,52 s; `/noticias` 2,21/2,25 s. Están en el límite de 2,5 s o por encima: pendiente revisar el rendimiento general del sitio.
+
+## 2026-10-26 · 005 · Noticias
+
+- Brainstorm, spec y plan aprobados. `/noticias`: lista sin filtros, de la más reciente a la más antigua, con fecha, medio, título, resumen propio y el texto «Si quieres saber más sobre esta noticia, haz clic en el enlace» con el enlace a la nota. Sin descargas. Suite 356/356.
+- Skill `buscar-noticias`: ya proponía por la cola; se agregó el envío por carpeta, el alcance (aclaración 2) y la verificación de cada nota.
+- Carga inicial: 9 noticias verificadas (sep. 2025 a oct. 2026), enviadas como aportes pendientes 303 a 311. No se hallaron más noticias de 2025 verificables.
+- E2E limpio 11/13: F-1, aprobar una noticia en `/admin` exigía `publicacion` (error de la 001 que solo afectaba a noticias); corregido como T11. Repetición 14/14.
+- Pendiente: que el editor apruebe las 9 noticias en `/admin` del sitio publicado y medir el LCP de `/noticias` publicado (requiere push).

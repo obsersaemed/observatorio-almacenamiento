@@ -1,12 +1,28 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ListaNoticias } from "@/components/noticias/lista-noticias";
+import { noticiasPublicas } from "@/lib/datos-publicos";
 import { TEXTOS } from "@/lib/textos";
-import { SeccionEnConstruccion } from "@/components/seccion-en-construccion";
 
 export const metadata: Metadata = {
   title: TEXTOS.noticias.titulo,
   description: TEXTOS.noticias.intro,
 };
 
+async function ListaConDatos() {
+  return <ListaNoticias noticias={await noticiasPublicas()} />;
+}
+
 export default function Noticias() {
-  return <SeccionEnConstruccion titulo={TEXTOS.noticias.titulo} descripcion={metadata.description as string} descarga="/datos/noticias.csv" />;
+  return (
+    <main className="mx-auto grid w-full max-w-[var(--page-max)] gap-6 px-4 py-8">
+      <header className="grid gap-2">
+        <h1 className="text-2xl font-extrabold text-[var(--text-heading)] sm:text-3xl">{TEXTOS.noticias.titulo}</h1>
+        <p className="max-w-3xl">{TEXTOS.noticias.intro}</p>
+      </header>
+      <Suspense fallback={<p role="status">Cargando las noticias…</p>}>
+        <ListaConDatos />
+      </Suspense>
+    </main>
+  );
 }

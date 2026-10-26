@@ -1,0 +1,15 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Cubrimiento del Decreto 393 de 2026, base de política pública para los SAEB.",
+  "fuente": "https://energiaestrategica.com/energiaestrategica/es/notes/colombia-lanza-decreto-clave-que-regula-los-sistemas-bess-es-el-habilitador-que-faltaba",
+  "datos": {
+    "fecha": "2026-04-15",
+    "medio": "Energía Estratégica",
+    "titulo": "Colombia lanza decreto clave que regula los sistemas BESS: \"Es el habilitador que faltaba\"",
+    "resumen": "El Decreto 0393 de 2026 fija los lineamientos para integrar el almacenamiento de energía en el SIN y en las zonas no interconectadas, y da a la CREG un plazo máximo de 12 meses para definir cómo se remunera.",
+    "enlace": "https://energiaestrategica.com/energiaestrategica/es/notes/colombia-lanza-decreto-clave-que-regula-los-sistemas-bess-es-el-habilitador-que-faltaba",
+    "etiquetas": "política pública;decreto",
+    "norma_relacionada": "MME-DEC-393-2026"
+  }
+}

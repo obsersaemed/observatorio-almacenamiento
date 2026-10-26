@@ -1,0 +1,14 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Planes de una de las empresas adjudicatarias de almacenamiento en la subasta.",
+  "fuente": "https://www.energiaestrategica.com/es/notes/celsia-acelera-su-apuesta-por-bess-en-colombia-nuestra-meta-es-llegar-a-1-gwh-en-los-proximos-cinco-anos",
+  "datos": {
+    "fecha": "2026-10-08",
+    "medio": "Energía Estratégica",
+    "titulo": "Celsia acelera su apuesta por BESS en Colombia: \"Nuestra meta es llegar a 1 GWh en los próximos cinco años\"",
+    "resumen": "Celsia busca llegar a 1 GWh de almacenamiento en cinco años. En la subasta de largo plazo obtuvo 75 MWh en el producto solar con almacenamiento y planea vender otros 125 MWh con contratos bilaterales.",
+    "enlace": "https://www.energiaestrategica.com/es/notes/celsia-acelera-su-apuesta-por-bess-en-colombia-nuestra-meta-es-llegar-a-1-gwh-en-los-proximos-cinco-anos",
+    "etiquetas": "empresas;Celsia;subasta"
+  }
+}

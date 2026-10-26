@@ -1,0 +1,14 @@
+{
+  "tipo": "Noticia",
+  "agente": "buscar-noticias",
+  "descripcion": "Cierre de la subasta de energía limpia con almacenamiento.",
+  "fuente": "https://www.eltiempo.com/economia/sectores/colombia-asegura-casi-1-000-mw-de-energia-solar-y-almacenamiento-con-baterias-para-blindar-su-seguridad-energetica-3574834",
+  "datos": {
+    "fecha": "2026-07-29",
+    "medio": "El Tiempo",
+    "titulo": "Colombia asegura casi 1.000 MW de energía solar y almacenamiento con baterías para blindar su seguridad energética",
+    "resumen": "La subasta cerró con unos 995 MW de generación solar y cerca de 100 MW de almacenamiento con baterías, la primera vez que un proceso de este tipo incluye almacenamiento a gran escala.",
+    "enlace": "https://www.eltiempo.com/economia/sectores/colombia-asegura-casi-1-000-mw-de-energia-solar-y-almacenamiento-con-baterias-para-blindar-su-seguridad-energetica-3574834",
+    "etiquetas": "subasta;MME"
+  }
+}

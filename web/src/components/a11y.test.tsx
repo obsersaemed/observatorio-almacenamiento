@@ -15,6 +15,7 @@ import { GraficasVehiculos } from "./vehiculos/graficas-vehiculos";
 import { VistaVehiculos } from "./vehiculos/vista-vehiculos";
 import { VistaNormativa } from "./normativa/vista-normativa";
 import { TarjetaNorma } from "./normativa/tarjeta-norma";
+import { ListaNoticias } from "./noticias/lista-noticias";
 import type { Norma } from "@/lib/normativa";
 import { armarLineas } from "@/lib/vehiculos";
 import { aProyectoMapa, type FilaPublica } from "@/lib/proyectos-mapa";
@@ -114,6 +115,7 @@ describe("axe sin violaciones", () => {
     ["vista de /vehiculos (003 · RNF-03)", <VistaVehiculos key="vv" lineas={lineasVe} ventas={ventasVe} importacion={{ actualizado_en: "2026-10-22T15:00:00Z", corte: "2026-09-17" }} />],
     ["gráficas de /vehiculos (003 · RNF-03)", <GraficasVehiculos key="gv" lineas={armarLineas(lineasVe, ventasVe)} corte="2026-09-17" />],
     ["tarjeta del proyecto (002)", <TarjetaProyecto key="t" proyecto={aProyectoMapa(filasMapa[0])} onCerrar={vi.fn()} />],
+    ["lista de /noticias (005 · RNF-04)", <ListaNoticias key="ln" noticias={[{ fecha: "2026-01-02", titulo: "Noticia ficticia 1", medio: "Medio ficticio", enlace: "https://ejemplo.co/1", resumen: "Resumen ficticio." }, { fecha: "2025-05-06", titulo: "Noticia ficticia 2", medio: "Medio ficticio", enlace: "https://ejemplo.co/2", resumen: null }]} />],
     ["vista de /normativa (004 · RNF-04)", <VistaNormativa key="vn" normas={normasFicticias} />],
     ["tarjeta de norma desplegada (004 · RNF-04)", <TarjetaNorma key="tn" norma={normasFicticias[0]} relacionadas={[{ id: "CNO-ACU-1-2020", norma: normasFicticias[1], texto: "Acuerdo CNO 1 de 2020" }, { id: "MME-RES-9-2021", norma: null, texto: "Resolución MME 9 de 2021" }]} abierta onAlternar={vi.fn()} onIrA={vi.fn()} />],
   ])("%s", async (_nombre, elemento) => {

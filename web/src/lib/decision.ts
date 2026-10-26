@@ -92,11 +92,13 @@ export async function aprobarAporte(
   const columnas = columnasDe(tabla);
 
   // El registro resultante debe cumplir las mismas reglas que el formulario y la importación.
+  // Se valida como «Aprobado», que es el estado que tendrá: el esquema de noticias exige
+  // `publicacion` y el formulario no la ofrece (la pone la base al aprobar; 005 · T11).
   const resultante = { ...(actual ?? {}), ...ajustado };
-  const { datos: validado, errores } = validar(
-    ESQUEMA_DE_TABLA[tabla],
-    Object.fromEntries(columnas.map((c) => [c.nombre, resultante[c.sql] ?? ""])),
-  );
+  const { datos: validado, errores } = validar(ESQUEMA_DE_TABLA[tabla], {
+    ...Object.fromEntries(columnas.map((c) => [c.nombre, resultante[c.sql] ?? ""])),
+    publicacion: "Aprobado",
+  });
   if (errores.length || !validado) return { ok: false, errores };
 
   const cambios: Record<string, unknown> = {};

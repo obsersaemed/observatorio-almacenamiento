@@ -78,6 +78,15 @@ describe("aprobarAporte", () => {
     expect(d.aplicar).toHaveBeenCalledWith(5, nuevo);
   });
 
+  test("005 · T11 · una noticia nueva se aprueba aunque el formulario no tenga «publicacion» (E2E-08)", async () => {
+    const d = deps();
+    const nueva = { fecha: "2026-06-19", titulo: "Noticia ficticia", medio: "Medio ficticio", enlace: "https://ejemplo.co/n", resumen: "Resumen." };
+    const r = await aprobarAporte(aporte({ tipo: "Noticia", registro_afectado: null, datos: nueva }), null, nueva, d);
+    expect(r).toEqual({ ok: true });
+    expect(d.aplicar).toHaveBeenCalledWith(5, nueva);
+    expect(d.revalidar).toHaveBeenCalledWith("noticias");
+  });
+
   test("una corrección sin cambios no se aprueba", async () => {
     const d = deps();
     const r = await aprobarAporte(aporte(), actual, { ...actual }, d);
