@@ -64,3 +64,9 @@ Con T20 (fecha sin día en el CSV) y T21 (unidad del desplegable), `npx playwrig
 ## Segunda repetición (2026-10-25)
 
 Con T22 (sin descargas CSV en `/normativa`, cambio de spec pedido por el usuario) y E2E-05b, E2E-07, E2E-15 y E2E-17 ajustados: **27 pasan, 0 fallan** (escritorio y 375 px).
+
+## Verificación publicada (2026-10-25)
+
+Sitio de Vercel con las 25 normas aprobadas por el editor (con correcciones de texto): 23 en la línea de tiempo y 2 estudios en «Documentos de referencia», 10 años (2014–2026), 5 derogadas, sin descargas, consola sin errores, sin desborde a 375 px; el salto de la 101 113 a la 098 la deja desplegada.
+
+**E2E-24 · RNF-05 (LCP de `/normativa` publicado, 4G lenta, mediana de 3):** 1.536 ms y 1.704 ms en dos corridas. ✅ Pasa.
