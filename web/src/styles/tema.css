@@ -11,15 +11,18 @@
   --card-foreground: var(--text-body);
   --popover: var(--surface-card);
   --popover-foreground: var(--text-body);
-  --primary: var(--brand);
+  /* Rediseño 007 (RF-04): botones principales en gris oscuro. */
+  --primary: var(--brand-ink);
   --primary-foreground: var(--brand-contrast);
   --secondary: var(--surface-tint);
   --secondary-foreground: var(--text-heading);
   --muted: var(--surface-tint);
   /* --text-muted (#7f868a) da 3,5:1 sobre el fondo: no cumple WCAG AA. Se usa --text-body. */
   --muted-foreground: var(--text-body);
-  --accent: var(--surface-tint);
-  --accent-foreground: var(--text-heading);
+  /* Acento naranja del rediseño 007; el texto sobre él siempre es oscuro. */
+  --accent: var(--highlight);
+  --accent-soft: var(--highlight-soft);
+  --accent-foreground: var(--text-on-highlight);
   --destructive: var(--status-susp);
   --border: var(--border-card);
   --input: var(--border-strong);

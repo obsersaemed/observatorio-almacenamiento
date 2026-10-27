@@ -61,7 +61,15 @@
 
   --surface-card: var(--white);
   --surface-page: var(--surface-alt);
-  --surface-header: var(--teal-300);
+  --surface-header: var(--teal-600); /* rediseño 007: encabezado gris oscuro */
+  /* Pestaña activa y cabecera de tabla: gris oscuro con texto blanco (≥ 4,5:1). */
+  --surface-selected: var(--teal-600);
+  --text-on-selected: var(--white);
+
+  /* Acentos naranja (rediseño 007): solo bordes, barras, rellenos o fondo de texto oscuro. */
+  --highlight:      var(--peach-400);
+  --highlight-soft: var(--peach-300);
+  --text-on-highlight: var(--ink-900);
 
   --border-card: var(--line-200);
   --border-strong: var(--line-300);

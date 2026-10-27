@@ -1,9 +1,9 @@
 // 005 · T01 · RF-01 · CA-01.1, CA-01.2: orden y enlace principal de las noticias. Datos ficticios.
 import { describe, expect, test } from "vitest";
-import { enlacePrincipal, ordenarNoticias, type Noticia } from "./noticias";
+import { enlacePrincipal, ordenarNoticias, temaDe, type Noticia } from "./noticias";
 
 const noticia = (titulo: string, fecha: string, enlace = `https://ejemplo.co/${titulo}`): Noticia => ({
-  fecha, titulo, medio: "Medio ficticio", enlace, resumen: `Resumen de ${titulo}.`,
+  fecha, titulo, medio: "Medio ficticio", enlace, resumen: `Resumen de ${titulo}.`, etiquetas: null,
 });
 
 describe("ordenarNoticias", () => {
@@ -27,5 +27,32 @@ describe("ordenarNoticias", () => {
 describe("enlacePrincipal", () => {
   test("es la primera URL de la columna enlace", () => {
     expect(enlacePrincipal(noticia("A", "2025-01-01", "https://a.co/nota https://b.co/otra"))).toBe("https://a.co/nota");
+  });
+});
+
+// 007 · T10 · RF-28 · CA-28.1, CA-28.2, CA-28.3: el tema de la ilustración sale de la primera etiqueta.
+describe("temaDe", () => {
+  test("la primera etiqueta define el tema (CA-28.1)", () => {
+    expect(temaDe("regulación;CREG")).toBe("Regulación");
+    expect(temaDe("Subasta;UPME")).toBe("Subasta");
+    expect(temaDe("mercado")).toBe("Mercado");
+    expect(temaDe(" empresas ; ISA")).toBe("Empresas");
+  });
+
+  test("«ambiental» y «ambiente» son Ambiente (CA-28.2)", () => {
+    expect(temaDe("ambiental;El Niño")).toBe("Ambiente");
+    expect(temaDe("Ambiente")).toBe("Ambiente");
+  });
+
+  test("no distingue mayúsculas ni tildes", () => {
+    expect(temaDe("Política Publica")).toBe("Política pública");
+    expect(temaDe("REGULACION")).toBe("Regulación");
+  });
+
+  test("sin etiquetas o con una primera etiqueta fuera de la lista, «General» (CA-28.3)", () => {
+    expect(temaDe("")).toBe("General");
+    expect(temaDe(null)).toBe("General");
+    expect(temaDe("solar")).toBe("General");
+    expect(temaDe("solar;regulación")).toBe("General");
   });
 });

@@ -107,8 +107,16 @@ const opcion = (page: Page, grupo: string, valor: string) =>
 const opcionesFiltro = (page: Page, grupo: string) =>
   grupoFiltro(page, grupo).getByRole("group", { name: `Opciones de ${grupo}` }).getByRole("checkbox");
 
+/** Rediseño 007 (RF-08): los filtros cargan recogidos tras el botón «Filtros»; se despliega el panel. */
+async function desplegarPanel(page: Page) {
+  const panel = page.getByRole("button", { name: /^(Filtros|Ocultar filtros)/ });
+  if ((await panel.getAttribute("aria-expanded")) !== "true") await panel.click();
+  await expect(panel).toHaveAttribute("aria-expanded", "true");
+}
+
 /** Abre el desplegable del filtro si está cerrado. */
 async function abrirFiltro(page: Page, grupo: string) {
+  await desplegarPanel(page);
   const b = botonFiltro(page, grupo);
   if ((await b.getAttribute("aria-expanded")) !== "true") await b.click();
   await expect(b).toHaveAttribute("aria-expanded", "true");
@@ -710,6 +718,7 @@ test.describe("002 · Implementación en el país (datos)", () => {
     const otra = await context.newPage();
     await otra.goto(url);
     await expect(tabla(otra)).toBeVisible();
+    await desplegarPanel(otra); // 007: el panel carga recogido
     await expect(botonFiltro(otra, "Departamento")).toHaveAccessibleName("Departamento 2 seleccionados");
     await expect(botonFiltro(otra, "Estado")).toHaveAccessibleName("Estado Anunciado");
     for (const [g, v] of [["Departamento", "Antioquia"], ["Departamento", "Huila"], ["Estado", "Anunciado"]]) {
@@ -786,6 +795,7 @@ test.describe("002 · Implementación en el país (datos)", () => {
     expect(await textoKpi(page, "Potencia total proyectada")).toMatch(/\b0(,0)? MW\b/);
     expect(await textoKpi(page, "Capacidad energética total proyectada")).toMatch(/\b0(,0)? MWh\b/);
     // Observación (no bloqueante): ¿se ve el filtro activo «Inactivo»?
+    await desplegarPanel(page); // 007: el panel carga recogido
     const boton = await botonFiltro(page, "Estado").innerText();
     await abrirFiltro(page, "Estado");
     const visible = await opcion(page, "Estado", "Inactivo").isVisible().catch(() => false);
@@ -1083,7 +1093,9 @@ test.describe("002 · Implementación en el país (375 px y RNF)", () => {
     await page.getByText("Filtros", { exact: true }).first().click();
     await expect(botonFiltro(page, "Departamento")).toBeVisible();
     await abrirFiltro(page, "Departamento");
-    await opcion(page, "Departamento", "Antioquia").check();
+    // Se marca el primer departamento ofrecido: tras la limpieza de la siembra los datos reales
+    // pueden no tener Antioquia (ajuste del 2026-10-27, T21 de la 007).
+    await opcionesFiltro(page, "Departamento").first().check();
     await expect(page).toHaveURL(/departamento=/);
     const caja = (await grupoFiltro(page, "Departamento").getByRole("group", { name: "Opciones de Departamento" }).boundingBox())!;
     test.info().annotations.push({ type: "desplegable-375", description: `x ${Math.round(caja.x)}–${Math.round(caja.x + caja.width)}; desborde ${await desborde()}` });

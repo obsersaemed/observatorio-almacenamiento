@@ -6,7 +6,9 @@ import { describe, expect, test, vi } from "vitest";
 import { ListaAportes } from "./aportes/lista";
 import { EncabezadoSitio } from "./encabezado-sitio";
 import { FormularioAporte } from "./formulario-aporte";
-import { Inicio, PanelKpi } from "./inicio";
+import { Inicio, PanelKpi, UltimasNoticias } from "./inicio";
+import { GraficaCrecimiento } from "./grafica-crecimiento";
+import { MiniMapaColombia } from "./mini-mapa-colombia";
 import { MapaProyectos } from "./mapa/mapa-proyectos";
 import { TarjetaProyecto } from "./mapa/tarjeta-proyecto";
 import { VistaMapa } from "./mapa/vista-mapa";
@@ -31,11 +33,14 @@ vi.mock("maplibre-gl", () => {
     remove() {}
     flyTo() {}
     jumpTo() {}
+    addControl() {}
     project([lng, lat]: [number, number]) {
       return { x: (lng + 80) * 10, y: (13 - lat) * 10 };
     }
   }
-  return { default: { Map: Mapa }, Map: Mapa };
+  // 007 · T14: el mapa agrega el control de navegación (acercar y alejar).
+  class NavigationControl {}
+  return { default: { Map: Mapa, NavigationControl }, Map: Mapa, NavigationControl };
 });
 vi.mock("./mapa/mapa-diferido", () => ({ MapaDiferido: () => null }));
 vi.mock("./graficas/graficas-diferidas", () => ({ GraficasDiferidas: () => null }));
@@ -107,7 +112,7 @@ const normasFicticias: Norma[] = [
 describe("axe sin violaciones", () => {
   test.each([
     ["encabezado", <EncabezadoSitio key="e" />],
-    ["inicio", <Inicio key="i" panelKpi={<PanelKpi kpi={kpi} />} />],
+    ["inicio (007)", <Inicio key="i" grafica={<GraficaCrecimiento barras={[{ anio: 2021, mw: 7, proyeccion: false }, { anio: 2027, mw: 30, proyeccion: true }]} sinAnio={1} />} miniMapa={<MiniMapaColombia proyectos={[{ nombre: "Ficticio", estado: "En operación", latitud: 4.4, longitud: -73.2 }]} />} panelKpi={<PanelKpi kpi={kpi} />} noticias={<UltimasNoticias noticias={[{ fecha: "2026-01-02", titulo: "Noticia ficticia 1", medio: "Medio ficticio", enlace: "https://ejemplo.co/1", resumen: null, etiquetas: null }]} />} />],
     ["formulario de aporte", <FormularioAporte key="f" accion={vi.fn()} siteKey="clave" />],
     ["lista de aportes", <ListaAportes key="l" aportes={[{ id: 1, tipo: "Noticia", registro_afectado: null, descripcion: "x", datos: {}, fuente: "https://e.co", origen: "usuario", agente: null, publicacion: "Pendiente", creado_en: "2026-10-20T00:00:00Z" }]} />],
     ["vista de /mapa (002 · RNF-03)", <VistaMapa key="v" filas={filasMapa} />],
@@ -115,7 +120,7 @@ describe("axe sin violaciones", () => {
     ["vista de /vehiculos (003 · RNF-03)", <VistaVehiculos key="vv" lineas={lineasVe} ventas={ventasVe} importacion={{ actualizado_en: "2026-10-22T15:00:00Z", corte: "2026-09-17" }} />],
     ["gráficas de /vehiculos (003 · RNF-03)", <GraficasVehiculos key="gv" lineas={armarLineas(lineasVe, ventasVe)} corte="2026-09-17" />],
     ["tarjeta del proyecto (002)", <TarjetaProyecto key="t" proyecto={aProyectoMapa(filasMapa[0])} onCerrar={vi.fn()} />],
-    ["lista de /noticias (005 · RNF-04)", <ListaNoticias key="ln" noticias={[{ fecha: "2026-01-02", titulo: "Noticia ficticia 1", medio: "Medio ficticio", enlace: "https://ejemplo.co/1", resumen: "Resumen ficticio." }, { fecha: "2025-05-06", titulo: "Noticia ficticia 2", medio: "Medio ficticio", enlace: "https://ejemplo.co/2", resumen: null }]} />],
+    ["lista de /noticias (005 · RNF-04)", <ListaNoticias key="ln" noticias={[{ fecha: "2026-01-02", titulo: "Noticia ficticia 1", medio: "Medio ficticio", enlace: "https://ejemplo.co/1", resumen: "Resumen ficticio.", etiquetas: null }, { fecha: "2025-05-06", titulo: "Noticia ficticia 2", medio: "Medio ficticio", enlace: "https://ejemplo.co/2", resumen: null, etiquetas: null }]} />],
     ["vista de /normativa (004 · RNF-04)", <VistaNormativa key="vn" normas={normasFicticias} />],
     ["tarjeta de norma desplegada (004 · RNF-04)", <TarjetaNorma key="tn" norma={normasFicticias[0]} relacionadas={[{ id: "CNO-ACU-1-2020", norma: normasFicticias[1], texto: "Acuerdo CNO 1 de 2020" }, { id: "MME-RES-9-2021", norma: null, texto: "Resolución MME 9 de 2021" }]} abierta onAlternar={vi.fn()} onIrA={vi.fn()} />],
   ])("%s", async (_nombre, elemento) => {

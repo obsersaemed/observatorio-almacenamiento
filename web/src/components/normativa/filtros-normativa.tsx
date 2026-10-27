@@ -1,8 +1,10 @@
 "use client";
 
 // Filtros de /normativa (spec 004, RF-07): entidad, tipo, estado y año, con el desplegable de
-// /mapa y el conteo de normas por opción. En móvil el panel empieza plegado (RNF-01).
-import { useEffect, useRef, useState } from "react";
+// /mapa y el conteo de normas por opción. Spec 007 (RF-08): van en la barra recogida, con un
+// chip por valor elegido y el conteo de normas.
+import { useState, type ReactNode } from "react";
+import { BarraFiltros } from "@/components/filtros/barra-filtros";
 import {
   CAMPOS_NORMATIVA,
   opcionesDe,
@@ -18,22 +20,26 @@ export function FiltrosNormativa({
   normas,
   filtros,
   onCambiar,
+  conteo,
+  acciones,
 }: {
   normas: Norma[];
   filtros: Filtros;
   onCambiar: (filtros: Filtros) => void;
+  conteo: ReactNode;
+  acciones?: ReactNode;
 }) {
-  const panel = useRef<HTMLDetailsElement>(null);
   const [abierto, setAbierto] = useState<CampoNormativa | null>(null);
-  useEffect(() => {
-    if (panel.current && window.matchMedia?.("(max-width: 639px)").matches) panel.current.open = false;
-  }, []);
 
-  const activos = CAMPOS_NORMATIVA.reduce((n, c) => n + (filtros[c]?.length ?? 0), 0);
+  const activos = CAMPOS_NORMATIVA.flatMap((campo) => (filtros[campo] ?? []).map((valor) => ({ campo, valor, etiqueta: valor })));
   const cambiar = (campo: CampoNormativa, nuevos: string[]) => {
     const siguiente: Filtros = { ...filtros, [campo]: nuevos };
     if (!nuevos.length) delete siguiente[campo];
     onCambiar(siguiente);
+  };
+  const quitar = (campo: string, valor: string) => {
+    const c = campo as CampoNormativa;
+    cambiar(c, (filtros[c] ?? []).filter((v) => v !== valor));
   };
   // Los valores elegidos sin normas con los demás filtros se ven con (0) y se pueden quitar.
   const opciones = (campo: CampoNormativa) => {
@@ -43,11 +49,8 @@ export function FiltrosNormativa({
   };
 
   return (
-    <details ref={panel} open className="rounded-[var(--radius-lg)] border border-border bg-card p-4">
-      <summary className="cursor-pointer font-bold text-[var(--text-heading)]">
-        Filtros{activos ? ` (${activos} ${activos === 1 ? "activo" : "activos"})` : ""}
-      </summary>
-      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <BarraFiltros activos={activos} onQuitar={quitar} conteo={conteo} acciones={acciones}>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {CAMPOS_NORMATIVA.map((campo) => (
           <DesplegableFiltro
             key={campo}
@@ -62,6 +65,6 @@ export function FiltrosNormativa({
           />
         ))}
       </div>
-    </details>
+    </BarraFiltros>
   );
 }

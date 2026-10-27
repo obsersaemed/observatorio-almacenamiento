@@ -44,7 +44,7 @@ describe("leerNoticias (005 · T02 · RF-05, RF-08)", () => {
     expect(cliente.from).toHaveBeenCalledWith("noticias");
     expect(consulta.eq).toHaveBeenCalledWith("publicacion", "Aprobado");
     const columnas = (consulta.select.mock.calls[0] as unknown as [string])[0];
-    for (const c of ["fecha", "titulo", "medio", "enlace", "resumen"]) expect(columnas).toContain(c);
+    for (const c of ["fecha", "titulo", "medio", "enlace", "resumen", "etiquetas"]) expect(columnas).toContain(c);
     expect(columnas).not.toContain("publicacion");
   });
 

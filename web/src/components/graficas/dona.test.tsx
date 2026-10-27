@@ -29,6 +29,22 @@ describe("Dona", () => {
   });
 });
 
+describe("007 · T23: sin imágenes SVG sin nombre (RNF-04, axe svg-img-alt)", () => {
+  test("los sectores (role=img de Recharts) quedan ocultos a lectores de pantalla; el total y la leyenda no", () => {
+    const { container } = render(
+      <Dona etiquetaLista="Marcas" centro="420 vehículos" filas={[{ categoria: "B", valor: 300, porcentaje: 71.4 }, { categoria: "A", valor: 120, porcentaje: 28.6 }]} />,
+    );
+    const imagenes = [...container.querySelectorAll('[role="img"]')];
+    expect(imagenes.length).toBeGreaterThan(0);
+    for (const i of imagenes) expect(i.closest('[aria-hidden="true"]'), "sector expuesto sin nombre").not.toBeNull();
+    // Nada enfocable dentro de lo oculto (axe aria-hidden-focus): la capa del Pie trae tabIndex=0.
+    const enfocables = [...container.querySelectorAll('[aria-hidden="true"] [tabindex]')].filter((e) => Number(e.getAttribute("tabindex")) >= 0);
+    expect(enfocables).toEqual([]);
+    expect(screen.getByTestId("total-dona").closest('[aria-hidden="true"]')).toBeNull();
+    expect(screen.getByRole("list", { name: "Marcas" })).toBeVisible();
+  });
+});
+
 describe("003 · paleta distinguible", () => {
   test("los 10 colores categóricos son distintos entre sí en su valor real (colors.css)", async () => {
     const { readFileSync } = await import("node:fs");

@@ -28,15 +28,19 @@ export function Dona({ filas, centro, etiquetaLista }: { filas: FilaDona[]; cent
   return (
     <>
       <div data-animado={reducido ? "false" : "true"} className="relative h-56">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie data={filas} dataKey="valor" nameKey="categoria" innerRadius="60%" outerRadius="85%" isAnimationActive={!reducido} stroke="var(--surface-card)">
-              {filas.map((f, i) => (
-                <Cell key={f.categoria} fill={COLORES[i % COLORES.length]} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
+        {/* Los sectores de Recharts llevan role="img" sin nombre (axe svg-img-alt): el dibujo se
+            oculta a lectores de pantalla porque la leyenda y la tabla dicen lo mismo (007, T23). */}
+        <div aria-hidden="true" className="h-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={filas} dataKey="valor" nameKey="categoria" innerRadius="60%" outerRadius="85%" isAnimationActive={!reducido} rootTabIndex={-1} stroke="var(--surface-card)">
+                {filas.map((f, i) => (
+                  <Cell key={f.categoria} fill={COLORES[i % COLORES.length]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
         {/* El total cabe dentro del anillo: la cifra arriba y la unidad debajo, más pequeña. */}
         <p data-testid="total-dona" className="pointer-events-none absolute inset-0 grid place-content-center text-center leading-tight text-[var(--text-heading)]">
           <span className="text-lg font-bold">{centro.split(" ")[0]}</span>{" "}

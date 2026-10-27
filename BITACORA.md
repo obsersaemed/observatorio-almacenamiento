@@ -260,3 +260,12 @@ Registro de decisiones, hallazgos y avances del sitio único. Las bitácoras de
 - Carga inicial: 9 noticias verificadas (sep. 2025 a oct. 2026), enviadas como aportes pendientes 303 a 311. No se hallaron más noticias de 2025 verificables.
 - E2E limpio 11/13: F-1, aprobar una noticia en `/admin` exigía `publicacion` (error de la 001 que solo afectaba a noticias); corregido como T11. Repetición 14/14.
 - Pendiente: que el editor apruebe las 9 noticias en `/admin` del sitio publicado y medir el LCP de `/noticias` publicado (requiere push).
+
+## 2026-10-27 · 007 · Rediseño de la interfaz
+
+- Maqueta aprobada (artefacto «Rediseño Observatorio SAEB», versión 21); brainstorm, spec y plan aprobados el 2026-10-26. Implementado con TDD en el worktree `rediseno-ui`: 25 tareas (T22–T25 salieron de los E2E). Suite 432/432; E2E limpio 42/42.
+- Cambios: encabezado gris oscuro con acento naranja y página actual marcada; botones formales; intro al final de cada sección; una sola animación (crecimiento en el inicio); inicio con gráfica de crecimiento, tres secciones principales y últimas noticias; filtros recogidos con chips en `/mapa`, `/vehiculos` y `/normativa`; mapa con botones de zoom y pestañas «Gran escala» / «Detrás del medidor» (en construcción); línea de puntos en `/normativa` que salta a la ficha; ilustración por tema en `/noticias` (primera etiqueta).
+- Decisiones del usuario (2026-10-27): pestaña activa y cabecera de la tabla en gris oscuro con texto blanco (antes 2,76:1); CA-08.1 sin búsqueda en `/mapa`.
+- Entorno: el `node_modules` del worktree es una copia (Turbopack no acepta el enlace fuera de la raíz); `.env.local` copiado del checkout principal (no se versiona).
+- Pendientes ajenos al rediseño: historial de aportes con fecha en UTC (001 E2E-11); el respaldo de normativa de la base de pruebas trae un texto con forma de correo (001 E2E-13, por revisar); E2E viejos que suponen datos ya cambiados (003 E2E-13, 004 escenarios de datos, 005 E2E-07). LCP publicado de `/mapa` y `/vehiculos` en el límite (2,50–2,58 s) antes del rediseño.
+- Pendiente: publicar (merge a `main` y push, con confirmación del usuario), medir el LCP publicado (RNF-05) y cargar los datos de proyectos detrás del medidor (spec aparte).

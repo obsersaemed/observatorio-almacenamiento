@@ -81,6 +81,8 @@ export function MapaProyectos({
         locale: TEXTOS_MAPA,
       });
       creado = m;
+      // Botones «Acercar» y «Alejar» (spec 007, RF-17); sin brújula porque el mapa no rota.
+      m.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-right");
       let cambiado = false;
       m.on("error", () => {
         if (!cambiado && !m.loaded?.()) {

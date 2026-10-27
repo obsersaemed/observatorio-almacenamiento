@@ -22,7 +22,15 @@ const ventas: FilaVenta[] = [
 ];
 const importacion = { actualizado_en: "2026-10-22T15:00:00+00:00", corte: "2026-09-17" };
 
-const abrirFiltro = (titulo: string) => fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
+// Spec 007 (T16): los filtros van en la barra recogida; se despliega el panel antes de abrir uno.
+const desplegar = () => {
+  const boton = screen.getByRole("button", { name: /^(Filtros|Ocultar filtros)/ });
+  if (boton.getAttribute("aria-expanded") === "false") fireEvent.click(boton);
+};
+const abrirFiltro = (titulo: string) => {
+  desplegar();
+  fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
+};
 const kpi = (nombre: RegExp) => screen.getByRole("group", { name: nombre }).textContent;
 
 beforeEach(() => window.history.replaceState(null, "", "/vehiculos"));
@@ -38,6 +46,7 @@ describe("VistaVehiculos", () => {
 
   test("muestra filtros, créditos, KPI, tabla de tecnología y las cuatro gráficas (CA-01.1)", () => {
     render(<VistaVehiculos lineas={lineas} ventas={ventas} importacion={importacion} />);
+    desplegar();
     for (const t of ["Marca", "Tipo de batería", "Línea"]) expect(screen.getByRole("button", { name: new RegExp(`^${t} Todas`) })).toBeInTheDocument();
     expect(screen.getByText(/^Fuentes:/)).toHaveTextContent("Última actualización: 22/10/2026 · Ventas hasta el 17/09/2026");
     expect(kpi(/^Vehículos eléctricos registrados/)).toContain("160");
@@ -94,7 +103,35 @@ describe("VistaVehiculos", () => {
 describe("003 · T13: conteos de los filtros con punto de miles (RNF-04)", () => {
   test("la opción de una línea con 1.577 vehículos se lee «(1.577)»", () => {
     render(<VistaVehiculos lineas={lineas} ventas={[...ventas, { linea: "Model 3", ano: 2025, unidades: 1_567 }]} importacion={importacion} />);
-    fireEvent.click(screen.getByRole("button", { name: /^Línea / }));
+    abrirFiltro("Línea");
     expect(screen.getByRole("checkbox", { name: "Model 3 (1.577)" })).toBeInTheDocument();
+  });
+});
+
+describe("007 · T16: cifras primero y créditos en la barra (RF-20, RF-21, RF-22)", () => {
+  const antes = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+  test("el primer bloque son los KPI y la tabla de participación, con los mismos valores (CA-20.1)", () => {
+    const { container } = render(<VistaVehiculos lineas={lineas} ventas={ventas} importacion={importacion} />);
+    const primero = container.firstElementChild!.firstElementChild as HTMLElement;
+    expect(within(primero).getByRole("group", { name: /^Vehículos eléctricos registrados/ })).toHaveTextContent("160");
+    expect(within(primero).getByRole("group", { name: /^Energía almacenada/ })).toBeInTheDocument();
+    expect(within(primero).getByRole("table", { name: "Participación por tipo de batería" })).toBeInTheDocument();
+  });
+
+  test("después va la barra de filtros recogida con fuentes y fechas visibles, y luego las gráficas (CA-21.1, CA-22.1)", () => {
+    render(<VistaVehiculos lineas={lineas} ventas={ventas} importacion={importacion} />);
+    const boton = screen.getByRole("button", { name: /^Filtros/ });
+    expect(boton).toHaveAttribute("aria-expanded", "false");
+    const creditos = screen.getByText(/^Fuentes:/);
+    expect(creditos).toBeVisible();
+    expect(creditos).toHaveTextContent("Última actualización: 22/10/2026 · Ventas hasta el 17/09/2026");
+    expect(screen.getByRole("status")).toHaveTextContent("160 vehículos");
+    const tabla = screen.getByRole("table", { name: "Participación por tipo de batería" });
+    const graficas = screen.getAllByRole("region");
+    expect(graficas).toHaveLength(4);
+    expect(antes(tabla, boton)).toBe(true);
+    expect(antes(boton, creditos)).toBe(true);
+    for (const g of graficas) expect(antes(creditos, g)).toBe(true);
   });
 });

@@ -75,9 +75,10 @@ const grupoFiltro = (page: Page, g: string) => page.getByRole("group", { name: g
 const botonFiltro = (page: Page, g: string) => grupoFiltro(page, g).getByRole("button", { name: new RegExp(`^${esc(g)} `) });
 const opcion = (page: Page, g: string, v: string) => grupoFiltro(page, g).getByRole("checkbox", { name: new RegExp(`^${esc(v)} \\(\\d+\\)$`) });
 
-/** Contenedor plegable de los filtros (en móvil, un <details> con el resumen «Filtros»). */
-const plegadorFiltros = (page: Page) => page.locator("summary").filter({ hasText: /^\s*Filtros/ }).first();
-const filtrosAbiertos = (page: Page) => plegadorFiltros(page).evaluate((s) => (s.parentElement as HTMLDetailsElement).open);
+/** Plegador de los filtros. Rediseño 007 (RF-08): ya no es un <details>, sino el botón «Filtros»
+ *  de la barra recogida (en todos los anchos); abierto = aria-expanded="true". */
+const plegadorFiltros = (page: Page) => page.getByRole("button", { name: /^(Filtros|Ocultar filtros)/ });
+const filtrosAbiertos = async (page: Page) => (await plegadorFiltros(page).getAttribute("aria-expanded")) === "true";
 
 async function abrirFiltro(page: Page, g: string) {
   const b = botonFiltro(page, g);
@@ -336,6 +337,7 @@ test.describe("004 · Evolución normativa (datos)", () => {
     await expect.poll(() => titulosLinea(page)).toEqual([N.A.titulo, N.B.titulo]);
     await page.getByRole("button", { name: "Limpiar filtros" }).click();
     await expect.poll(() => titulosLinea(page)).toEqual(ORDEN.map((n) => n.titulo));
+    if (!(await filtrosAbiertos(page))) await plegadorFiltros(page).click(); // 007: panel recogido
     await expect(botonFiltro(page, "Entidad")).toHaveAccessibleName(/Todas/);
     await expect(botonFiltro(page, "Estado")).toHaveAccessibleName(/Todas/);
   });

@@ -9,7 +9,7 @@ import { GraficaTecnologia } from "./grafica-tecnologia";
 
 export function Graficas({ proyectos }: { proyectos: ProyectoMapa[] }) {
   return (
-    <section aria-label="Gráficas" className="grid gap-4 lg:grid-cols-3">
+    <section aria-label="Gráficas" className="grid gap-4 min-[860px]:grid-cols-3">
       <GraficaEstados proyectos={proyectos} />
       <GraficaEvolucion proyectos={proyectos} />
       <GraficaTecnologia proyectos={proyectos} />

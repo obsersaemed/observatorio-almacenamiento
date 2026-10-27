@@ -47,7 +47,7 @@ export function Pestanas({
               else if (e.key === "ArrowLeft") mover(i, -1);
             }}
             className={`rounded-[var(--radius-sm)] px-3 py-1 text-xs font-semibold ${
-              elegida ? "bg-[var(--surface-header)] text-[var(--text-heading)] shadow-[var(--shadow-card)]" : "text-[var(--text-heading)]"
+              elegida ? "bg-[var(--surface-selected)] text-[var(--text-on-selected)] shadow-[var(--shadow-card)]" : "text-[var(--text-heading)]"
             }`}
           >
             {o.texto}

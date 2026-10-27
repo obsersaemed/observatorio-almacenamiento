@@ -10,6 +10,7 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { formatoNumero } from "@/lib/formato";
 import type { ProyectoMapa } from "@/lib/proyectos-mapa";
@@ -76,7 +77,7 @@ export function TablaProyectos({
     <div className="max-w-full overflow-x-auto rounded-[var(--radius-lg)] border border-border bg-card">
       <table className="w-full text-left text-sm">
         <caption className="sr-only">Proyectos de almacenamiento con baterías según los filtros</caption>
-        <thead className="bg-[var(--surface-header)] text-[var(--text-heading)]">
+        <thead className="bg-[var(--surface-selected)] text-[var(--text-on-selected)]">
           {tabla.getHeaderGroups().map((grupo) => (
             <tr key={grupo.id}>
               {grupo.headers.map((h) => {
@@ -88,9 +89,10 @@ export function TablaProyectos({
                     aria-sort={sentido === "asc" ? "ascending" : sentido === "desc" ? "descending" : "none"}
                     className="px-3 py-2 font-semibold whitespace-nowrap"
                   >
-                    <button type="button" onClick={h.column.getToggleSortingHandler()} className="font-semibold">
+                    <button type="button" onClick={h.column.getToggleSortingHandler()} className="inline-flex items-center gap-1 font-semibold">
                       {flexRender(h.column.columnDef.header, h.getContext())}
-                      <span aria-hidden="true">{sentido === "asc" ? " ▲" : sentido === "desc" ? " ▼" : ""}</span>
+                      {sentido === "asc" && <ChevronUp aria-hidden="true" className="size-3.5" />}
+                      {sentido === "desc" && <ChevronDown aria-hidden="true" className="size-3.5" />}
                     </button>
                   </th>
                 );

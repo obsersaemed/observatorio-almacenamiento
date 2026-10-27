@@ -1,8 +1,10 @@
 "use client";
 
 // Filtros de /vehiculos (spec 003, RF-02): Marca, Tipo de batería y Línea, con el desplegable
-// de /mapa (T23) y el conteo de vehículos por opción. En móvil el panel empieza plegado.
-import { useEffect, useRef, useState } from "react";
+// de /mapa (T23) y el conteo de vehículos por opción. Spec 007 (RF-21): van en la barra
+// recogida, con un chip por valor elegido y los créditos siempre visibles.
+import { useState, type ReactNode } from "react";
+import { BarraFiltros } from "@/components/filtros/barra-filtros";
 import { CAMPOS_VEHICULOS, opcionesDe, type CampoVehiculo, type FiltrosVehiculos, type LineaVehiculo } from "@/lib/vehiculos";
 import { DesplegableFiltro } from "../mapa/desplegable-filtro";
 
@@ -12,22 +14,28 @@ export function FiltrosVehiculos({
   lineas,
   filtros,
   onCambiar,
+  conteo,
+  acciones,
+  pie,
 }: {
   lineas: LineaVehiculo[];
   filtros: FiltrosVehiculos;
   onCambiar: (filtros: FiltrosVehiculos) => void;
+  conteo: ReactNode;
+  acciones?: ReactNode;
+  pie?: ReactNode;
 }) {
-  const panel = useRef<HTMLDetailsElement>(null);
   const [abierto, setAbierto] = useState<CampoVehiculo | null>(null);
-  useEffect(() => {
-    if (panel.current && window.matchMedia?.("(max-width: 639px)").matches) panel.current.open = false;
-  }, []);
 
-  const activos = CAMPOS_VEHICULOS.reduce((n, c) => n + (filtros[c]?.length ?? 0), 0);
+  const activos = CAMPOS_VEHICULOS.flatMap((campo) => (filtros[campo] ?? []).map((valor) => ({ campo, valor, etiqueta: valor })));
   const cambiar = (campo: CampoVehiculo, nuevos: string[]) => {
     const siguiente: FiltrosVehiculos = { ...filtros, [campo]: nuevos };
     if (!nuevos.length) delete siguiente[campo];
     onCambiar(siguiente);
+  };
+  const quitar = (campo: string, valor: string) => {
+    const c = campo as CampoVehiculo;
+    cambiar(c, (filtros[c] ?? []).filter((v) => v !== valor));
   };
   // Los valores elegidos sin vehículos con los demás filtros se ven con (0) y se pueden quitar.
   const opciones = (campo: CampoVehiculo) => {
@@ -37,11 +45,8 @@ export function FiltrosVehiculos({
   };
 
   return (
-    <details ref={panel} open className="rounded-[var(--radius-lg)] border border-border bg-card p-4">
-      <summary className="cursor-pointer font-bold text-[var(--text-heading)]">
-        Filtros{activos ? ` (${activos} ${activos === 1 ? "activo" : "activos"})` : ""}
-      </summary>
-      <div className="mt-3 grid gap-4 sm:grid-cols-3">
+    <BarraFiltros activos={activos} onQuitar={quitar} conteo={conteo} acciones={acciones} pie={pie}>
+      <div className="grid gap-4 sm:grid-cols-3">
         {CAMPOS_VEHICULOS.map((campo) => (
           <DesplegableFiltro
             key={campo}
@@ -56,6 +61,6 @@ export function FiltrosVehiculos({
           />
         ))}
       </div>
-    </details>
+    </BarraFiltros>
   );
 }

@@ -281,8 +281,10 @@ test.describe("005 · Noticias (datos)", () => {
   test("E2E-10 · CA-10.1: la tarjeta «Noticias» del inicio y el menú llevan a la lista", async ({ page }) => {
     soloEscritorio();
     await page.goto("/");
-    const tarjetaInicio = page.getByRole("navigation", { name: "Secciones" }).getByRole("link", { name: /Noticias/ });
-    await expect(tarjetaInicio).toHaveCount(1);
+    // Rediseño 007 (RF-12, RF-14): el inicio ya no tiene la tarjeta «Noticias» en «Secciones»;
+    // se llega a la lista desde «Últimas noticias», cuyas entradas enlazan a /noticias.
+    const tarjetaInicio = page.getByRole("list", { name: "Últimas noticias" }).getByRole("link").first();
+    await expect(tarjetaInicio).toHaveAttribute("href", "/noticias");
     await tarjetaInicio.click();
     await expect(page).toHaveURL(/\/noticias$/);
     await expect(page.getByText(/Sección en construcción/)).toHaveCount(0);

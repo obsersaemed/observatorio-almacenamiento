@@ -20,7 +20,15 @@ const NORMAS = [
   }),
 ];
 
-const abrirFiltro = (titulo: string) => fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
+// Spec 007 (T19): los filtros van en la barra recogida; se despliega el panel antes de abrir uno.
+const desplegar = () => {
+  const boton = screen.getByRole("button", { name: /^(Filtros|Ocultar filtros)/ });
+  if (boton.getAttribute("aria-expanded") === "false") fireEvent.click(boton);
+};
+const abrirFiltro = (titulo: string) => {
+  desplegar();
+  fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
+};
 const tarjetas = () => within(screen.getByTestId("linea-tiempo")).queryAllByRole("article").map((a) => a.id.replace("norma-", ""));
 
 beforeEach(() => {
@@ -57,6 +65,7 @@ describe("VistaNormativa", () => {
     window.history.replaceState(null, "", "/normativa?entidad=CNO");
     render(<VistaNormativa normas={NORMAS} />);
     expect(tarjetas()).toEqual(["CNO-ACU-2-2022", "CNO-ACU-1-2020"]);
+    desplegar();
     expect(screen.getByRole("button", { name: /^Entidad / })).toHaveTextContent("CNO");
   });
 
@@ -103,5 +112,30 @@ describe("VistaNormativa", () => {
     expect(window.location.search).toBe("");
     const destino = screen.getByRole("article", { name: /CNO 1 de 2020/ });
     expect(within(destino).getByRole("button", { name: /Ver explicación/ })).toHaveAttribute("aria-expanded", "true");
+  });
+});
+
+describe("007 · T19: filtros de normativa recogidos (RF-08, RF-26)", () => {
+  test("al cargar los filtros están recogidos, con chips y conteo (CA-08.4)", () => {
+    window.history.replaceState(null, "", "/normativa?entidad=CREG");
+    render(<VistaNormativa normas={NORMAS} />);
+    const boton = screen.getByRole("button", { name: "Filtros (1)" });
+    expect(boton).toHaveAttribute("aria-expanded", "false");
+    expect(document.getElementById(boton.getAttribute("aria-controls")!)).not.toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent("2 normas");
+    fireEvent.click(within(screen.getByRole("list", { name: "Filtros activos" })).getByRole("button", { name: "Quitar filtro CREG" }));
+    expect(window.location.search).toBe("");
+    expect(screen.getByRole("status")).toHaveTextContent("4 normas");
+    fireEvent.click(screen.getByRole("button", { name: "Filtros" }));
+    expect(screen.getByRole("button", { name: "Ocultar filtros" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: /^Entidad / })).toBeVisible();
+  });
+
+  test("la línea de tiempo conserva años, fichas y «Ver explicación» (CA-26.1)", () => {
+    render(<VistaNormativa normas={NORMAS} />);
+    const linea = screen.getByTestId("linea-tiempo");
+    expect(within(linea).getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual(["2022", "2020", "2019"]);
+    expect(within(linea).getAllByRole("article")).toHaveLength(4);
+    expect(within(linea).getAllByRole("button", { name: "Ver explicación" })).toHaveLength(4);
   });
 });

@@ -13,6 +13,7 @@ export function LineaTiempo({
   publicadas,
   onFuera,
   abrirAlCargar,
+  resaltada = null,
 }: {
   /** Normas del resultado filtrado, sin estudios. */
   normas: Norma[];
@@ -22,6 +23,8 @@ export function LineaTiempo({
   onFuera?: (id: string) => void;
   /** Norma que hay que desplegar y mostrar apenas esté en la lista. */
   abrirAlCargar?: string | null;
+  /** Norma elegida en la línea de puntos (spec 007, RF-25). */
+  resaltada?: string | null;
 }) {
   const reducido = useMovimientoReducido();
   const [abiertas, setAbiertas] = useState<Set<string>>(() => new Set(abrirAlCargar ? [abrirAlCargar] : []));
@@ -92,6 +95,7 @@ export function LineaTiempo({
                   abierta={abiertas.has(n.id)}
                   onAlternar={() => alternar(n.id)}
                   onIrA={irA}
+                  resaltada={resaltada === n.id}
                 />
               </div>
             );

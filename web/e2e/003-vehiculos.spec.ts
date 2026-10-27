@@ -81,7 +81,14 @@ const opcion = (page: Page, grupo: string, valor: string) =>
   grupoFiltro(page, grupo).getByRole("checkbox", { name: new RegExp(`^${esc(valor)} \\([\\d.]+\\)$`) });
 const creditos = (page: Page) => page.getByText(/^Fuentes: ANDEMOS/);
 
+/** Rediseño 007 (RF-08): los filtros cargan recogidos tras el botón «Filtros»; se despliega el panel. */
+async function desplegarPanel(page: Page) {
+  const panel = page.getByRole("button", { name: /^(Filtros|Ocultar filtros)/ });
+  if ((await panel.getAttribute("aria-expanded")) !== "true") await panel.click();
+  await expect(panel).toHaveAttribute("aria-expanded", "true");
+}
 async function abrirFiltro(page: Page, grupo: string) {
+  await desplegarPanel(page);
   const b = botonFiltro(page, grupo);
   if ((await b.getAttribute("aria-expanded")) !== "true") await b.click();
   await expect(b).toHaveAttribute("aria-expanded", "true");
@@ -396,6 +403,8 @@ test.describe("003 · Vehículos (filtros)", () => {
     const url = page.url();
     nota("url", url);
     const foto = async (p: Page) => ({
+      // 007 (RF-08): la barra carga recogida; se despliega para leer los botones de los filtros.
+      panel: await desplegarPanel(p),
       botones: await Promise.all(["Marca", "Tipo de batería", "Línea"].map(async (g) => (await botonFiltro(p, g).innerText()).trim())),
       kpis: await kpis(p),
       tabla: await filasTablaTec(p),

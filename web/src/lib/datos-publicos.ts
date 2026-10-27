@@ -140,7 +140,7 @@ export const ETIQUETA_NOTICIAS = "noticias";
 
 /** Noticias aprobadas (spec 005, RF-05); el orden de la lista lo da lib/noticias. */
 export async function leerNoticias(supabase: SupabaseClient): Promise<Noticia[]> {
-  const { data, error } = await supabase.from("noticias").select("fecha, titulo, medio, enlace, resumen").eq("publicacion", "Aprobado").order("fecha", { ascending: false });
+  const { data, error } = await supabase.from("noticias").select("fecha, titulo, medio, enlace, resumen, etiquetas").eq("publicacion", "Aprobado").order("fecha", { ascending: false });
   if (error) throw new Error(`No se pudieron leer las noticias: ${error.message}`);
   return (data ?? []) as Noticia[];
 }

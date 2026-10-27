@@ -5,11 +5,12 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { csvDe } from "@/lib/csv";
+import { formatoNumero } from "@/lib/formato";
 import { descargarTexto, useFiltrosUrl } from "@/lib/use-filtros-url";
 import { aProyectoMapa, filtrar, kpiSeccion, type CampoFiltro, type FilaPublica } from "@/lib/proyectos-mapa";
 import { Filtros } from "./filtros";
 import { KpiMapa } from "./kpi-mapa";
-import { MapaDiferido } from "./mapa-diferido";
+import { PanelMapa } from "./panel-mapa";
 import { GraficasDiferidas } from "../graficas/graficas-diferidas";
 import { TablaProyectos } from "./tabla-proyectos";
 
@@ -32,19 +33,24 @@ export function VistaMapa({ filas }: { filas: FilaPublica[] }) {
   return (
     <div className="grid gap-6">
       <KpiMapa kpi={kpi} />
-      <div className="grid gap-3">
-        <Filtros proyectos={proyectos} filtros={filtros} onCambiar={escribirFiltros} />
-        <div className="flex flex-wrap gap-3">
-          <Button type="button" variant="outline" onClick={() => escribirFiltros({})} disabled={!consulta}>
-            Limpiar filtros
-          </Button>
-          <Button type="button" variant="outline" onClick={() => descargarCsv(filasResultado())}>
-            Descargar CSV
-          </Button>
-        </div>
-      </div>
+      <Filtros
+        proyectos={proyectos}
+        filtros={filtros}
+        onCambiar={escribirFiltros}
+        conteo={`${formatoNumero(resultado.length)} ${resultado.length === 1 ? "proyecto" : "proyectos"}`}
+        acciones={
+          <>
+            <Button type="button" variant="outline" onClick={() => escribirFiltros({})} disabled={!consulta}>
+              Limpiar filtros
+            </Button>
+            <Button type="button" variant="outline" onClick={() => descargarCsv(filasResultado())}>
+              Descargar CSV
+            </Button>
+          </>
+        }
+      />
       <GraficasDiferidas proyectos={resultado} />
-      <MapaDiferido proyectos={resultado} seleccionado={seleccionado} onSeleccionar={setSeleccionado} />
+      <PanelMapa proyectos={resultado} seleccionado={seleccionado} onSeleccionar={setSeleccionado} />
       <TablaProyectos proyectos={resultado} seleccionado={seleccionado} onElegir={setSeleccionado} />
     </div>
   );

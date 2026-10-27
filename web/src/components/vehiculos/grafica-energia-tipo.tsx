@@ -30,7 +30,7 @@ export function GraficaEnergiaTipo({ lineas }: { lineas: LineaVehiculo[] }) {
               tick={{ fontSize: 12 }}
               label={{ value: "Energía [MWh]", angle: -90, position: "insideLeft", fontSize: 12 }}
             />
-            <Bar dataKey="mwh" fill="var(--primary)" isAnimationActive={!reducido}>
+            <Bar dataKey="mwh" fill="var(--brand)" isAnimationActive={!reducido}>
               <LabelList dataKey="etiqueta" position="top" fontSize={12} fill="var(--text-body)" />
             </Bar>
           </BarChart>

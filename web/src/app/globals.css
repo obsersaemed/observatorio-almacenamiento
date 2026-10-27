@@ -59,3 +59,10 @@
     @apply font-sans;
   }
 }
+
+/* Créditos del mapa (MapLibre): los enlaces se subrayan para distinguirse del texto que los
+   rodea sin depender del color (WCAG 1.4.1; axe link-in-text-block a 375 px). Con el prefijo
+   .maplibregl-map gana a maplibre-gl.css, que se carga después. 007, T24. */
+.maplibregl-map .maplibregl-ctrl-attrib a {
+  text-decoration: underline;
+}

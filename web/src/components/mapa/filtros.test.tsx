@@ -16,12 +16,21 @@ const proyectos = [
   fila({ nombre: "C" }),
 ].map(aProyectoMapa);
 
-const boton = (titulo: string) => screen.getByRole("button", { name: new RegExp(`^${titulo} `) });
+// 007 · T13: el panel empieza recogido; los desplegables están dentro y se despliega primero.
+const abrirPanel = () => {
+  const principal = screen.queryByRole("button", { name: /^Filtros/ });
+  if (principal?.getAttribute("aria-expanded") === "false") fireEvent.click(principal);
+};
+const boton = (titulo: string) => {
+  abrirPanel();
+  return screen.getByRole("button", { name: new RegExp(`^${titulo} `) });
+};
 const abrir = (titulo: string) => fireEvent.click(boton(titulo));
 
 describe("Filtros", () => {
   test("ofrece los 7 filtros cerrados, cada uno con su título y «Todas»", () => {
-    render(<Filtros proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
+    abrirPanel();
     const grupos = screen.getAllByRole("group").filter((g) => g.tagName === "FIELDSET").map((g) => g.querySelector("legend")?.textContent);
     expect(grupos).toEqual(["Estado", "Departamento", "Municipio", "Servicios", "Operador", "Tecnología", "Año de FPO"]);
     expect(boton("Estado")).toHaveAccessibleName("Estado Todas");
@@ -30,7 +39,7 @@ describe("Filtros", () => {
   });
 
   test("al abrirse muestra «Todas», un buscador y cada opción con su conteo", () => {
-    render(<Filtros proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
     abrir("Departamento");
     expect(boton("Departamento")).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("checkbox", { name: "Todas" })).toBeChecked();
@@ -42,7 +51,7 @@ describe("Filtros", () => {
 
   test("marcar una opción agrega el valor al filtro", () => {
     const onCambiar = vi.fn();
-    render(<Filtros proyectos={proyectos} filtros={{ estado: ["Anunciado"] }} onCambiar={onCambiar} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{ estado: ["Anunciado"] }} onCambiar={onCambiar} />);
     abrir("Departamento");
     fireEvent.click(screen.getByRole("checkbox", { name: "Cundinamarca (1)" }));
     expect(onCambiar).toHaveBeenCalledWith({ estado: ["Anunciado"], departamento: ["Cundinamarca"] });
@@ -50,7 +59,7 @@ describe("Filtros", () => {
 
   test("desmarcar quita el valor", () => {
     const onCambiar = vi.fn();
-    render(<Filtros proyectos={proyectos} filtros={{ estado: ["Anunciado", "En operación"] }} onCambiar={onCambiar} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{ estado: ["Anunciado", "En operación"] }} onCambiar={onCambiar} />);
     abrir("Estado");
     fireEvent.click(screen.getByRole("checkbox", { name: /^Anunciado/ }));
     expect(onCambiar).toHaveBeenCalledWith({ estado: ["En operación"] });
@@ -58,7 +67,7 @@ describe("Filtros", () => {
 
   test("«Todas» limpia el filtro", () => {
     const onCambiar = vi.fn();
-    render(<Filtros proyectos={proyectos} filtros={{ estado: ["Anunciado"], departamento: ["Meta"] }} onCambiar={onCambiar} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{ estado: ["Anunciado"], departamento: ["Meta"] }} onCambiar={onCambiar} />);
     abrir("Estado");
     const todas = screen.getByRole("checkbox", { name: "Todas" });
     expect(todas).not.toBeChecked();
@@ -67,13 +76,13 @@ describe("Filtros", () => {
   });
 
   test("el botón dice el valor elegido o cuántos hay elegidos", () => {
-    render(<Filtros proyectos={proyectos} filtros={{ estado: ["Anunciado"], departamento: ["Meta", "Cundinamarca"] }} onCambiar={vi.fn()} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{ estado: ["Anunciado"], departamento: ["Meta", "Cundinamarca"] }} onCambiar={vi.fn()} />);
     expect(boton("Estado")).toHaveAccessibleName("Estado Anunciado");
     expect(boton("Departamento")).toHaveAccessibleName("Departamento 2 seleccionados");
   });
 
   test("el buscador acota las opciones", () => {
-    render(<Filtros proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
     abrir("Departamento");
     fireEvent.change(screen.getByRole("searchbox", { name: "Buscar en Departamento" }), { target: { value: "cun" } });
     const opciones = screen.getAllByRole("checkbox").map((c) => c.getAttribute("aria-label") ?? "Todas");
@@ -81,7 +90,7 @@ describe("Filtros", () => {
   });
 
   test("Escape cierra y devuelve el foco al botón; un clic afuera también cierra", () => {
-    render(<Filtros proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{}} onCambiar={vi.fn()} />);
     abrir("Estado");
     fireEvent.keyDown(screen.getByRole("searchbox", { name: "Buscar en Estado" }), { key: "Escape" });
     expect(screen.queryByRole("checkbox")).toBeNull();
@@ -92,7 +101,7 @@ describe("Filtros", () => {
   });
 
   test("con un departamento elegido, el municipio solo lista los de ese departamento (CA-08.2)", () => {
-    render(<Filtros proyectos={proyectos} filtros={{ departamento: ["Cundinamarca"] }} onCambiar={vi.fn()} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{ departamento: ["Cundinamarca"] }} onCambiar={vi.fn()} />);
     abrir("Municipio");
     const lista = screen.getByRole("group", { name: "Opciones de Municipio" });
     expect(within(lista).getAllByRole("checkbox").map((c) => c.getAttribute("aria-label"))).toEqual([
@@ -101,15 +110,22 @@ describe("Filtros", () => {
     ]);
   });
 
-  test("el panel se puede plegar y dice cuántos filtros hay activos (RNF-01)", () => {
-    render(<Filtros proyectos={proyectos} filtros={{ estado: ["Anunciado"], departamento: ["Meta"] }} onCambiar={vi.fn()} />);
-    const resumen = screen.getByText(/Filtros/, { selector: "summary" });
-    expect(resumen).toHaveTextContent("Filtros (2 activos)");
+  test("007 · T13 · el panel empieza recogido, dice cuántos filtros hay y cada uno es un chip que se quita (CA-08.1, CA-08.3)", () => {
+    const onCambiar = vi.fn();
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{ estado: ["Anunciado"], departamento: ["Meta"] }} onCambiar={onCambiar} />);
+    const principal = screen.getByRole("button", { name: "Filtros (2)" });
+    expect(principal).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("button", { name: /^Estado / })).toBeNull();
+    expect(screen.getByRole("status")).toHaveTextContent("3 proyectos");
+    fireEvent.click(screen.getByRole("button", { name: "Quitar filtro Anunciado" }));
+    expect(onCambiar).toHaveBeenCalledWith({ departamento: ["Meta"] });
+    fireEvent.click(screen.getByRole("button", { name: "Quitar filtro Meta" }));
+    expect(onCambiar).toHaveBeenLastCalledWith({ estado: ["Anunciado"] });
   });
 
   test("T19 · un valor elegido sin proyectos con los demás filtros sigue visible con (0) y se puede quitar (O-2)", () => {
     const onCambiar = vi.fn();
-    render(<Filtros proyectos={proyectos} filtros={{ departamento: ["Antioquia"], estado: ["Inactivo"] }} onCambiar={onCambiar} />);
+    render(<Filtros conteo="3 proyectos" proyectos={proyectos} filtros={{ departamento: ["Antioquia"], estado: ["Inactivo"] }} onCambiar={onCambiar} />);
     abrir("Estado");
     expect(screen.getByRole("checkbox", { name: "Inactivo (0)" })).toBeChecked();
     abrir("Departamento");

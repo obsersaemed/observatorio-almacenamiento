@@ -37,7 +37,13 @@ const filasDeTabla = () =>
   screen.getAllByRole("row").slice(1).map((r) => within(r).getAllByRole("cell")[0].querySelector("button")?.textContent);
 const puntos = () => within(screen.getByRole("list", { name: "Puntos del mapa" })).queryAllByRole("listitem").map((l) => l.textContent);
 // T23: las casillas de cada filtro están dentro de su desplegable.
-const abrirFiltro = (titulo: string) => fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
+// 007 · T13: el panel empieza recogido; se despliega antes de abrir un desplegable.
+const abrirFiltro = (titulo: string) => {
+  const principal = screen.queryByRole("button", { name: /^Filtros/ });
+  if (principal?.getAttribute("aria-expanded") === "false") fireEvent.click(principal);
+  fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${titulo} `) }));
+};
+const antes = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
 const proyectosFiltrados = () => screen.getByRole("group", { name: "Proyectos identificados" }).textContent;
 
 beforeEach(() => window.history.replaceState(null, "", "/mapa"));
@@ -108,13 +114,46 @@ describe("VistaMapa", () => {
   test("006 · las gráficas van después de los filtros y antes del mapa (CA-01.1)", () => {
     render(<VistaMapa filas={filas} />);
     const graficas = screen.getByRole("region", { name: "Gráficas" });
-    const filtros = screen.getByText(/^Filtros/, { selector: "summary" });
+    const filtros = screen.getByRole("button", { name: /^Filtros/ });
     const mapa = screen.getByRole("list", { name: "Puntos del mapa" });
     expect(filtros.compareDocumentPosition(graficas) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(graficas.compareDocumentPosition(mapa) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(graficas).getAllByRole("heading").map((h) => h.textContent)).toEqual([
       "Capacidad por estado", "Evolución por año de FPO", "Tecnología",
     ]);
+  });
+
+  test("007 · T13 · con ?estado=En operación el panel está recogido, se ve el chip y el conteo coincide (CA-08.1, CA-08.3, CA-09.1)", () => {
+    window.history.replaceState(null, "", "/mapa?estado=En%20operaci%C3%B3n");
+    render(<VistaMapa filas={filas} />);
+    const principal = screen.getByRole("button", { name: "Filtros (1)" });
+    expect(principal).toHaveAttribute("aria-expanded", "false");
+    expect(filasDeTabla()).toEqual(["Operando"]);
+    expect(screen.getByRole("status")).toHaveTextContent("1 proyecto");
+    fireEvent.click(screen.getByRole("button", { name: "Quitar filtro En operación" }));
+    expect(window.location.search).toBe("");
+    expect(screen.getByRole("status")).toHaveTextContent("3 proyectos");
+    expect(filasDeTabla()).toHaveLength(3);
+  });
+
+  test("007 · T13 · el orden es KPI, barra de filtros, gráficas, mapa y tabla (CA-15.1)", () => {
+    render(<VistaMapa filas={filas} />);
+    const kpi = screen.getByRole("region", { name: "Instalado (en operación)" });
+    const barra = screen.getByRole("button", { name: /^Filtros/ });
+    const graficas = screen.getByRole("region", { name: "Gráficas" });
+    const mapa = screen.getByRole("list", { name: "Puntos del mapa" });
+    const tabla = screen.getByRole("table");
+    expect(antes(kpi, barra)).toBe(true);
+    expect(antes(barra, graficas)).toBe(true);
+    expect(antes(graficas, mapa)).toBe(true);
+    expect(antes(mapa, tabla)).toBe(true);
+    expect(graficas).toHaveClass("min-[860px]:grid-cols-3");
+  });
+
+  test("007 · T15 · el mapa va dentro de las pestañas «Tipo de almacenamiento» (CA-16.1)", () => {
+    render(<VistaMapa filas={filas} />);
+    expect(screen.getByRole("tablist", { name: "Tipo de almacenamiento" })).toBeInTheDocument();
+    expect(screen.getByRole("tabpanel", { name: "Gran escala" })).toContainElement(screen.getByRole("list", { name: "Puntos del mapa" }));
   });
 
   test("006 · al filtrar, barras y dona suman lo mismo que los KPI «según filtros» (CA-02.1)", () => {

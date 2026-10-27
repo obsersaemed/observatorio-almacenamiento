@@ -40,6 +40,20 @@ describe("TablaProyectos", () => {
     expect(screen.getByRole("columnheader", { name: /Potencia/ })).toHaveAttribute("aria-sort", "descending");
   });
 
+  test("al ordenar, la cabecera muestra un ícono SVG de Lucide, no ▲/▼ (007 · CA-05.1)", () => {
+    render(<TablaProyectos proyectos={proyectos} onElegir={vi.fn()} />);
+    const boton = screen.getByRole("button", { name: /Potencia \[MW\]/ });
+    fireEvent.click(boton); // ascendente
+    let icono = boton.querySelector("svg.lucide");
+    expect(icono).not.toBeNull();
+    expect(icono).toHaveAttribute("aria-hidden", "true");
+    expect(boton.textContent).not.toMatch(/[▲▼]/);
+    fireEvent.click(boton); // descendente
+    icono = boton.querySelector("svg.lucide");
+    expect(icono).not.toBeNull();
+    expect(boton.textContent).not.toMatch(/[▲▼]/);
+  });
+
   test("marca los proyectos sin ubicación en el mapa (CA-03.1)", () => {
     render(<TablaProyectos proyectos={proyectos} onElegir={vi.fn()} />);
     const fila = screen.getByRole("row", { name: /Sin coordenadas/ });

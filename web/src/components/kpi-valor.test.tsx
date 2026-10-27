@@ -1,7 +1,7 @@
-// RF-17 · CA-17.1: los KPI se animan, salvo con movimiento reducido.
+// 007 · RF-11, CA-11.2: el KPI muestra el valor final desde el primer render, sin conteo
+// (antes, RF-17 de la 001, se animaba).
 import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { Aparecer } from "./aparecer";
 import { KpiValor } from "./kpi-valor";
 
 function preferirMovimientoReducido(reducir: boolean) {
@@ -28,12 +28,14 @@ describe("KpiValor", () => {
     expect(visible).toHaveAttribute("data-animado", "false");
   });
 
-  test("sin la preferencia anima el conteo y termina en el valor final", async () => {
+  test("sin la preferencia también muestra el valor final desde el primer render, sin conteo", async () => {
     preferirMovimientoReducido(false);
     render(<KpiValor valor={10.8} unidad="MWh" />);
     const visible = screen.getByTestId("kpi-valor");
-    expect(visible).toHaveAttribute("data-animado", "true");
-    await vi.waitFor(() => expect(visible).toHaveTextContent("10,8 MWh"), { timeout: 3000 });
+    expect(visible).toHaveTextContent("10,8 MWh");
+    expect(visible).toHaveAttribute("data-animado", "false");
+    await new Promise((r) => setTimeout(r, 100));
+    expect(visible).toHaveTextContent("10,8 MWh");
   });
 
   test("los lectores de pantalla leen siempre el valor final, no el conteo", () => {
@@ -41,21 +43,5 @@ describe("KpiValor", () => {
     render(<KpiValor valor={1500} unidad={null} />);
     expect(screen.getByText("1.500", { selector: ".sr-only" })).toBeInTheDocument();
     expect(screen.getByTestId("kpi-valor")).toHaveAttribute("aria-hidden", "true");
-  });
-});
-
-describe("Aparecer", () => {
-  test("con movimiento reducido no aplica estilos de animación", () => {
-    preferirMovimientoReducido(true);
-    render(<Aparecer>contenido</Aparecer>);
-    const caja = screen.getByText("contenido");
-    expect(caja).toHaveAttribute("data-animado", "false");
-    expect(caja.getAttribute("style") ?? "").not.toMatch(/opacity|transform/);
-  });
-
-  test("sin la preferencia entra con animación", () => {
-    preferirMovimientoReducido(false);
-    render(<Aparecer>contenido</Aparecer>);
-    expect(screen.getByText("contenido")).toHaveAttribute("data-animado", "true");
   });
 });

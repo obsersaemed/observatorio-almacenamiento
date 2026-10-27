@@ -10,6 +10,7 @@ import { useFiltrosUrl } from "@/lib/use-filtros-url";
 import { BarraAnios } from "./barra-anios";
 import { DocumentosReferencia } from "./documentos-referencia";
 import { FiltrosNormativa } from "./filtros-normativa";
+import { LineaPuntos } from "./linea-puntos";
 import { LineaTiempo } from "./linea-tiempo";
 
 export function VistaNormativa({ normas }: { normas: Norma[] }) {
@@ -17,6 +18,7 @@ export function VistaNormativa({ normas }: { normas: Norma[] }) {
   const { linea, referencia } = useMemo(() => separar(normas), [normas]);
   const resultado = useMemo(() => ordenar(filtrar(linea, filtros)), [linea, filtros]);
   const [abrir, setAbrir] = useState<string | null>(null);
+  const [resaltada, setResaltada] = useState<string | null>(null);
 
   // Una relacionada que los filtros ocultan: se quitan los filtros y se abre (RF-06).
   const irAOculta = (id: string) => {
@@ -27,20 +29,23 @@ export function VistaNormativa({ normas }: { normas: Norma[] }) {
   return (
     <div className="grid gap-6">
       <div className="grid gap-3">
-        <FiltrosNormativa normas={linea} filtros={filtros} onCambiar={escribir} />
-        <div className="flex flex-wrap items-center gap-3">
-          <Button type="button" variant="outline" onClick={() => escribir({})} disabled={!consulta}>
-            Limpiar filtros
-          </Button>
-          <p role="status" className="font-semibold">
-            {textoConteo(resultado.length)}
-          </p>
-        </div>
+        <FiltrosNormativa
+          normas={linea}
+          filtros={filtros}
+          onCambiar={escribir}
+          conteo={textoConteo(resultado.length)}
+          acciones={
+            <Button type="button" variant="outline" onClick={() => escribir({})} disabled={!consulta}>
+              Limpiar filtros
+            </Button>
+          }
+        />
         <BarraAnios anios={aniosDe(resultado)} />
       </div>
+      <LineaPuntos normas={resultado} onElegir={setResaltada} />
       <div data-testid="linea-tiempo">
         {resultado.length ? (
-          <LineaTiempo normas={resultado} publicadas={linea} onFuera={irAOculta} abrirAlCargar={abrir} />
+          <LineaTiempo normas={resultado} publicadas={linea} onFuera={irAOculta} abrirAlCargar={abrir} resaltada={resaltada} />
         ) : (
           <p className="rounded-[var(--radius-lg)] border border-border bg-card p-4">Ninguna norma cumple estos filtros</p>
         )}

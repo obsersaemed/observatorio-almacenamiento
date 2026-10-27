@@ -52,20 +52,6 @@ async function sumaEnOperacion() {
   };
 }
 
-/** Conteos por estado tal como los expone el árbol de accesibilidad (sin el número animado aria-hidden). */
-async function conteosPorEstado(page: Page) {
-  const snap = await page.getByRole("group", { name: "Proyectos por estado" }).ariaSnapshot();
-  const res: Record<string, string> = {};
-  let termino = "";
-  for (const l of snap.split(/\r?\n/)) {
-    const t = l.match(/- term: (.+)$/);
-    if (t) termino = t[1].replace(/^"|"$/g, "");
-    const d = l.match(/- definition: (.+)$/);
-    if (d && termino) res[termino] = d[1].replace(/^"|"$/g, "");
-  }
-  return res;
-}
-
 async function textoKpi(page: Page, nombre: string) {
   // Árbol de accesibilidad: excluye el número animado (aria-hidden) y deja el valor final.
   return (await page.getByRole("group", { name: nombre }).ariaSnapshot()).replace(/\s+/g, " ").trim();
@@ -169,11 +155,10 @@ test.describe("001 · Plataforma base", () => {
     expect(await tarjetaMwh.innerText()).not.toMatch(/\bMW\b(?!h)/);
     // Coma decimal.
     expect(await tarjetaMw.innerText()).toMatch(/\d,\d MW/);
-    // Conteo por estado (solo aprobados).
-    const porEstadoUI = page.getByRole("group", { name: "Proyectos por estado" });
-    await expect(porEstadoUI).toBeVisible();
-    const conteos = await conteosPorEstado(page);
-    for (const [estado, n] of Object.entries(porEstado)) expect(conteos[estado], `conteo de ${estado}`).toBe(String(n));
+    // Conteo de proyectos (solo aprobados). Desde el rediseño 007 (RF-13) el inicio muestra el
+    // total en «Proyectos identificados» en lugar de la tarjeta «Proyectos por estado».
+    const total = Object.values(porEstado).reduce((a, n) => a + n, 0);
+    await expect(page.getByRole("group", { name: "Proyectos identificados" })).toContainText(total.toLocaleString("es-CO"));
     expect(errores, "consola sin errores").toEqual([]);
   });
 
@@ -231,10 +216,11 @@ test.describe("001 · Plataforma base", () => {
     });
     await page.goto("/");
     // Se espera a que el bloque de conteos esté en el árbol de accesibilidad (en la corrida
-    // del 2026-10-21 la primera lectura, justo después de cargar, salió vacía).
-    await expect.poll(() => textoKpi(page, "Proyectos por estado"), { timeout: 15_000 }).toContain("term");
+    // del 2026-10-21 la primera lectura, justo después de cargar, salió vacía). Desde el
+    // rediseño 007 el conteo es «Proyectos identificados» (antes «Proyectos por estado»).
+    await expect.poll(() => textoKpi(page, "Proyectos identificados"), { timeout: 15_000 }).toMatch(/\d/);
     const kpiAntes = await textoKpi(page, "Potencia en operación [MW]");
-    const estadosAntes = await textoKpi(page, "Proyectos por estado");
+    const estadosAntes = await textoKpi(page, "Proyectos identificados");
     const csvAntes = (await csvPublico(page)).texto;
 
     const descripcion = `${PREFIJO}valido-${sufijo()}`;
@@ -246,9 +232,9 @@ test.describe("001 · Plataforma base", () => {
     expect(numero).toMatch(/^\d+$/);
 
     await page.goto("/");
-    await expect.poll(() => textoKpi(page, "Proyectos por estado"), { timeout: 15_000 }).toContain("term");
+    await expect.poll(() => textoKpi(page, "Proyectos identificados"), { timeout: 15_000 }).toMatch(/\d/);
     expect(await textoKpi(page, "Potencia en operación [MW]")).toBe(kpiAntes);
-    expect(await textoKpi(page, "Proyectos por estado")).toBe(estadosAntes);
+    expect(await textoKpi(page, "Proyectos identificados")).toBe(estadosAntes);
     const csvDespues = (await csvPublico(page)).texto;
     expect(csvDespues.split(/\r?\n/).length).toBe(csvAntes.split(/\r?\n/).length);
     expect(await page.content()).not.toContain(descripcion);
@@ -709,7 +695,9 @@ test.describe("001 · Plataforma base", () => {
     );
     expect(animaciones).toBe(0);
 
-    // Referencia (no bloqueante): sin la preferencia, RF-17 pide animación.
+    // Referencia (no bloqueante): sin la preferencia, RF-17 de la 001 pedía animación; el
+    // rediseño 007 (RF-11) la retira: la única animación es la gráfica del inicio, y el KPI
+    // muestra su valor final desde el primer render.
     const p2 = await page.context().newPage();
     await p2.addInitScript(() => {
       const w = window as unknown as { __kpi: string[] };
@@ -728,7 +716,7 @@ test.describe("001 · Plataforma base", () => {
     await p2.waitForTimeout(4200);
     const normales = await p2.evaluate(() => (window as unknown as { __kpi: string[] }).__kpi);
     test.info().annotations.push({ type: "valores-kpi-normal", description: `${normales.length} valores: ${JSON.stringify(normales.slice(0, 5))}` });
-    expect.soft(normales.length, "sin movimiento reducido hay animación de conteo (RF-17)").toBeGreaterThan(1);
+    expect.soft(normales.length, "sin movimiento reducido tampoco hay conteo (007, RF-11)").toBe(1);
     await p2.close();
   });
 

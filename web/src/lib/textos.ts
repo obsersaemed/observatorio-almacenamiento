@@ -32,3 +32,16 @@ export const TEXTOS = {
       "¿Conoces un proyecto de almacenamiento con baterías, una norma o una noticia que falte, o un dato que deba corregirse? Tu aporte nos ayuda a mantener la información actualizada y a construir una visión más completa del almacenamiento de energía en Colombia.",
   },
 } as const;
+
+// Tarjetas de «Secciones principales» del inicio (spec 007, RF-12): títulos de TEXTOS; textos y
+// botones definidos en la spec.
+export const SECCIONES_INICIO = [
+  { ruta: "/mapa", titulo: TEXTOS.mapa.titulo, texto: "Mapa e inventario de los SAEB en Colombia.", boton: "Ver el mapa" },
+  {
+    ruta: "/vehiculos",
+    titulo: TEXTOS.vehiculos.titulo,
+    texto: "Tecnologías y oportunidades de almacenamiento energético en la movilidad eléctrica.",
+    boton: "Ver vehículos",
+  },
+  { ruta: "/normativa", titulo: TEXTOS.normativa.titulo, texto: "Consulta el marco regulatorio de los SAEB en Colombia.", boton: "Ver la normativa" },
+] as const;

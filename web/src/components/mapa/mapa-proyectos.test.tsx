@@ -11,6 +11,7 @@ class MapaFalso {
   flyTo = vi.fn();
   jumpTo = vi.fn();
   remove = vi.fn();
+  addControl = vi.fn();
   constructor(opciones: Record<string, unknown>) {
     this.opciones = opciones;
     instancias.push(this);
@@ -26,7 +27,18 @@ class MapaFalso {
     return { x: (lng + 80) * 10, y: (13 - lat) * 10 };
   }
 }
-vi.mock("maplibre-gl", () => ({ default: { Map: MapaFalso }, Map: MapaFalso }));
+// 007 · T14: control de navegación simulado; guarda sus opciones.
+class ControlNavegacionFalso {
+  opciones: Record<string, unknown>;
+  constructor(opciones: Record<string, unknown> = {}) {
+    this.opciones = opciones;
+  }
+}
+vi.mock("maplibre-gl", () => ({
+  default: { Map: MapaFalso, NavigationControl: ControlNavegacionFalso },
+  Map: MapaFalso,
+  NavigationControl: ControlNavegacionFalso,
+}));
 
 const { MapaProyectos } = await import("./mapa-proyectos");
 
@@ -225,5 +237,27 @@ describe("MapaProyectos", () => {
     expect(screen.getByRole("dialog", { name: "Uno" })).toBeInTheDocument();
     fireEvent.keyDown(document.body, { key: "Escape" });
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+  test("007 · T14 · botones de acercar y alejar arriba a la derecha, sin brújula, con el encuadre de Colombia y la atribución (CA-17.1, CA-17.2)", async () => {
+    await montar();
+    const mapa = instancias[0];
+    expect(mapa.addControl).toHaveBeenCalledTimes(1);
+    const [control, posicion] = mapa.addControl.mock.calls[0];
+    expect(control).toBeInstanceOf(ControlNavegacionFalso);
+    expect((control as ControlNavegacionFalso).opciones).toMatchObject({ showCompass: false });
+    expect(posicion).toBe("top-right");
+    const opciones = mapa.opciones as {
+      locale: Record<string, string>;
+      bounds: [[number, number], [number, number]];
+      attributionControl: { customAttribution: string };
+    };
+    expect(opciones.locale["NavigationControl.ZoomIn"]).toBe("Acercar");
+    expect(opciones.locale["NavigationControl.ZoomOut"]).toBe("Alejar");
+    const [[oeste, sur], [este, norte]] = opciones.bounds;
+    expect(oeste).toBeLessThanOrEqual(-79);
+    expect(este).toBeGreaterThanOrEqual(-67);
+    expect(sur).toBeLessThanOrEqual(-4.2);
+    expect(norte).toBeGreaterThanOrEqual(12.4);
+    expect(opciones.attributionControl.customAttribution).toMatch(/OpenStreetMap/);
   });
 });

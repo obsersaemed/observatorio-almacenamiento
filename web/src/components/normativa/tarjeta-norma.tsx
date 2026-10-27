@@ -26,12 +26,15 @@ export function TarjetaNorma({
   abierta,
   onAlternar,
   onIrA,
+  resaltada = false,
 }: {
   norma: Norma;
   relacionadas: Relacionada[];
   abierta: boolean;
   onAlternar: () => void;
   onIrA: (id: string) => void;
+  /** Elegida en la línea de puntos (spec 007, RF-25): contorno de acento. */
+  resaltada?: boolean;
 }) {
   const idPanel = useId();
   const [oficial, ...otros] = enlaces(norma.enlace);
@@ -41,7 +44,8 @@ export function TarjetaNorma({
       id={`norma-${norma.id}`}
       aria-label={textoNorma(norma)}
       tabIndex={-1}
-      className="relative scroll-mt-24 overflow-hidden rounded-[var(--radius-lg)] border border-border bg-card p-4 pl-5 shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+      data-resaltada={resaltada ? "true" : undefined}
+      className="relative scroll-mt-24 overflow-hidden rounded-[var(--radius-lg)] border border-border bg-card p-4 pl-5 shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 data-[resaltada=true]:outline-3 data-[resaltada=true]:outline-offset-2 data-[resaltada=true]:outline-[var(--accent)]"
     >
       <span
         data-testid="color-entidad"

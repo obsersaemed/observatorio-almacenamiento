@@ -208,8 +208,11 @@ test.describe("006 · Gráficas (datos)", () => {
     const titulos = await graficas(page).getByRole("heading", { level: 2 }).allInnerTexts();
     expect(titulos.map((s) => s.trim())).toEqual([ESTADO, EVOL, TEC]);
     for (const t of [ESTADO, EVOL, TEC]) await expect(tarjeta(page, t)).toBeVisible();
-    const filtros = page.getByRole("group", { name: "Departamento", exact: true });
-    const mapa = page.getByRole("region", { name: /^Mapa/ });
+    // Rediseño 007 (RF-08): los filtros cargan recogidos; la barra se ubica por su botón «Filtros».
+    const filtros = page.getByRole("button", { name: /^Filtros/ });
+    // 007 (RF-16): el mapa va en una sección «Mapa» con pestañas; dentro, el lienzo de MapLibre
+    // también es una región «Mapa de los proyectos…». Se toma la primera (la sección).
+    const mapa = page.getByRole("region", { name: /^Mapa/ }).first();
     const orden = await page.evaluate(
       ([f, g, m]) => {
         const a = f as Element, b = g as Element, c = m as Element;
@@ -242,6 +245,7 @@ test.describe("006 · Gráficas (datos)", () => {
     }
     // Filtro por el desplegable, como un usuario.
     const grupo = page.getByRole("group", { name: "Departamento", exact: true });
+    await page.getByRole("button", { name: /^Filtros/ }).click(); // 007: el panel carga recogido
     await grupo.getByRole("button", { name: /^Departamento / }).click();
     await grupo.getByRole("searchbox", { name: "Buscar en Departamento" }).fill("Vaup");
     await grupo.getByRole("checkbox", { name: new RegExp(`^${DEPTO} \\(\\d+\\)$`) }).check();
