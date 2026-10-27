@@ -12,6 +12,7 @@ import { MiniMapaColombia } from "./mini-mapa-colombia";
 import { MapaProyectos } from "./mapa/mapa-proyectos";
 import { TarjetaProyecto } from "./mapa/tarjeta-proyecto";
 import { VistaMapa } from "./mapa/vista-mapa";
+import { BotonesSegmento } from "./mapa/botones-segmento";
 import { Graficas } from "./graficas/graficas";
 import { GraficasVehiculos } from "./vehiculos/graficas-vehiculos";
 import { VistaVehiculos } from "./vehiculos/vista-vehiculos";
@@ -126,6 +127,25 @@ describe("axe sin violaciones", () => {
   ])("%s", async (_nombre, elemento) => {
     const { container } = render(<div>{elemento}</div>);
     expect(await violaciones(container)).toEqual([]);
+  });
+});
+
+// 008 · T06 · RNF-03: botones de segmento y la vista en «Detrás del medidor» (con proyectos y vacía).
+describe("axe en los segmentos de /mapa (008)", () => {
+  const medidor = filaMapa({ nombre: "Medidor ficticio", tipo_uso_conexion: "Maximización de autoconsumo PV y respaldo", punto_de_conexion_kv: null, potencia_nominal_mw: 0.015, capacidad_maxima_mwh: 0.04 });
+  test.each([
+    ["con proyectos", [...filasMapa, medidor]],
+    ["sin proyectos del segmento", filasMapa],
+  ])("«Detrás del medidor» %s", async (_nombre, filas) => {
+    window.history.replaceState(null, "", "/mapa?segmento=detras-del-medidor");
+    const { container } = render(
+      <div>
+        <BotonesSegmento />
+        <VistaMapa filas={filas} />
+      </div>,
+    );
+    expect(await violaciones(container)).toEqual([]);
+    window.history.replaceState(null, "", "/");
   });
 });
 

@@ -6,7 +6,9 @@ import {
   filtrar,
   kpiSeccion,
   opcionesDe,
+  segmentoDe,
   SIN_DATO,
+  soloSegmento,
   type FilaProyecto,
   type ProyectoMapa,
 } from "./proyectos-mapa";
@@ -134,5 +136,23 @@ describe("kpiSeccion (RF-11, CA-11.1, CA-12.1)", () => {
     const k = kpiSeccion(proyectos, []);
     expect(k.filtrado).toEqual({ total: 0, mw: 0, mwh: 0 });
     expect(k.instalado.mw).toBe(21.5);
+  });
+});
+
+// 008 · T04: el segmento se deduce del servicio, leído del esquema (RF-01).
+describe("segmentoDe y soloSegmento (008, RF-01)", () => {
+  const medidor = fila({ nombre: "M", tipo_uso_conexion: "Maximización de autoconsumo PV y respaldo", potencia_nominal_mw: 0.015 });
+  const filas = [fila({ nombre: "A", tipo_uso_conexion: "Regulación primaria de frecuencia" }), medidor, fila({ nombre: "B" })];
+
+  test("con el servicio nuevo es «Detrás del medidor»; con los demás o sin servicio, «Gran escala»", () => {
+    expect(segmentoDe(aProyectoMapa(medidor))).toBe("Detrás del medidor");
+    expect(segmentoDe(medidor)).toBe("Detrás del medidor");
+    expect(segmentoDe(filas[0])).toBe("Gran escala");
+    expect(segmentoDe(aProyectoMapa(filas[2]))).toBe("Gran escala");
+  });
+
+  test("soloSegmento filtra filas y proyectos", () => {
+    expect(soloSegmento(filas, "Gran escala").map((f) => f.nombre)).toEqual(["A", "B"]);
+    expect(soloSegmento(filas.map(aProyectoMapa), "Detrás del medidor").map((p) => p.nombre)).toEqual(["M"]);
   });
 });

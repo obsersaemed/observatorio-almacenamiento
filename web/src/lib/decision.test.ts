@@ -142,7 +142,8 @@ describe("camposDecision (RNF-04, CA-16.1)", () => {
     const campos = camposDecision(aporte({ datos: {} }), { ...actual, tipo_uso_conexion: "Inyección de energía en la noche" });
     const servicios = campos.find((c) => c.sql === "tipo_uso_conexion")!;
     expect(servicios).toMatchObject({ multiple: true, valor: "Inyección de energía en la noche" });
-    expect(servicios.valores).toHaveLength(3);
+    expect(servicios.valores).toHaveLength(6); // lista de la Sheet (2026-10-27) + la de detrás del medidor
+    expect(servicios.valores).toContain("Maximización de autoconsumo PV y respaldo");
   });
 
   test("prellena con lo propuesto sobre lo actual, números con coma y Estado con su lista", () => {

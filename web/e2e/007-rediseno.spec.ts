@@ -44,7 +44,10 @@ const botonFiltros = (page: Page) => page.getByRole("button", { name: /^(Filtros
 const conteo = (page: Page) => page.getByRole("status").filter({ hasText: /\d/ }).first();
 const chip = (page: Page, valor: string) => page.getByRole("button", { name: `Quitar filtro ${valor}`, exact: true });
 const grupoFiltro = (page: Page, nombre: string) => page.getByRole("group", { name: nombre, exact: true });
-const pestanasMapa = (page: Page) => page.getByRole("tablist", { name: "Tipo de almacenamiento" });
+// 008 reemplazó las pestañas internas del mapa por botones de segmento debajo del título
+// (grupo «Tipo de almacenamiento», botones con aria-pressed, ?segmento=detras-del-medidor).
+const botonesSegmento = (page: Page) => page.getByRole("group", { name: "Tipo de almacenamiento" });
+const panelMapa = (page: Page) => page.getByRole("region", { name: "Mapa", exact: true });
 const lineaPuntos = (page: Page) => page.getByRole("list", { name: "Normas en el tiempo" }).getByRole("button");
 const fichas = (page: Page) => page.getByTestId("linea-tiempo").locator("article[id^='norma-']");
 
@@ -230,7 +233,10 @@ test.describe("007 · General", () => {
       const main = page.locator("main");
       const hijos = main.locator(":scope > *");
       await expect(hijos.first(), ruta).toHaveJSProperty("tagName", "H1");
-      const segundo = hijos.nth(1);
+      // 008 (RF-03): en /mapa los botones de segmento van entre el título y las cifras.
+      const conBotones = ruta === "/mapa";
+      if (conBotones) await expect(hijos.nth(1), "botones de segmento tras el h1").toHaveAttribute("aria-label", "Tipo de almacenamiento");
+      const segundo = hijos.nth(conBotones ? 2 : 1);
       await expect(contenido[ruta](segundo), `${ruta}: contenido tras el h1`).toBeVisible();
       await expect(segundo, `${ruta}: la intro no va tras el h1`).not.toContainText(intro!.slice(0, 60));
       await expect(hijos.last(), `${ruta}: la intro va al final`).toHaveText(intro!);
@@ -572,7 +578,7 @@ test.describe("007 · Implementación", () => {
       await y(page.getByRole("region", { name: "Instalado (en operación)" })),
       await y(botonFiltros(page)),
       await y(graficas),
-      await y(pestanasMapa(page)),
+      await y(panelMapa(page)),
       await y(tabla(page)),
     ];
     expect([...orden].sort((a, b) => a - b)).toEqual(orden);
@@ -581,21 +587,25 @@ test.describe("007 · Implementación", () => {
     expect(new Set(tops).size, "las tres gráficas en una fila").toBe(1);
   });
 
-  test("E2E-23 · CA-16.1, CA-16.2: pestañas del mapa con «Gran escala» elegida; las flechas cambian", async ({ page }) => {
+  // Ajustado por la 008: las pestañas internas pasaron a ser botones de segmento debajo del título
+  // (aria-pressed; se usan con Tab y Enter en lugar de flechas). Ver también 008 · E2E-03 y E2E-04.
+  test("E2E-23 · CA-16.1, CA-16.2 (ajustado por 008): botones de segmento con «Gran escala» elegido; el teclado cambia", async ({ page }) => {
     await abrirMapa(page);
-    const lista = pestanasMapa(page);
-    const gran = lista.getByRole("tab", { name: "Gran escala" });
-    const detras = lista.getByRole("tab", { name: "Detrás del medidor" });
-    await expect(gran).toHaveAttribute("aria-selected", "true");
-    await expect(detras).toHaveAttribute("aria-selected", "false");
+    const grupo = botonesSegmento(page);
+    const gran = grupo.getByRole("button", { name: "Gran escala", exact: true });
+    const detras = grupo.getByRole("button", { name: "Detrás del medidor", exact: true });
+    await expect(gran).toHaveAttribute("aria-pressed", "true");
+    await expect(detras).toHaveAttribute("aria-pressed", "false");
     await gran.focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(detras).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("Tab");
     await expect(detras).toBeFocused();
-    await page.keyboard.press("ArrowLeft");
-    await expect(gran).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("Enter");
+    await expect(detras).toHaveAttribute("aria-pressed", "true");
+    await page.keyboard.press("Shift+Tab");
     await expect(gran).toBeFocused();
-    await expect(page.getByRole("tabpanel", { name: "Gran escala" })).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(gran).toHaveAttribute("aria-pressed", "true");
+    await expect(panelMapa(page)).toBeVisible({ timeout: 60_000 });
   });
 
   test("E2E-24 · CA-17.1: el mapa carga con Colombia a la vista y los créditos de OpenStreetMap", async ({ page }) => {
@@ -659,24 +669,32 @@ test.describe("007 · Implementación", () => {
     throw new Error("Ningún punto libre para el puntero");
   });
 
-  test("E2E-27 · CA-18.1: «Detrás del medidor» muestra el aviso sin mapa; al volver reaparece", async ({ page }) => {
+  // Ajustado por la 008: el aviso sale al elegir el botón de segmento cuando no hay proyectos
+  // aprobados del segmento (008 · RF-08). Si la base ya los tiene, el caso no se puede observar.
+  test("E2E-27 · CA-18.1 (ajustado por 008): «Detrás del medidor» sin proyectos muestra el aviso sin mapa; al volver reaparece", async ({ page }) => {
+    const { data } = await admin()
+      .from("proyectos")
+      .select("nombre")
+      .eq("publicacion", "Aprobado")
+      .ilike("tipo_uso_conexion", "%Maximización de autoconsumo PV y respaldo%");
+    test.skip((data ?? []).length > 0, "La base ya tiene proyectos aprobados del segmento (lo cubre la 008)");
     await abrirMapa(page);
     await esperarPuntos(page);
-    const lista = pestanasMapa(page);
-    await lista.getByRole("tab", { name: "Detrás del medidor" }).click();
-    const panel = page.getByRole("tabpanel", { name: "Detrás del medidor" });
-    await expect(panel.getByRole("heading", { name: "Sección en construcción" })).toBeVisible();
-    await expect(panel).toContainText(/detrás del medidor/i);
+    const grupo = botonesSegmento(page);
+    await grupo.getByRole("button", { name: "Detrás del medidor", exact: true }).click();
+    const aviso = page.getByRole("region", { name: "Sección en construcción" });
+    await expect(aviso.getByRole("heading", { name: "Sección en construcción" })).toBeVisible();
+    await expect(aviso).toContainText(/detrás del medidor/i);
     await expect(page.locator(".maplibregl-map")).toHaveCount(0);
     await expect(puntos(page)).toHaveCount(0);
-    await lista.getByRole("tab", { name: "Gran escala" }).click();
+    await grupo.getByRole("button", { name: "Gran escala", exact: true }).click();
     await esperarPuntos(page);
   });
 
-  test("E2E-28 · CA-19.1: encabezados de la tabla en orden", async ({ page }) => {
+  test("E2E-28 · CA-19.1: encabezados de la tabla en orden (sin «Servicios», 008 · CA-12.1)", async ({ page }) => {
     await abrirMapa(page);
     await expect(tabla(page).getByRole("columnheader")).toHaveText([
-      "Nombre", "Operador", "Estado", "Servicios", "Departamento", "Municipio", "Potencia [MW]", "Energía [MWh]", "Año de FPO",
+      "Nombre", "Promotor", "Estado", "Departamento", "Municipio", "Potencia [MW]", "Energía [MWh]", "Año de FPO",
     ]);
   });
 });

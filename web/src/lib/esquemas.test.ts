@@ -117,3 +117,41 @@ describe("003 · T03: reglas de vehículos con el mismo mensaje que Python (CA-1
     expect(validar("vehiculos_ventas", { "Línea": "Linea 1", "Año": 2024, Unidades: 7 }).datos).toMatchObject({ "Año": 2024, Unidades: 7 });
   });
 });
+
+describe("008 · T03: segmentos y fuente según segmento, como en Python y SQL (CA-10.1)", () => {
+  const MEDIDOR = "Maximización de autoconsumo PV y respaldo";
+  const TEXTO = "Información de Azimut Energía (2026-10)";
+
+  test("el servicio nuevo está en la lista y marcado como «Detrás del medidor»", () => {
+    const col = definicion.proyectos.columnas.find((c) => c.nombre === "Tipo uso/conexión") as {
+      valores: string[];
+      segmentos?: Record<string, string[]>;
+    };
+    expect(col.valores).toContain(MEDIDOR);
+    expect(col.segmentos).toEqual({ "Detrás del medidor": [MEDIDOR] });
+  });
+
+  test("detrás del medidor con fuente textual pasa (CA-02.1, CA-09.1)", () => {
+    const r = validar("proyectos", { ...proyectoValido, "Tipo uso/conexión": MEDIDOR, Fuente: TEXTO });
+    expect(r.errores).toEqual([]);
+    expect(r.datos?.Fuente).toBe(TEXTO);
+  });
+
+  test("gran escala con fuente textual se rechaza como hoy (CA-09.2)", () => {
+    const urls = mensaje("urls", { columna: "Fuente" });
+    expect(validar("proyectos", { ...proyectoValido, Fuente: TEXTO }).errores).toEqual([urls]);
+    expect(
+      validar("proyectos", { ...proyectoValido, "Tipo uso/conexión": "Regulación primaria de frecuencia", Fuente: TEXTO }).errores,
+    ).toEqual([urls]);
+  });
+
+  test("mezclar servicios de los dos segmentos se rechaza nombrando 'Tipo uso/conexión' (CA-02.2)", () => {
+    const r = validar("proyectos", {
+      ...proyectoValido,
+      "Tipo uso/conexión": `Regulación primaria de frecuencia, ${MEDIDOR}`,
+    });
+    expect(r.errores).toEqual([
+      "'Tipo uso/conexión' mezcla servicios de dos segmentos (Gran escala y Detrás del medidor): un proyecto es de un solo segmento",
+    ]);
+  });
+});

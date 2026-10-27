@@ -5,11 +5,24 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { LICENCIA } from "@/lib/csv";
 import type { FilaPublica } from "@/lib/proyectos-mapa";
 
+// 008 · T06: el mapa simulado expone las unidades y deja elegir un punto (como un clic en el marcador).
 vi.mock("./mapa-diferido", () => ({
-  MapaDiferido: ({ proyectos, seleccionado }: { proyectos: { nombre: string }[]; seleccionado: string | null }) => (
-    <ul aria-label="Puntos del mapa" data-seleccionado={seleccionado ?? ""}>
+  MapaDiferido: ({
+    proyectos,
+    seleccionado,
+    onSeleccionar,
+    unidades,
+  }: {
+    proyectos: { nombre: string }[];
+    seleccionado: string | null;
+    onSeleccionar: (n: string | null) => void;
+    unidades?: string;
+  }) => (
+    <ul aria-label="Puntos del mapa" data-seleccionado={seleccionado ?? ""} data-unidades={unidades ?? ""}>
       {proyectos.map((p) => (
-        <li key={p.nombre}>{p.nombre}</li>
+        <li key={p.nombre} onClick={() => onSeleccionar(p.nombre)}>
+          {p.nombre}
+        </li>
       ))}
     </ul>
   ),
@@ -150,10 +163,11 @@ describe("VistaMapa", () => {
     expect(graficas).toHaveClass("min-[860px]:grid-cols-3");
   });
 
-  test("007 · T15 · el mapa va dentro de las pestañas «Tipo de almacenamiento» (CA-16.1)", () => {
+  // 008 · T06: reemplaza la prueba 007 · T15 (pestañas internas del mapa), retiradas por la spec 008.
+  test("008 · el mapa ya no lleva pestañas internas «Tipo de almacenamiento»", () => {
     render(<VistaMapa filas={filas} />);
-    expect(screen.getByRole("tablist", { name: "Tipo de almacenamiento" })).toBeInTheDocument();
-    expect(screen.getByRole("tabpanel", { name: "Gran escala" })).toContainElement(screen.getByRole("list", { name: "Puntos del mapa" }));
+    expect(screen.queryByRole("tablist", { name: "Tipo de almacenamiento" })).toBeNull();
+    expect(screen.getByRole("region", { name: "Mapa" })).toContainElement(screen.getByRole("list", { name: "Puntos del mapa" }));
   });
 
   test("006 · al filtrar, barras y dona suman lo mismo que los KPI «según filtros» (CA-02.1)", () => {
@@ -170,5 +184,142 @@ describe("VistaMapa", () => {
     expect(filasEstados).toEqual(["En operación0,0", "En construcción0,0", "Anunciado50,0", "Inactivo0,0"]);
     const dona = within(graficas).getByRole("region", { name: "Tecnología" });
     expect(within(dona).getByTestId("total-dona")).toHaveTextContent("50,0 MW");
+  });
+});
+
+// 008 · T06 · RF-03, RF-04, RF-05, RF-06, RF-08 · CA-01.1, CA-01.2, CA-03.2, CA-04.1, CA-04.2,
+// CA-04.3, CA-06.1, CA-08.1: el segmento cambia toda la página. 7 proyectos de gran escala y 3
+// ficticios del segmento «Detrás del medidor».
+const { BotonesSegmento } = await import("./botones-segmento");
+
+const MEDIDOR = "Maximización de autoconsumo PV y respaldo";
+const granEscala = Array.from({ length: 7 }, (_, i) =>
+  fila({ nombre: `Grande ${i + 1}`, potencia_nominal_mw: 10, capacidad_maxima_mwh: 20, tipo_uso_conexion: i % 2 ? "Inyección de energía en la noche" : null }),
+);
+const medidor = [
+  fila({ nombre: "Casa ficticia", tipo_uso_conexion: MEDIDOR, departamento: "Antioquia", municipio: "Medellín", potencia_nominal_mw: 0.015, capacidad_maxima_mwh: 0.04, fuente: "Información de una empresa ficticia" }),
+  fila({ nombre: "Comercio ficticio", tipo_uso_conexion: MEDIDOR, estado: "En construcción", departamento: "Nariño", municipio: "Ipiales", potencia_nominal_mw: 0.107, capacidad_maxima_mwh: 0.241 }),
+  fila({ nombre: "Planta ficticia", tipo_uso_conexion: MEDIDOR, estado: "Anunciado", departamento: "Antioquia", municipio: "Guarne", potencia_nominal_mw: 0.03, capacidad_maxima_mwh: 0.119 }),
+];
+const todas = [...granEscala, ...medidor];
+const NOTA = "Ubicación aproximada: cabecera del municipio";
+
+const montarPagina = (filasPagina: FilaPublica[] = todas) =>
+  render(
+    <>
+      <BotonesSegmento />
+      <VistaMapa filas={filasPagina} />
+    </>,
+  );
+const enSegmento = () => window.history.replaceState(null, "", "/mapa?segmento=detras-del-medidor");
+
+describe("VistaMapa por segmento (008)", () => {
+  test("en «Gran escala» (por defecto) KPI, conteo, gráficas, puntos y tabla cuentan 7, en MW (CA-01.1, CA-05.3)", () => {
+    montarPagina();
+    expect(filasDeTabla()).toHaveLength(7);
+    expect(puntos()).toHaveLength(7);
+    expect(proyectosFiltrados()).toContain("7");
+    expect(screen.getByRole("status")).toHaveTextContent("7 proyectos");
+    expect(screen.getByRole("group", { name: "Potencia total proyectada" })).toHaveTextContent("70,0 MW");
+    expect(screen.getByRole("columnheader", { name: "Potencia [MW]" })).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Puntos del mapa" })).toHaveAttribute("data-unidades", "MW");
+    expect(screen.queryByText(NOTA)).toBeNull();
+    const dona = screen.getByRole("region", { name: "Tecnología" });
+    expect(within(dona).getByTestId("total-dona")).toHaveTextContent("70,0 MW");
+  });
+
+  test("en «Detrás del medidor» todo cuenta 3, en kW y kWh, con la nota de ubicación (CA-01.2, CA-04.1, CA-05.1, CA-06.1)", () => {
+    enSegmento();
+    montarPagina();
+    expect(filasDeTabla()).toEqual(["Casa ficticia", "Comercio ficticio", "Planta ficticia"]);
+    expect(puntos()).toEqual(["Casa ficticia", "Comercio ficticio", "Planta ficticia"]);
+    expect(proyectosFiltrados()).toContain("3");
+    expect(screen.getByRole("status")).toHaveTextContent("3 proyectos");
+    expect(screen.getByRole("group", { name: "Potencia instalada [kW]" })).toHaveTextContent("15,0 kW");
+    expect(screen.getByRole("group", { name: "Energía instalada [kWh]" })).toHaveTextContent("40,0 kWh");
+    expect(screen.getByRole("group", { name: "Potencia total proyectada" })).toHaveTextContent("152,0 kW");
+    expect(screen.getByRole("columnheader", { name: "Potencia [kW]" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Energía [kWh]" })).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Puntos del mapa" })).toHaveAttribute("data-unidades", "kW");
+    expect(screen.getByText(NOTA)).toBeInTheDocument();
+    const estados = screen.getByRole("region", { name: "Capacidad por estado" });
+    expect(within(estados).getByRole("tab", { name: "Potencia [kW]" })).toBeInTheDocument();
+    const dona = screen.getByRole("region", { name: "Tecnología" });
+    expect(within(dona).getByTestId("total-dona")).toHaveTextContent("152,0 kW");
+  });
+
+  test("las opciones de los filtros salen del segmento; filtrar conserva el segmento en la URL (CA-04.1)", () => {
+    enSegmento();
+    montarPagina();
+    abrirFiltro("Departamento");
+    expect(screen.getByRole("checkbox", { name: "Antioquia (2)" })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Nariño (1)" })).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: /^Meta/ })).toBeNull();
+    fireEvent.click(screen.getByRole("checkbox", { name: "Nariño (1)" }));
+    const p = new URLSearchParams(window.location.search);
+    expect(p.get("segmento")).toBe("detras-del-medidor");
+    expect(p.getAll("departamento")).toEqual(["Nariño"]);
+    expect(filasDeTabla()).toEqual(["Comercio ficticio"]);
+  });
+
+  test("Limpiar filtros conserva el segmento", () => {
+    window.history.replaceState(null, "", "/mapa?segmento=detras-del-medidor&departamento=Nari%C3%B1o");
+    montarPagina();
+    expect(filasDeTabla()).toEqual(["Comercio ficticio"]);
+    fireEvent.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    expect(window.location.search).toBe("?segmento=detras-del-medidor");
+    expect(filasDeTabla()).toHaveLength(3);
+  });
+
+  test("cambiar de segmento limpia los filtros y escribe ?segmento= (CA-04.2, CA-03.2)", () => {
+    window.history.replaceState(null, "", "/mapa?departamento=Meta");
+    montarPagina();
+    expect(filasDeTabla()).toHaveLength(7);
+    fireEvent.click(screen.getByRole("button", { name: "Detrás del medidor" }));
+    expect(window.location.search).toBe("?segmento=detras-del-medidor");
+    expect(screen.getByRole("button", { name: /^Filtros/ })).toHaveAccessibleName("Filtros");
+    expect(filasDeTabla()).toHaveLength(3);
+    fireEvent.click(screen.getByRole("button", { name: "Gran escala" }));
+    expect(window.location.search).toBe("");
+    expect(filasDeTabla()).toHaveLength(7);
+  });
+
+  test("un clic en un punto del segmento lo selecciona para abrir su tarjeta (CA-04.3)", () => {
+    enSegmento();
+    montarPagina();
+    fireEvent.click(within(screen.getByRole("list", { name: "Puntos del mapa" })).getByText("Comercio ficticio"));
+    expect(screen.getByRole("list", { name: "Puntos del mapa" })).toHaveAttribute("data-seleccionado", "Comercio ficticio");
+  });
+
+  test("la descarga trae solo las filas del segmento, con su fuente (RF-04, CA-09.3)", async () => {
+    let blob: Blob | undefined;
+    URL.createObjectURL = vi.fn((b: Blob) => ((blob = b), "blob:prueba"));
+    URL.revokeObjectURL = vi.fn();
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    enSegmento();
+    montarPagina();
+    fireEvent.click(screen.getByRole("button", { name: "Descargar CSV" }));
+    const lineas = (await blob!.text()).replace(/^﻿/, "").trim().split(/\r\n/);
+    expect(lineas.slice(2)).toHaveLength(3);
+    expect(lineas.slice(2).join("\n")).not.toMatch(/Grande/);
+    expect(lineas[2]).toContain("Información de una empresa ficticia");
+  });
+
+  test("sin proyectos del segmento: «Sección en construcción», sin KPI, gráficas, mapa ni tabla (CA-08.1)", () => {
+    enSegmento();
+    montarPagina(granEscala);
+    expect(screen.getByRole("heading", { name: "Sección en construcción" })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Aquí se publicarán los sistemas de baterías instalados en usuarios (industria, comercio y hogares), detrás del medidor. Los datos están en preparación.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Instalado (en operación)" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Gráficas" })).toBeNull();
+    expect(screen.queryByRole("list", { name: "Puntos del mapa" })).toBeNull();
+    expect(screen.queryByRole("table")).toBeNull();
+    // Los botones siguen ahí para volver a «Gran escala».
+    fireEvent.click(screen.getByRole("button", { name: "Gran escala" }));
+    expect(filasDeTabla()).toHaveLength(7);
   });
 });

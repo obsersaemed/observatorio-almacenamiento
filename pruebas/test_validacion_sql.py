@@ -1,6 +1,6 @@
 """T20 · RF-16 · CA-16.1: la base valida con los mismos mensajes que la web y la importación.
 La validación SQL se genera desde datos/esquemas.json (scripts/generar_validacion_sql.py) y la
-última migración que la regenera (0004) debe contener exactamente lo generado. Correr con: python -m unittest discover pruebas"""
+última migración que la regenera (0008) debe contener exactamente lo generado. Correr con: python -m unittest discover pruebas"""
 import json
 import sys
 import unittest
@@ -10,7 +10,8 @@ RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "scripts"))
 from generar_validacion_sql import INICIO, FIN, generar  # noqa: E402
 
-MIGRACION = RAIZ / "supabase" / "migrations" / "0006_normativa.sql"  # la última que regenera la validación
+MIGRACION = RAIZ / "supabase" / "migrations" / "0008_servicios_sheet.sql"  # la última que regenera la validación
+M0007 = RAIZ / "supabase" / "migrations" / "0007_segmento.sql"
 MIGRACION_0004 = RAIZ / "supabase" / "migrations" / "0004_servicios.sql"
 MIGRACION_0005 = RAIZ / "supabase" / "migrations" / "0005_vehiculos.sql"  # tablas de vehículos (003)
 ESQUEMAS = json.loads((RAIZ / "datos" / "esquemas.json").read_text(encoding="utf-8"))
@@ -71,6 +72,55 @@ class TestValidacionSql(unittest.TestCase):
         self.assertIn("new.capacidad_maxima_kwh < new.capacidad_minima_kwh", sql)
 
 
+def funcion(sql, tabla):
+    """Cuerpo de public.validar_<tabla>() dentro del SQL generado."""
+    inicio = sql.index(f"create or replace function public.validar_{tabla}()")
+    return sql[inicio:sql.index("$$;", inicio)]
+
+
+class TestSegmento0007(unittest.TestCase):
+    """008 · T02 · RF-02, RF-09, RF-10: servicio nuevo, sin mezcla de segmentos, fuente según segmento."""
+    MEDIDOR = "Maximización de autoconsumo PV y respaldo"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.sql = generar(ESQUEMAS)
+        cls.migracion = M0007.read_text(encoding="utf-8") if M0007.exists() else ""
+
+    def test_la_0007_existe_y_no_agrega_columnas(self):
+        self.assertTrue(M0007.exists(), f"Falta {M0007}")
+        self.assertNotRegex(self.migracion, r"(?i)add\s+column")
+        self.assertNotRegex(self.migracion, r"(?i)create\s+table")
+
+    def test_la_0007_reemplaza_el_check_de_fuente_en_proyectos_y_aportes(self):
+        for tabla in ("proyectos", "aportes"):
+            self.assertIn(f"alter table public.{tabla} drop constraint if exists {tabla}_fuente_check", self.migracion)
+            self.assertNotRegex(self.migracion, rf"{tabla}_fuente_check check \(fuente ~")
+
+    def test_el_disparador_acepta_el_servicio_nuevo(self):
+        self.assertIn(f"'{self.MEDIDOR}'", funcion(self.sql, "proyectos"))
+
+    def test_el_disparador_rechaza_la_mezcla_nombrando_la_columna(self):
+        esperado = ESQUEMAS["_mensajes"]["segmentos"].format(columna="Tipo uso/conexión", segmentos="%s")
+        cuerpo = funcion(self.sql, "proyectos")
+        self.assertIn(esperado.replace("'", "''"), cuerpo)
+        self.assertIn("count(distinct", cuerpo)
+
+    def test_fuente_textual_solo_con_un_servicio_del_segmento(self):
+        urls_proyectos = next(l for l in funcion(self.sql, "proyectos").splitlines() if "u !~" in l and "new.fuente" in l)
+        self.assertIn("new.tipo_uso_conexion", urls_proyectos)
+        self.assertIn(f"'{self.MEDIDOR}'", urls_proyectos)
+        self.assertIn("'Detrás del medidor'", urls_proyectos)
+        urls_aportes = next(l for l in funcion(self.sql, "aportes").splitlines() if "u !~" in l and "new.fuente" in l)
+        self.assertIn("new.datos ->> 'tipo_uso_conexion'", urls_aportes)
+        self.assertIn("'Detrás del medidor'", urls_aportes)
+
+    def test_las_demas_tablas_siguen_exigiendo_url_sin_condicion(self):
+        for tabla in ("normas", "noticias"):
+            linea = next(l for l in funcion(self.sql, tabla).splitlines() if "u !~" in l)
+            self.assertNotIn("Detrás del medidor", linea)
+
+
 class TestMigracionVehiculos(unittest.TestCase):
     """003 · T04 · RF-12, CA-14.1: importación atómica y registro de importaciones."""
 
@@ -96,3 +146,25 @@ class TestMigracionVehiculos(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestServiciosSheet0008(unittest.TestCase):
+    """2026-10-27: lista de servicios de la Hoja 1 y renombre de «Canadian solar» sin duplicar."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.migracion = MIGRACION.read_text(encoding="utf-8") if MIGRACION.exists() else ""
+
+    def test_el_generador_escribe_en_la_0008(self):
+        from generar_validacion_sql import MIGRACION as destino
+        self.assertEqual(destino.name, "0008_servicios_sheet.sql")
+
+    def test_la_0008_trae_la_lista_nueva_y_no_agrega_columnas(self):
+        self.assertIn("Alivio de retrasos en proyectos de transmisión", self.migracion)
+        self.assertIn("Mercado regulado a través de los contratos de largo plazo", self.migracion)
+        self.assertNotIn("'Mercado regulado a través de contratos de largo plazo'", self.migracion)
+        self.assertNotRegex(self.migracion, r"(?i)add\s+column")
+
+    def test_la_0008_renombra_canadian_solar_antes_de_importar(self):
+        self.assertIn("update public.proyectos set nombre = 'UPME STR 01-2021' where nombre = 'Canadian solar';",
+                      self.migracion)

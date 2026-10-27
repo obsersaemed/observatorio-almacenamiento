@@ -26,7 +26,7 @@ Fuente: información de Azimut Energía (comunicación directa, sin enlace públ
 
 | Proyecto | Operador / desarrollador | Estado (dato) | Estado en el sitio | FPO | Ubicación | Potencia / energía | Conexión | Tecnología |
 |---|---|---|---|---|---|---|---|---|
-| Casa Alto de las Palmas | EPM / Azimut Energía | Operación | En operación | abril de 2025 | Medellín, Antioquia (Alto de las Palmas) | 15 kW / 40 kWh | Nivel 2, 13,2 kV (transformador propio 13.200/240 V) | LFP |
+| Casa Alto de las Palmas | EPM / Azimut Energía | Operación | En operación | abril de 2025 | Medellín, Antioquia | 15 kW / 40 kWh | Nivel 2, 13,2 kV (transformador propio 13.200/240 V) | LFP |
 | Centro Comercial Ipiales | Cedenar / Azimut Energía | En construcción | En construcción | marzo de 2026 | Ipiales, Nariño | 107 kW / 241 kWh (acople AC) | Nivel 3, 34,5 kV (transformador propio 34.500/240 V) | LFP |
 | Planta Guarne | EPM / Azimut Energía | En ingeniería | Anunciado | julio de 2026 | Guarne, Antioquia | 107 kW / 241 kWh (acople AC) | Nivel 2, 13,2 kV (transformador propio 13.200/240 V) | LFP |
 
@@ -48,7 +48,8 @@ Fuente: información de Azimut Energía (comunicación directa, sin enlace públ
   textual.
 - **Ubicación:** el punto va en la cabecera del municipio, con las coordenadas oficiales de la
   DIVIPOLA del DANE, y se marca como «ubicación aproximada». No se publica la dirección de la
-  vivienda: «Alto de las Palmas» no aparece en el sitio.
+  vivienda. «Alto de las Palmas» es parte del nombre del proyecto; su ubicación es Medellín
+  (aclaración del usuario, 2026-10-27).
 - **«En ingeniería»:** se registra como «Anunciado». No se crea un estado nuevo.
 - **Carga:** por la cola de aportes. El usuario aprueba en `/admin`, como con normas y noticias.
 

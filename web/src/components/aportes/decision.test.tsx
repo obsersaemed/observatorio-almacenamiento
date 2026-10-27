@@ -56,7 +56,7 @@ describe("Decision · campos con valores permitidos (CA-16.1)", () => {
             etiqueta: "Tipo uso/conexión",
             obligatorio: false,
             valor: "Regulación primaria de frecuencia, Inyección de energía en la noche",
-            valores: ["Regulación primaria de frecuencia", "Inyección de energía en la noche", "Mercado regulado a través de contratos de largo plazo"],
+            valores: ["Regulación primaria de frecuencia", "Inyección de energía en la noche", "Mercado regulado a través de los contratos de largo plazo"],
             multiple: true,
           },
         ]}

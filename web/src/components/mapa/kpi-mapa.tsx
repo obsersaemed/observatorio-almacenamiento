@@ -2,6 +2,7 @@
 // filtros; «según filtros» suma todos los estados del resultado. MW y MWh nunca se suman.
 import { KpiTarjeta } from "@/components/kpi-tarjeta";
 import { KpiValor } from "@/components/kpi-valor";
+import { unidadEnergia, type Unidades } from "@/lib/formato";
 import type { kpiSeccion } from "@/lib/proyectos-mapa";
 
 type Kpi = ReturnType<typeof kpiSeccion>;
@@ -16,15 +17,16 @@ function Grupo({ titulo, columnas = "lg:grid-cols-3", children }: { titulo: stri
   );
 }
 
-export function KpiMapa({ kpi }: { kpi: Kpi }) {
+// 008 (RF-05): en «Detrás del medidor» las cifras van en kW y kWh (unidades="kW").
+export function KpiMapa({ kpi, unidades = "MW" }: { kpi: Kpi; unidades?: Unidades }) {
   return (
     <div className="grid gap-5 lg:grid-cols-[2fr_3fr]">
       <Grupo titulo="Instalado (en operación)" columnas="lg:grid-cols-2">
-        <KpiTarjeta etiqueta="Potencia instalada [MW]">
-          <KpiValor valor={kpi.instalado.mw} unidad="MW" />
+        <KpiTarjeta etiqueta={`Potencia instalada [${unidades}]`}>
+          <KpiValor valor={kpi.instalado.mw} unidad="MW" unidades={unidades} />
         </KpiTarjeta>
-        <KpiTarjeta etiqueta="Energía instalada [MWh]">
-          <KpiValor valor={kpi.instalado.mwh} unidad="MWh" />
+        <KpiTarjeta etiqueta={`Energía instalada [${unidadEnergia(unidades)}]`}>
+          <KpiValor valor={kpi.instalado.mwh} unidad="MWh" unidades={unidades} />
         </KpiTarjeta>
       </Grupo>
       <Grupo titulo="Según filtros (todos los estados)">
@@ -32,10 +34,10 @@ export function KpiMapa({ kpi }: { kpi: Kpi }) {
           <KpiValor valor={kpi.filtrado.total} unidad={null} />
         </KpiTarjeta>
         <KpiTarjeta etiqueta="Potencia total proyectada">
-          <KpiValor valor={kpi.filtrado.mw} unidad="MW" />
+          <KpiValor valor={kpi.filtrado.mw} unidad="MW" unidades={unidades} />
         </KpiTarjeta>
         <KpiTarjeta etiqueta="Capacidad energética total proyectada">
-          <KpiValor valor={kpi.filtrado.mwh} unidad="MWh" />
+          <KpiValor valor={kpi.filtrado.mwh} unidad="MWh" unidades={unidades} />
         </KpiTarjeta>
       </Grupo>
     </div>

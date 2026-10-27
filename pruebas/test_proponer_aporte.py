@@ -54,6 +54,20 @@ class TestProponerAporte(unittest.TestCase):
         esperado = ESQUEMAS["_mensajes"]["obligatorio"].format(columna="fuente")
         self.assertTrue(any(esperado in m for m in mensajes), mensajes)
 
+    def test_proyecto_detras_del_medidor_acepta_fuente_textual(self):
+        # 008 · RF-09: la misma regla que el validador, la base y /admin.
+        propuesta = {"tipo": "Proyecto nuevo", "agente": "carga-008", "descripcion": "Carga 008",
+                     "fuente": "Información de Azimut Energía (2026-10)",
+                     "datos": {"tipo_uso_conexion": "Maximización de autoconsumo PV y respaldo"}}
+        codigo, mensajes, peticiones = self.correr(propuesta)
+        self.assertEqual(codigo, 0, mensajes)
+        self.assertEqual(len(peticiones), 1)
+
+        gran_escala = {**propuesta, "datos": {"tipo_uso_conexion": "Regulación primaria de frecuencia"}}
+        codigo, _, peticiones = self.correr(gran_escala)
+        self.assertNotEqual(codigo, 0)
+        self.assertEqual(peticiones, [])
+
     def test_sin_nombre_de_agente_se_niega(self):
         codigo, _, peticiones = self.correr({**NOTICIA, "agente": ""})
         self.assertNotEqual(codigo, 0)

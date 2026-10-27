@@ -1,0 +1,21 @@
+{
+  "tipo": "Proyecto nuevo",
+  "agente": "carga-008",
+  "descripcion": "Carga inicial 008 (detrás del medidor): Planta Guarne. Punto en la cabecera municipal (DIVIPOLA, DANE); ubicación aproximada.",
+  "fuente": "Información de Azimut Energía (2026-10)",
+  "datos": {
+    "nombre": "Planta Guarne",
+    "operador": "Azimut Energía",
+    "estado": "Anunciado",
+    "tecnologia": "LFP",
+    "fpo": "2026",
+    "tipo_uso_conexion": "Maximización de autoconsumo PV y respaldo",
+    "departamento": "Antioquia",
+    "municipio": "Guarne",
+    "latitud": 6.27787,
+    "longitud": -75.441612,
+    "potencia_nominal_mw": 0.107,
+    "capacidad_maxima_mwh": 0.241,
+    "fuente": "Información de Azimut Energía (2026-10)"
+  }
+}

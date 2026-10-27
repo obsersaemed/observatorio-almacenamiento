@@ -81,7 +81,7 @@ export function FormularioAporte({ accion, siteKey, inicial }: { accion: Accion;
         </span>
       </label>
 
-      <div className="cf-turnstile" data-sitekey={siteKey} data-language="es" />
+      <div className="cf-turnstile" data-sitekey={siteKey} data-language="es" data-appearance="interaction-only" />
       <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
 
       <Button type="submit" size="lg" disabled={enviando} className="justify-self-start">

@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from importar import importar  # noqa: E402
 from supabase_rest import ClienteRest  # noqa: E402
 from test_validar_datos import ENC_PROY, fila_proyecto  # noqa: E402
+from validar_datos import columna_sql  # noqa: E402
 
 
 class ServidorFalso:
@@ -114,6 +115,25 @@ class TestImportar(unittest.TestCase):
         esperado = self.esquemas["_mensajes"]["valores"].format(
             columna="Estado", valor="Planeado", valores=", ".join(valores))
         self.assertTrue(any(esperado in m for m in mensajes), mensajes)
+
+    def test_008_detras_del_medidor_con_fuente_textual_se_importa_sin_cambiar_el_encabezado(self):
+        """008 · T08 · RF-09, CA-09.3: la fila del segmento entra con su fuente textual."""
+        servicio = "Maximización de autoconsumo PV y respaldo"
+        fuente = "Información de Azimut Energía (2026-10)"
+        columnas = [c["nombre"] for c in self.esquemas["proyectos"]["columnas"]]
+        self.assertEqual(",".join(columnas) + "\n", ENC_PROY)  # sin columnas nuevas
+        codigo, mensajes, peticiones = self.correr(ENC_PROY + fila_proyecto(servicios=servicio, fuente=f'"{fuente}"'))
+        self.assertEqual(codigo, 0, mensajes)
+        fila = peticiones[0]["cuerpo"][0]
+        self.assertEqual(fila["tipo_uso_conexion"], servicio)
+        self.assertEqual(fila["fuente"], fuente)
+        self.assertEqual(set(fila) - {"publicacion"}, {columna_sql(c) for c in columnas})
+
+    def test_008_gran_escala_con_fuente_textual_no_se_importa(self):
+        codigo, mensajes, peticiones = self.correr(ENC_PROY + fila_proyecto(fuente="Sin enlace"))
+        self.assertNotEqual(codigo, 0)
+        self.assertEqual(peticiones, [])
+        self.assertTrue(any(self.esquemas["_mensajes"]["urls"].format(columna="Fuente") in m for m in mensajes), mensajes)
 
     def test_error_de_la_api_termina_con_codigo_distinto_de_cero(self):
         codigo, mensajes, _ = self.correr(ENC_PROY + fila_proyecto(), estado=500)

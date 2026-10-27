@@ -65,6 +65,24 @@ def separar_lista(c, v):
     return [x.strip() for x in v.split(c.get("separador", ",")) if x.strip()]
 
 
+def segmentos_de(c, v):
+    """Segmentos (008) de los servicios v de la columna c, en orden: el de por defecto primero y
+    luego los del esquema. Un servicio que no está en 'segmentos' es del segmento por defecto."""
+    por_servicio = {s: seg for seg, servicios in c.get("segmentos", {}).items() for s in servicios}
+    encontrados = {por_servicio.get(x, c.get("segmento_por_defecto")) for x in separar_lista(c, v)}
+    orden = [c.get("segmento_por_defecto"), *c.get("segmentos", {})]
+    return [seg for seg in orden if seg in encontrados]
+
+
+def segmento_de_fila(cols, reg):
+    """Segmento del registro según su columna con 'segmentos' (o None si el esquema no tiene)."""
+    c = next((c for c in cols if c.get("segmentos")), None)
+    if c is None:
+        return None
+    segmentos = segmentos_de(c, reg.get(c["nombre"], ""))
+    return segmentos[0] if len(segmentos) == 1 else c.get("segmento_por_defecto")
+
+
 ENTERO = re.compile(r"^-?\d+$")
 
 
@@ -140,7 +158,12 @@ def validar_tabla(nombre, esquema, ruta, mensajes):
                 if c.get("aviso_si_vacio"):
                     avisos.append(f"{donde}: '{c['nombre']}' vacío, {c['aviso_si_vacio']}")
                 continue
+            if c.get("texto_si_segmento") and c["texto_si_segmento"] == segmento_de_fila(cols, reg):
+                continue  # 008 · RF-09: referencia textual sin URL (ya se sabe que no está vacía)
             problema = validar_valor(c, v, mensajes)
+            mezcla = segmentos_de(c, v) if not problema and c.get("segmentos") else []
+            if len(mezcla) > 1:  # 008 · RF-02: un proyecto no mezcla segmentos
+                problema = mensajes["segmentos"].format(columna=c["nombre"], segmentos=" y ".join(mezcla))
             if problema:
                 errores.append(f"{donde}: {problema}")
             elif c.get("min_de") and v:

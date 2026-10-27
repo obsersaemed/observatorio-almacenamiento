@@ -9,7 +9,8 @@
     "urls": "'{columna}' tiene algo que no es un enlace http(s)",
     "correo": "'{columna}' no es un correo válido",
     "entero": "'{columna}' = '{valor}' no es un número entero",
-    "min_de": "'{columna}' = {valor} es menor que '{otra}'"
+    "min_de": "'{columna}' = {valor} es menor que '{otra}'",
+    "segmentos": "'{columna}' mezcla servicios de dos segmentos ({segmentos}): un proyecto es de un solo segmento"
   },
   "proyectos": {
     "archivo": "proyectos.csv",
@@ -53,8 +54,18 @@
         "valores": [
           "Regulación primaria de frecuencia",
           "Inyección de energía en la noche",
-          "Mercado regulado a través de contratos de largo plazo"
-        ]
+          "Alivio de retrasos en proyectos de transmisión",
+          "Mercado regulado a través de los contratos de largo plazo",
+          "Suavizar fluctuaciones a corto plazo en la generación solar",
+          "Maximización de autoconsumo PV y respaldo"
+        ],
+        "segmento_por_defecto": "Gran escala",
+        "segmentos": {
+          "Detrás del medidor": [
+            "Maximización de autoconsumo PV y respaldo"
+          ]
+        },
+        "_nota": "008: el segmento del proyecto se deduce de sus servicios; un proyecto no mezcla segmentos"
       },
       {
         "nombre": "Punto de conexión kV",
@@ -147,7 +158,9 @@
       {
         "nombre": "Fuente",
         "tipo": "urls",
-        "obligatorio": true
+        "obligatorio": true,
+        "texto_si_segmento": "Detrás del medidor",
+        "_nota": "008: en ese segmento acepta una referencia textual sin URL; en los demás, URL"
       }
     ]
   },
@@ -341,7 +354,9 @@
       {
         "nombre": "fuente",
         "tipo": "urls",
-        "obligatorio": true
+        "obligatorio": true,
+        "texto_si_segmento": "Detrás del medidor",
+        "_nota": "008: texto sin URL solo si el aporte propone servicios (datos.tipo_uso_conexion) de ese segmento"
       },
       {
         "nombre": "correo",

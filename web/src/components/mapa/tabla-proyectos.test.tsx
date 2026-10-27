@@ -20,15 +20,15 @@ const nombresDeFilas = () =>
   screen.getAllByRole("row").slice(1).map((r) => within(r).getAllByRole("cell")[0].textContent);
 
 describe("TablaProyectos", () => {
-  test("encabezados con unidades entre corchetes y cifras con coma decimal (RNF-04)", () => {
+  test("encabezados con unidades entre corchetes y cifras con coma decimal (RNF-04), sin «Servicios» y con «Promotor» (008 · CA-12.1)", () => {
     render(<TablaProyectos proyectos={proyectos} onElegir={vi.fn()} />);
     const encabezados = screen.getAllByRole("columnheader").map((h) => h.textContent);
     expect(encabezados).toEqual([
-      "Nombre", "Operador", "Estado", "Servicios", "Departamento", "Municipio",
+      "Nombre", "Promotor", "Estado", "Departamento", "Municipio",
       "Potencia [MW]", "Energía [MWh]", "Año de FPO",
     ]);
     expect(screen.getByRole("cell", { name: "1,5" })).toBeInTheDocument();
-    expect(screen.getByRole("cell", { name: "Inyección de energía en la noche" })).toBeInTheDocument();
+    expect(screen.queryByRole("cell", { name: "Inyección de energía en la noche" })).not.toBeInTheDocument();
   });
 
   test("ordena por potencia de mayor a menor (CA-02.1)", () => {
@@ -70,5 +70,29 @@ describe("TablaProyectos", () => {
     render(<TablaProyectos proyectos={proyectos} onElegir={onElegir} />);
     fireEvent.click(screen.getByRole("button", { name: "Ver Grande en el mapa" }));
     expect(onElegir).toHaveBeenCalledWith("Grande");
+  });
+});
+
+// 008 · T05 · RF-05, CA-05.1, RNF-02: tabla en kW y kWh.
+describe("TablaProyectos con unidades (008)", () => {
+  const medidor = [
+    fila({ nombre: "Casa", potencia_nominal_mw: 0.015, capacidad_maxima_mwh: 0.04 }),
+    fila({ nombre: "Planta", potencia_nominal_mw: 0.03, capacidad_maxima_mwh: 0.119 }),
+  ].map(aProyectoMapa);
+
+  test("con unidades=\"kW\": encabezados [kW] y [kWh] y cifras multiplicadas por 1000", () => {
+    render(<TablaProyectos proyectos={medidor} onElegir={vi.fn()} unidades="kW" />);
+    const encabezados = screen.getAllByRole("columnheader").map((h) => h.textContent);
+    expect(encabezados).toContain("Potencia [kW]");
+    expect(encabezados).toContain("Energía [kWh]");
+    expect(encabezados.join()).not.toMatch(/MW/);
+    expect(screen.getByRole("cell", { name: "15,0" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "119,0" })).toBeInTheDocument();
+  });
+
+  test("con unidades=\"MW\" queda como hoy", () => {
+    render(<TablaProyectos proyectos={proyectos} onElegir={vi.fn()} unidades="MW" />);
+    expect(screen.getByRole("columnheader", { name: "Potencia [MW]" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "1,5" })).toBeInTheDocument();
   });
 });

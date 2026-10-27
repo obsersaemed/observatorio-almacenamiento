@@ -30,6 +30,8 @@ export const TEXTOS = {
     titulo: "Aportar al observatorio",
     intro:
       "¿Conoces un proyecto de almacenamiento con baterías, una norma o una noticia que falte, o un dato que deba corregirse? Tu aporte nos ayuda a mantener la información actualizada y a construir una visión más completa del almacenamiento de energía en Colombia.",
+    correo: "obsersae_med@unal.edu.co",
+    formulario: "/formularios/Formulario_Recoleccion_SAEB_Colombia.xlsx",
   },
 } as const;
 

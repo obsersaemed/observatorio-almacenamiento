@@ -4,26 +4,30 @@
 // JRC: una medida a la vez, así MW y MWh nunca comparten eje (RNF-07).
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { formatoNumero } from "@/lib/formato";
+import { factorDe, formatoNumero, unidadEnergia, type Unidades } from "@/lib/formato";
 import { porEstado } from "@/lib/graficas-mapa";
 import { useMovimientoReducido } from "@/lib/movimiento";
 import type { ProyectoMapa } from "@/lib/proyectos-mapa";
 import { colorDe } from "../mapa/leyenda";
 import { TarjetaGrafica } from "./tarjeta-grafica";
 
-const MEDIDAS = [
-  { id: "mw", texto: "Potencia [MW]" },
-  { id: "mwh", texto: "Energía [MWh]" },
-  { id: "h", texto: "Duración [h]" },
-] as const;
-type IdMedida = (typeof MEDIDAS)[number]["id"];
+// 008: en «Detrás del medidor» potencia y energía van en kW y kWh; la duración no cambia.
+const medidasDe = (unidades: Unidades) =>
+  [
+    { id: "mw", texto: `Potencia [${unidades}]` },
+    { id: "mwh", texto: `Energía [${unidadEnergia(unidades)}]` },
+    { id: "h", texto: "Duración [h]" },
+  ] as const;
+type IdMedida = ReturnType<typeof medidasDe>[number]["id"];
 
 export const cifra = (v: number | null | undefined) => (v === null || v === undefined ? "—" : formatoNumero(v, 1));
 
-export function GraficaEstados({ proyectos }: { proyectos: ProyectoMapa[] }) {
+export function GraficaEstados({ proyectos, unidades = "MW" }: { proyectos: ProyectoMapa[]; unidades?: Unidades }) {
   const [medida, setMedida] = useState<IdMedida>("mw");
   const reducido = useMovimientoReducido();
-  const filas = porEstado(proyectos, medida);
+  const MEDIDAS = medidasDe(unidades);
+  const factor = medida === "h" ? 1 : factorDe(unidades);
+  const filas = porEstado(proyectos, medida).map((f) => ({ ...f, valor: f.valor === null ? null : f.valor * factor }));
   // Recharts no dibuja la etiqueta de un valor nulo: la barra va en 0 y la etiqueta dice «—»
   // (RF-04). La duración lleva su unidad en la etiqueta (CA-04.1).
   const datos = filas.map((f) => ({

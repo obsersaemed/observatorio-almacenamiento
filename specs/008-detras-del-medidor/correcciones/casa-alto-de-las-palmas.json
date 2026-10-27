@@ -1,0 +1,11 @@
+{
+  "tipo": "Corrección",
+  "agente": "carga-008",
+  "registro_afectado": "Casa Alto de las Palmas",
+  "descripcion": "008: promotor de «Casa Alto de las Palmas» solo «Azimut Energía» (pedido del usuario, 2026-10-27).",
+  "fuente": "Información de Azimut Energía (2026-10)",
+  "datos": {
+    "operador": "Azimut Energía",
+    "tipo_uso_conexion": "Maximización de autoconsumo PV y respaldo"
+  }
+}

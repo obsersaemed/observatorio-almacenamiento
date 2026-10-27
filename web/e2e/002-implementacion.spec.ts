@@ -30,8 +30,10 @@ const ESTADOS = ["En operación", "En construcción", "Anunciado", "Inactivo"];
 const SERVICIOS = [
   "Regulación primaria de frecuencia",
   "Inyección de energía en la noche",
-  "Mercado regulado a través de contratos de largo plazo",
+  "Mercado regulado a través de los contratos de largo plazo",
 ];
+// 008: servicio de «Detrás del medidor» (cuarto valor de la lista cerrada).
+const SERVICIO_MEDIDOR = "Maximización de autoconsumo PV y respaldo";
 
 const fmt1 = (n: number) =>
   n.toLocaleString("es-CO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -838,9 +840,10 @@ test.describe("002 · Implementación en el país (datos)", () => {
     await page.goto(`/admin/${a.id}`);
     const form = page.getByRole("form", { name: "Aprobar aporte" });
     const casillas = form.getByRole("group", { name: /Servicios|Tipo uso\/conexión/ }).getByRole("checkbox");
-    await expect(casillas).toHaveCount(3);
+    // 008: la lista cerrada gana «Maximización de autoconsumo PV y respaldo» (servicio de «Detrás del medidor»).
+    await expect(casillas).toHaveCount(SERVICIOS.length + 1);
     const rotulos = await casillas.evaluateAll((es) => es.map((e) => (e as HTMLInputElement).labels?.[0]?.textContent?.trim() ?? e.getAttribute("aria-label")));
-    expect(rotulos).toEqual(SERVICIOS);
+    expect(rotulos).toEqual([...SERVICIOS, SERVICIO_MEDIDOR]);
     // Sin marcar nada, la aprobación no muestra el valor propuesto (observación).
     const marcadas = await casillas.evaluateAll((es) => es.filter((e) => (e as HTMLInputElement).checked).length);
     test.info().annotations.push({ type: "casillas-marcadas-con-Servicio-X-propuesto", description: String(marcadas) });
@@ -893,8 +896,14 @@ test.describe("002 · Implementación en el país (datos)", () => {
     fs.rmSync(tmp, { recursive: true, force: true });
 
     test.info().annotations.push({ type: "mensajes", description: JSON.stringify(mensajes) });
+    // 008: hasta que el usuario aplique la 0007 en «pruebas», el disparador lista solo los 3 servicios
+    // de antes; la comparación entre vías queda bloqueada (no se da por buena).
+    test.skip(
+      !mensajes.baseDeDatos.includes(SERVICIO_MEDIDOR),
+      "BLOQUEADO (0007): el disparador de «pruebas» aún no lista «Maximización de autoconsumo PV y respaldo»",
+    );
     for (const [via, m] of Object.entries(mensajes)) {
-      for (const s of SERVICIOS) expect.soft(m, `${via} lista «${s}»`).toContain(s);
+      for (const s of [...SERVICIOS, SERVICIO_MEDIDOR]) expect.soft(m, `${via} lista «${s}»`).toContain(s);
     }
     expect.soft(mensajes.aprobacion, "aprobación = base de datos").toBe(mensajes.baseDeDatos);
     expect.soft(mensajes.importacion, "importación = base de datos").toBe(mensajes.baseDeDatos);

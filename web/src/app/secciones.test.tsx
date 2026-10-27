@@ -24,6 +24,16 @@ describe("Implementación en el país (spec 002)", () => {
     expect(mMapa.title).toBe("Implementación de SAEB en Colombia");
     expect(String(mMapa.description ?? "").length).toBeGreaterThan(20);
   });
+
+  test("008 · los botones de segmento van debajo del título y antes de la vista con los KPI (CA-03.1)", () => {
+    render(<Mapa />);
+    const titulo = screen.getByRole("heading", { level: 1 });
+    const grupo = screen.getByRole("group", { name: "Tipo de almacenamiento" });
+    const vista = screen.getByText(/Cargando los proyectos/);
+    expect(titulo.compareDocumentPosition(grupo) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(grupo.compareDocumentPosition(vista) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Gran escala" })).toHaveAttribute("aria-pressed", "true");
+  });
 });
 
 describe("Vehículos eléctricos (spec 003)", () => {
@@ -91,7 +101,10 @@ describe("introducción al final (007 · RF-03, CA-03.1)", () => {
     expect(bloques[0].tagName).toBe("H1");
     expect(bloques[0]).toHaveTextContent(texto.titulo);
     expect(bloques[1]).not.toHaveTextContent(texto.intro);
-    expect(bloques[1]).toHaveAttribute("role", "status"); // el contenido (aún cargando) va justo después
+    // El contenido (aún cargando) va justo después; en /mapa, 008 · RF-03 pone antes los botones de segmento.
+    const contenido = _ruta === "/mapa" ? bloques[2] : bloques[1];
+    if (_ruta === "/mapa") expect(bloques[1]).toHaveAttribute("role", "group");
+    expect(contenido).toHaveAttribute("role", "status");
     expect(bloques.at(-1)!.textContent).toBe(texto.intro);
   });
 });

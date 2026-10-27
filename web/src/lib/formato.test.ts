@@ -1,5 +1,21 @@
 import { describe, expect, test } from "vitest";
-import { formatoFecha, formatoMW, formatoMWh, formatoNumero } from "./formato";
+import { formatoEnergia, formatoFecha, formatoMW, formatoMWh, formatoNumero, formatoPotencia } from "./formato";
+
+// 008 · T04: en «Detrás del medidor» las cifras van en kW y kWh (RF-05, RNF-02).
+describe("formatoPotencia y formatoEnergia (008)", () => {
+  test("en kW multiplica por 1000 y usa kW / kWh", () => {
+    expect(formatoPotencia(0.015, "kW")).toBe("15,0 kW");
+    expect(formatoEnergia(0.04, "kW")).toBe("40,0 kWh");
+    expect(formatoPotencia(0.107, "kW")).toBe("107,0 kW");
+    expect(formatoEnergia(0.241, "kW")).toBe("241,0 kWh");
+  });
+
+  test("en MW queda como hoy", () => {
+    expect(formatoPotencia(67, "MW")).toBe(formatoMW(67));
+    expect(formatoEnergia(57.8, "MW")).toBe(formatoMWh(57.8));
+    expect(formatoPotencia(null, "kW")).toBe("—");
+  });
+});
 
 describe("formato es-CO", () => {
   test("potencia en MW con un decimal y coma decimal", () => {

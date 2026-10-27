@@ -6,7 +6,7 @@ Se ejecuta antes que las restricciones CHECK de 0001, así que el mensaje que ll
 
 Uso:
     python scripts/generar_validacion_sql.py              # imprime el bloque SQL
-    python scripts/generar_validacion_sql.py --escribir   # lo reemplaza en la última migración (0004)
+    python scripts/generar_validacion_sql.py --escribir   # lo reemplaza en la última migración (MIGRACION)
 """
 import argparse
 import json
@@ -18,7 +18,7 @@ from validar_datos import RAIZ, columna_sql, limite  # noqa: E402
 
 INICIO = "-- >>> validación generada desde datos/esquemas.json con scripts/generar_validacion_sql.py (no editar a mano)"
 FIN = "-- <<< fin de la validación generada"
-MIGRACION = RAIZ / "supabase" / "migrations" / "0006_normativa.sql"  # la última que lo regenera
+MIGRACION = RAIZ / "supabase" / "migrations" / "0008_servicios_sheet.sql"  # la última que lo regenera
 ESQUEMAS = ("proyectos", "normativa", "noticias", "aportes", "vehiculos_lineas", "vehiculos_ventas")
 
 
@@ -33,7 +33,27 @@ def lanzar(mensaje, valor_sql=None):
     return f"raise exception using errcode = '23514', message = format({literal(mensaje)}, {valor_sql});"
 
 
-def reglas_de(columna, mensajes):
+def segmento_sql(c):
+    """CASE con el segmento (008) de cada servicio btrim(v) de la columna c."""
+    ramas = "".join(f" when btrim(v) in ({', '.join(literal(x) for x in servicios)}) then {literal(seg)}"
+                    for seg, servicios in c["segmentos"].items())
+    return f"case{ramas} else {literal(c['segmento_por_defecto'])} end"
+
+
+def orden_sql(c):
+    """Orden del segmento en el mensaje: el de por defecto primero y luego los del esquema."""
+    ramas = "".join(f" when btrim(v) in ({', '.join(literal(x) for x in servicios)}) then {i}"
+                    for i, servicios in enumerate(c["segmentos"].values(), start=1))
+    return f"case{ramas} else 0 end"
+
+
+def servicios_de(c, expresion):
+    """FROM con los servicios no vacíos de la expresión (texto separado por el separador de c)."""
+    return f"regexp_split_to_table({expresion}, {literal(c.get('separador', ','))}) as v where btrim(v) <> ''"
+
+
+def reglas_de(columna, mensajes, segmentos=None):
+    """segmentos = (columna con 'segmentos', expresión SQL con los servicios del registro) o None."""
     col = f"new.{columna_sql(columna['nombre'])}"
     m = lambda clave, **kw: mensajes[clave].format(columna=columna["nombre"], **kw)  # noqa: E731
     lineas = []
@@ -52,6 +72,14 @@ def reglas_de(columna, mensajes):
             f"if {col} is not null and exists (select 1 from regexp_split_to_table({col}, {separador}) as v "
             f"where btrim(v) <> '' and btrim(v) not in ({valores})) then {lanzar(texto, col)} end if;"
         )
+        if columna.get("segmentos"):
+            # 008 · RF-02: un proyecto no mezcla servicios de dos segmentos.
+            seg, desde = segmento_sql(columna), servicios_de(columna, col)
+            nombres = f"(select string_agg(s, ' y ' order by o) from (select distinct {seg} as s, {orden_sql(columna)} as o from {desde}) as x)"
+            lineas.append(
+                f"if {col} is not null and (select count(distinct {seg}) from {desde}) > 1 then "
+                f"{lanzar(m('segmentos', segmentos='%s'), nombres)} end if;"
+            )
     if tipo == "entero":
         lineas.append(f"if {col} is not null and {col} <> trunc({col}) then {lanzar(m('entero', valor='%s'), col)} end if;")
     if tipo in ("numero", "entero") and ("min" in columna or "max" in columna):
@@ -67,11 +95,30 @@ def reglas_de(columna, mensajes):
         texto = m("min_de", valor="%s", otra=columna["min_de"])
         lineas.append(f"if {col} is not null and {otra} is not null and {col} < {otra} then {lanzar(texto, col)} end if;")
     if tipo == "urls":
+        # 008 · RF-09: en el segmento indicado, la fuente puede ser texto sin URL.
+        guarda = ""
+        if columna.get("texto_si_segmento") and segmentos:
+            c_seg, expresion = segmentos
+            guarda = (f"not coalesce((select bool_and({segmento_sql(c_seg)} = {literal(columna['texto_si_segmento'])}) "
+                      f"from {servicios_de(c_seg, expresion)}), false) and ")
         lineas.append(
-            f"if {col} is not null and exists (select 1 from regexp_split_to_table(btrim({col}), '\\s+') as u "
+            f"if {col} is not null and {guarda}exists (select 1 from regexp_split_to_table(btrim({col}), '\\s+') as u "
             f"where u <> '' and u !~ '^https?://\\S+$') then {lanzar(m('urls'))} end if;"
         )
     return lineas
+
+
+def columna_de_segmentos(esquemas, esquema):
+    """(columna con 'segmentos', expresión SQL de sus servicios en este registro), o None.
+    Si la columna no está en la tabla (aportes), los servicios vienen en datos (jsonb)."""
+    propia = next((c for c in esquema["columnas"] if c.get("segmentos")), None)
+    if propia:
+        return propia, f"new.{columna_sql(propia['nombre'])}"
+    for nombre in ESQUEMAS:
+        c = next((c for c in esquemas[nombre]["columnas"] if c.get("segmentos")), None)
+        if c:
+            return c, f"(new.datos ->> {literal(columna_sql(c['nombre']))})"
+    return None
 
 
 def generar(esquemas):
@@ -80,10 +127,11 @@ def generar(esquemas):
     for nombre in ESQUEMAS:
         esquema = esquemas[nombre]
         tabla = esquema["tabla"]
+        segmentos = columna_de_segmentos(esquemas, esquema)
         cuerpo = []
         for c in esquema["columnas"]:
             if not c.get("privado"):
-                cuerpo.extend(reglas_de(c, mensajes))
+                cuerpo.extend(reglas_de(c, mensajes, segmentos))
         partes.append(
             f"create or replace function public.validar_{tabla}() returns trigger\n"
             f"language plpgsql set search_path = public as $$\n"

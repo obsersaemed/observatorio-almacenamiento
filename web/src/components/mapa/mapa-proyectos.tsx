@@ -7,6 +7,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Map as MapaMaplibre } from "maplibre-gl";
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
+import type { Unidades } from "@/lib/formato";
 import { useMovimientoReducido } from "@/lib/movimiento";
 import { posicionTarjeta } from "@/lib/posicion-tarjeta";
 import type { ProyectoMapa } from "@/lib/proyectos-mapa";
@@ -49,10 +50,13 @@ export function MapaProyectos({
   proyectos,
   seleccionado,
   onSeleccionar,
+  unidades = "MW",
 }: {
   proyectos: ProyectoMapa[];
   seleccionado: string | null;
   onSeleccionar: (nombre: string | null) => void;
+  /** 008: la tarjeta muestra kW/kWh en «Detrás del medidor». */
+  unidades?: Unidades;
 }) {
   const contenedor = useRef<HTMLDivElement>(null);
   const marco = useRef<HTMLDivElement>(null);
@@ -216,7 +220,7 @@ export function MapaProyectos({
           onBlur={(e) => !dentroDeLaTarjeta(e.relatedTarget) && setEncima(null)}
           className="z-10 sm:absolute sm:top-0 sm:left-0"
         >
-          <TarjetaProyecto proyecto={activo} onCerrar={cerrar} />
+          <TarjetaProyecto proyecto={activo} onCerrar={cerrar} unidades={unidades} />
         </div>
       )}
       <Leyenda />

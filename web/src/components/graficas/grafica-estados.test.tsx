@@ -86,3 +86,35 @@ describe("GraficaEstados", () => {
     expect(marcas.some((m) => m?.includes(","))).toBe(true);
   });
 });
+
+// 008 · T05 · RF-05, RNF-02: en kW y kWh, una medida a la vez (sin compartir eje).
+describe("GraficaEstados con unidades (008)", () => {
+  const medidor = [
+    fila({ potencia_nominal_mw: 0.015, capacidad_maxima_mwh: 0.04 }),
+    fila({ estado: "Anunciado", potencia_nominal_mw: 0.03, capacidad_maxima_mwh: 0.119 }),
+  ].map(aProyectoMapa);
+
+  test("con unidades=\"kW\": pestañas, eje y tabla en kW y kWh", () => {
+    const { container } = render(<GraficaEstados proyectos={medidor} unidades="kW" />);
+    expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Potencia [kW]", "Energía [kWh]", "Duración [h]"]);
+    const textos = [...container.querySelectorAll("svg text")].map((t) => t.textContent);
+    expect(textos).toContain("Potencia [kW]");
+    expect(textos).toContain("15,0");
+    fireEvent.click(screen.getByRole("tab", { name: "Energía [kWh]" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ver como tabla" }));
+    expect(screen.getAllByRole("columnheader").map((h) => h.textContent)).toEqual(["Estado", "Energía [kWh]"]);
+    expect(filasTabla()).toEqual(["En operación40,0", "En construcción0,0", "Anunciado119,0", "Inactivo0,0"]);
+  });
+
+  test("la duración no cambia con las unidades", () => {
+    render(<GraficaEstados proyectos={medidor} unidades="kW" />);
+    fireEvent.click(screen.getByRole("tab", { name: "Duración [h]" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ver como tabla" }));
+    expect(filasTabla()[0]).toBe("En operación2,7");
+  });
+
+  test("con unidades=\"MW\" queda como hoy", () => {
+    render(<GraficaEstados proyectos={proyectos} unidades="MW" />);
+    expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Potencia [MW]", "Energía [MWh]", "Duración [h]"]);
+  });
+});

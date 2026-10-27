@@ -30,6 +30,8 @@ describe("FormularioAporte", () => {
   test("incluye el widget de verificación humana con la clave del sitio", () => {
     const { container } = render(<FormularioAporte accion={vi.fn()} siteKey="clave-publica" />);
     expect(container.querySelector(".cf-turnstile")).toHaveAttribute("data-sitekey", "clave-publica");
+    // 2026-10-27: el widget solo se muestra si Cloudflare pide una interacción (oculta el aviso de la llave de prueba).
+    expect(container.querySelector(".cf-turnstile")).toHaveAttribute("data-appearance", "interaction-only");
   });
 
   test("pide el registro afectado solo para correcciones", () => {

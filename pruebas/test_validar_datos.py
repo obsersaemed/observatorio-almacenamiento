@@ -1,4 +1,5 @@
 """Pruebas del validador. Correr con: python -m unittest discover pruebas"""
+import csv
 import json
 import shutil
 import sys
@@ -18,8 +19,9 @@ ENC_PROY = ("Nombre,Operador,Estado,Tecnologia,FPO,Tipo uso/conexión,Punto de c
             "Tiempo para aporte de máxima potencia [%],Tipo de compensación adicional,Fuente\n")
 
 
-def fila_proyecto(estado="En operación", lat='"4,9653"', lon='"-73,9128"', servicios=""):
-    return f"P1,Op,{estado},Li-ion,2024,{servicios},115,Cundinamarca,Tocancipá,{lat},{lon},7,\"3,9\",,,,,,,,,,https://ejemplo.co\n"
+def fila_proyecto(estado="En operación", lat='"4,9653"', lon='"-73,9128"', servicios="",
+                  fuente="https://ejemplo.co"):
+    return f"P1,Op,{estado},Li-ion,2024,{servicios},115,Cundinamarca,Tocancipá,{lat},{lon},7,\"3,9\",,,,,,,,,,{fuente}\n"
 
 
 class TestValidador(unittest.TestCase):
@@ -129,6 +131,57 @@ ENC_LINEAS = "Marca,Línea,Tipo de batería,Capacidad mínima [kWh],Capacidad m�
 ENC_VENTAS = "Línea,Año,Unidades\n"
 
 
+MEDIDOR = "Maximización de autoconsumo PV y respaldo"
+FUENTE_TEXTO = '"Información de Azimut Energía (2026-10)"'
+
+
+class TestSegmentos(unittest.TestCase):
+    """008 · T01: servicio de «Detrás del medidor», sin mezcla de segmentos, fuente según segmento."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp())
+        shutil.copy(RAIZ / "datos" / "esquemas.json", self.dir)
+        for n in ("normativa.csv", "noticias.csv", "vehiculos_lineas.csv", "vehiculos_ventas.csv"):
+            shutil.copy(RAIZ / "datos" / n, self.dir)
+        self.esquemas = json.loads((RAIZ / "datos" / "esquemas.json").read_text(encoding="utf-8"))
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def proyectos(self, contenido):
+        (self.dir / "proyectos.csv").write_text(contenido, encoding="utf-8")
+        return validar(self.dir)
+
+    def test_servicio_nuevo_marcado_como_detras_del_medidor(self):
+        col = next(c for c in self.esquemas["proyectos"]["columnas"] if c["nombre"] == "Tipo uso/conexión")
+        self.assertIn(MEDIDOR, col["valores"])
+        self.assertEqual(col["segmentos"], {"Detrás del medidor": [MEDIDOR]})
+
+    def test_detras_del_medidor_con_fuente_textual_pasa(self):
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto(servicios=MEDIDOR, fuente=FUENTE_TEXTO))
+        self.assertEqual(errores, [])
+
+    def test_gran_escala_con_fuente_textual_falla_como_hoy(self):
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto(fuente=FUENTE_TEXTO))
+        esperado = self.esquemas["_mensajes"]["urls"].format(columna="Fuente")
+        self.assertTrue(any(e.endswith(esperado) for e in errores), errores)
+
+    def test_gran_escala_con_servicio_y_fuente_textual_falla(self):
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto(
+            servicios="Regulación primaria de frecuencia", fuente=FUENTE_TEXTO))
+        self.assertTrue(any("Fuente" in e for e in errores), errores)
+
+    def test_mezcla_de_segmentos_falla_nombrando_la_columna(self):
+        mezcla = f'"Regulación primaria de frecuencia, {MEDIDOR}"'
+        errores, _ = self.proyectos(ENC_PROY + fila_proyecto(servicios=mezcla))
+        self.assertTrue(any("'Tipo uso/conexión'" in e and "segmento" in e for e in errores), errores)
+
+    def test_proyectos_csv_real_sigue_validando(self):
+        shutil.copy(RAIZ / "datos" / "proyectos.csv", self.dir)
+        errores, _ = validar(self.dir)
+        self.assertEqual(errores, [])
+
+
 class TestVehiculos(unittest.TestCase):
     """003 · T01 · RF-14, CA-14.1: reglas de vehículos (datos ficticios)."""
 
@@ -181,3 +234,26 @@ class TestVehiculos(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestServiciosSheet(unittest.TestCase):
+    """2026-10-27: lista cerrada de servicios según la Hoja 1 de la `Base de datos SAEB`."""
+
+    def test_lista_de_servicios_es_la_de_la_sheet(self):
+        esquemas = json.loads((RAIZ / "datos" / "esquemas.json").read_text(encoding="utf-8"))
+        c = next(c for c in esquemas["proyectos"]["columnas"] if c["nombre"] == "Tipo uso/conexión")
+        self.assertEqual(c["valores"], [
+            "Regulación primaria de frecuencia",
+            "Inyección de energía en la noche",
+            "Alivio de retrasos en proyectos de transmisión",
+            "Mercado regulado a través de los contratos de largo plazo",
+            "Suavizar fluctuaciones a corto plazo en la generación solar",
+            "Maximización de autoconsumo PV y respaldo",
+        ])
+
+    def test_el_csv_trae_los_cambios_de_la_sheet(self):
+        filas = {r[0]: r for r in list(csv.reader((RAIZ / "datos" / "proyectos.csv").open(encoding="utf-8")))[1:]}
+        self.assertIn("UPME STR 01-2021", filas)
+        self.assertNotIn("Canadian solar", filas)
+        self.assertEqual(filas["Parque Solar Chenche"][6], "13.2")
+        self.assertEqual(len(filas), 8)

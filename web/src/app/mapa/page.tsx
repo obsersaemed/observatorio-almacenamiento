@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { BotonesSegmento } from "@/components/mapa/botones-segmento";
 import { VistaMapa } from "@/components/mapa/vista-mapa";
 import { proyectosParaMapa } from "@/lib/datos-publicos";
 import { TEXTOS } from "@/lib/textos";
@@ -18,6 +19,9 @@ export default function Mapa() {
   return (
     <main className="mx-auto grid w-full max-w-[var(--page-max)] gap-6 px-4 py-8">
       <h1 className="text-2xl font-extrabold text-[var(--text-heading)] sm:text-3xl">{TEXTOS.mapa.titulo}</h1>
+      {/* 008 · RF-03: debajo del título y antes de los KPI. Lee la URL en el navegador (no usa
+          useSearchParams), así que no necesita <Suspense>. */}
+      <BotonesSegmento />
       <Suspense fallback={<p role="status">Cargando los proyectos…</p>}>
         <VistaConDatos />
       </Suspense>

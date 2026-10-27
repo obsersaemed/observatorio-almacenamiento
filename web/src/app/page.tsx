@@ -14,10 +14,11 @@ import { MiniMapaColombia } from "@/components/mini-mapa-colombia";
 import { crecimiento } from "@/lib/crecimiento";
 import { noticiasPublicas, proyectosParaMapa } from "@/lib/datos-publicos";
 import { calcularKpi } from "@/lib/kpi";
-import { aProyectoMapa } from "@/lib/proyectos-mapa";
+import { aProyectoMapa, SEGMENTO_POR_DEFECTO, soloSegmento } from "@/lib/proyectos-mapa";
 
+// 008 · RF-07: el inicio cuenta solo la «Gran escala».
 async function proyectos() {
-  return (await proyectosParaMapa()).map(aProyectoMapa);
+  return soloSegmento((await proyectosParaMapa()).map(aProyectoMapa), SEGMENTO_POR_DEFECTO);
 }
 
 async function GraficaConDatos() {

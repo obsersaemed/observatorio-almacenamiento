@@ -2,7 +2,8 @@
 // tabla, los KPI «según filtros» y la descarga usan el mismo resultado de filtrar() (RF-09).
 // Reglas del proyecto: MW y MWh se suman por separado; «Instalado» cuenta solo En operación.
 import definicion from "@/generado/esquemas.json";
-import { leerNumero, separarLista } from "./esquemas";
+import { leerNumero, segmentosDe, separarLista } from "./esquemas";
+import type { Unidades } from "./formato";
 
 /** Fila pública de `proyectos` (nombres SQL) que lee /mapa. */
 export type FilaProyecto = {
@@ -56,9 +57,47 @@ export type Opcion = { valor: string; cantidad: number };
 /** Valor de Servicios para los proyectos que no lo tienen (spec 002, aclaración 4). */
 export const SIN_DATO = "Sin dato";
 
-const SEPARADOR =
-  definicion.proyectos.columnas.find((c) => c.nombre === "Tipo uso/conexión")?.separador ?? ",";
+const COLUMNA_SERVICIOS = definicion.proyectos.columnas.find(
+  (c) => c.nombre === "Tipo uso/conexión",
+) as unknown as Parameters<typeof segmentosDe>[0];
+const SEPARADOR = COLUMNA_SERVICIOS.separador ?? ",";
 const texto = (v: unknown) => String(v ?? "").trim();
+
+/** 008 (RF-01): segmentos del esquema; el de por defecto primero («Gran escala»). */
+export const SEGMENTO_POR_DEFECTO = COLUMNA_SERVICIOS.segmento_por_defecto!;
+export const SEGMENTOS = [SEGMENTO_POR_DEFECTO, ...Object.keys(COLUMNA_SERVICIOS.segmentos ?? {})];
+
+/** Segmento de un proyecto según sus servicios. Un proyecto no mezcla segmentos (lo impiden el
+ *  validador, la base y /admin); si llegara a pasar, gana el segmento distinto del de por defecto. */
+export function segmentoDe(p: Pick<ProyectoMapa, "servicios"> | Pick<FilaProyecto, "tipo_uso_conexion">): string {
+  const servicios = "servicios" in p ? p.servicios : separarLista(texto(p.tipo_uso_conexion), SEPARADOR);
+  return segmentosDe(COLUMNA_SERVICIOS, servicios).at(-1) ?? SEGMENTO_POR_DEFECTO;
+}
+
+/** 008 (RF-03, RF-05): cada segmento con su id para la URL (?segmento=detras-del-medidor) y sus
+ *  unidades. El de por defecto va en MW/MWh y no se escribe en la URL. */
+export type OpcionSegmento = { id: string; nombre: string; unidades: Unidades };
+const idDe = (nombre: string) =>
+  nombre.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim().replace(/\s+/g, "-");
+export const OPCIONES_SEGMENTO: OpcionSegmento[] = SEGMENTOS.map((nombre) => ({
+  id: idDe(nombre),
+  nombre,
+  unidades: nombre === SEGMENTO_POR_DEFECTO ? "MW" : "kW",
+}));
+export const PARAMETRO_SEGMENTO = "segmento";
+
+/** Segmento elegido según la consulta de la URL; uno desconocido o ausente es el de por defecto. */
+export function segmentoDeConsulta(consulta: string): OpcionSegmento {
+  const id = new URLSearchParams(consulta).get(PARAMETRO_SEGMENTO);
+  return OPCIONES_SEGMENTO.find((o) => o.id === id) ?? OPCIONES_SEGMENTO[0];
+}
+
+export function soloSegmento<T extends Pick<ProyectoMapa, "servicios"> | Pick<FilaProyecto, "tipo_uso_conexion">>(
+  filas: T[],
+  segmento: string,
+): T[] {
+  return filas.filter((f) => segmentoDe(f) === segmento);
+}
 
 export function duracionHoras(mw: number | null, mwh: number | null): number | null {
   return mw && mwh !== null ? mwh / mw : null;

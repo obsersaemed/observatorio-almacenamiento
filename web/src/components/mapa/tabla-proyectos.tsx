@@ -12,23 +12,27 @@ import {
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import { formatoNumero } from "@/lib/formato";
+import { factorDe, formatoNumero, unidadEnergia, type Unidades } from "@/lib/formato";
 import type { ProyectoMapa } from "@/lib/proyectos-mapa";
 
 const col = createColumnHelper<ProyectoMapa>();
-const numero = (v: number | null) => (v === null ? undefined : v);
 const cifra = (v: number | undefined) => (v === undefined ? "" : formatoNumero(v, 1));
 
 export function TablaProyectos({
   proyectos,
   seleccionado,
   onElegir,
+  unidades = "MW",
 }: {
   proyectos: ProyectoMapa[];
   seleccionado?: string | null;
   onElegir: (nombre: string) => void;
+  /** 008: «Detrás del medidor» en kW y kWh. */
+  unidades?: Unidades;
 }) {
   const [orden, setOrden] = useState<SortingState>([]);
+  const factor = factorDe(unidades);
+  const enUnidades = (v: number | null) => (v === null ? undefined : v * factor);
 
   const columnas = [
     col.accessor("nombre", {
@@ -49,13 +53,13 @@ export function TablaProyectos({
         </>
       ),
     }),
-    col.accessor("operador", { header: "Operador" }),
+    // 008 · RF-12: «Promotor» y sin la columna de servicios (provisional; el CSV la conserva).
+    col.accessor("operador", { header: "Promotor" }),
     col.accessor("estado", { header: "Estado" }),
-    col.accessor((p) => p.servicios.join(", "), { id: "servicios", header: "Servicios" }),
     col.accessor("departamento", { header: "Departamento" }),
     col.accessor("municipio", { header: "Municipio" }),
-    col.accessor((p) => numero(p.mw), { id: "mw", header: "Potencia [MW]", sortUndefined: "last", cell: (c) => cifra(c.getValue()) }),
-    col.accessor((p) => numero(p.mwh), { id: "mwh", header: "Energía [MWh]", sortUndefined: "last", cell: (c) => cifra(c.getValue()) }),
+    col.accessor((p) => enUnidades(p.mw), { id: "mw", header: `Potencia [${unidades}]`, sortUndefined: "last", cell: (c) => cifra(c.getValue()) }),
+    col.accessor((p) => enUnidades(p.mwh), { id: "mwh", header: `Energía [${unidadEnergia(unidades)}]`, sortUndefined: "last", cell: (c) => cifra(c.getValue()) }),
     col.accessor("fpo", { header: "Año de FPO" }),
   ];
 

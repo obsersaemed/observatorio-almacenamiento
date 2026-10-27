@@ -2,7 +2,7 @@
 // salvo Servicios («Sin dato»). Sin enlaces de fuente (aclaración 6): la fuente va en el CSV.
 import Link from "next/link";
 import { valorEsCo } from "@/lib/columnas";
-import { formatoMW, formatoMWh, formatoNumero } from "@/lib/formato";
+import { formatoEnergia, formatoNumero, formatoPotencia, type Unidades } from "@/lib/formato";
 import { SIN_DATO, type ProyectoMapa } from "@/lib/proyectos-mapa";
 
 const NUMERO = { tipo: "numero" } as const;
@@ -11,7 +11,17 @@ export function enlaceCorreccion(nombre: string): string {
   return `/aportar?tipo=${encodeURIComponent("Corrección")}&registro=${encodeURIComponent(nombre)}`;
 }
 
-export function TarjetaProyecto({ proyecto: p, onCerrar }: { proyecto: ProyectoMapa; onCerrar?: () => void }) {
+// 008: en «Detrás del medidor» (unidades="kW") las cifras van en kW/kWh y no se muestra el nivel
+// de tensión (aclaración 2).
+export function TarjetaProyecto({
+  proyecto: p,
+  onCerrar,
+  unidades = "MW",
+}: {
+  proyecto: ProyectoMapa;
+  onCerrar?: () => void;
+  unidades?: Unidades;
+}) {
   const datos: [string, string | null][] = [
     ["Operador", p.operador || null],
     ["Estado", p.estado],
@@ -19,9 +29,9 @@ export function TarjetaProyecto({ proyecto: p, onCerrar }: { proyecto: ProyectoM
     ["Año de FPO", p.fpo || null],
     ["Servicios", p.servicios.length ? p.servicios.join(", ") : SIN_DATO],
     ["Ubicación", [p.municipio, p.departamento].filter(Boolean).join(", ") || null],
-    ["Punto de conexión", p.kv === null ? null : `${valorEsCo(NUMERO, p.kv)} kV`],
-    ["Potencia", p.mw === null ? null : formatoMW(p.mw)],
-    ["Energía", p.mwh === null ? null : formatoMWh(p.mwh)],
+    ["Punto de conexión", p.kv === null || unidades === "kW" ? null : `${valorEsCo(NUMERO, p.kv)} kV`],
+    ["Potencia", p.mw === null ? null : formatoPotencia(p.mw, unidades)],
+    ["Energía", p.mwh === null ? null : formatoEnergia(p.mwh, unidades)],
     ["Duración", p.duracion === null ? null : `${formatoNumero(p.duracion, 1)} h`],
   ];
 

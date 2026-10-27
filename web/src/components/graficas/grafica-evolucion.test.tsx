@@ -63,3 +63,31 @@ describe("GraficaEvolucion", () => {
     for (const d of trazos) expect(d).not.toMatch(/C/);
   });
 });
+
+// 008 · T05 · RF-05, RNF-02: evolución en kW y kWh.
+describe("GraficaEvolucion con unidades (008)", () => {
+  const medidor = [
+    fila({ fpo: "2025", potencia_nominal_mw: 0.015, capacidad_maxima_mwh: 0.04 }),
+    fila({ fpo: "2026", estado: "Anunciado", potencia_nominal_mw: 0.03, capacidad_maxima_mwh: 0.119 }),
+  ].map(aProyectoMapa);
+
+  test("con unidades=\"kW\": pestañas, eje y tabla en kW y kWh", () => {
+    const { container } = render(<GraficaEvolucion proyectos={medidor} unidades="kW" />);
+    expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Potencia [kW]", "Energía [kWh]"]);
+    const textos = [...container.querySelectorAll("svg text")].map((t) => t.textContent);
+    expect(textos).toContain("Potencia [kW]");
+    fireEvent.click(screen.getByRole("button", { name: "Ver como tabla" }));
+    expect(screen.getAllByRole("columnheader").map((h) => h.textContent)).toEqual([
+      "Año de FPO", "En operación y en construcción [kW]", "Anunciado (proyectado) [kW]",
+    ]);
+    expect(within(screen.getByRole("table")).getAllByRole("row").at(-1)).toHaveTextContent("202615,030,0");
+    fireEvent.click(screen.getByRole("tab", { name: "Energía [kWh]" }));
+    expect(screen.getAllByRole("columnheader")[1]).toHaveTextContent("[kWh]");
+    expect(within(screen.getByRole("table")).getAllByRole("row").at(-1)).toHaveTextContent("202640,0119,0");
+  });
+
+  test("con unidades=\"MW\" queda como hoy", () => {
+    render(<GraficaEvolucion proyectos={proyectos} unidades="MW" />);
+    expect(screen.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Potencia [MW]", "Energía [MWh]"]);
+  });
+});

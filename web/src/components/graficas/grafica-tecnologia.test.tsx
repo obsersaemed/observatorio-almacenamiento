@@ -38,3 +38,24 @@ describe("GraficaTecnologia", () => {
     expect(screen.getAllByRole("row")[1]).toHaveTextContent("Li-ion185,2100,0");
   });
 });
+
+// 008 · T05 · RF-05, RNF-02: dona de tecnología en kW.
+describe("GraficaTecnologia con unidades (008)", () => {
+  const medidor = [
+    fila({ tecnologia: "LFP", potencia_nominal_mw: 0.107 }),
+    fila({ tecnologia: "LFP", potencia_nominal_mw: 0.015 }),
+  ].map(aProyectoMapa);
+
+  test("con unidades=\"kW\": total en kW y tabla con [kW]", () => {
+    render(<GraficaTecnologia proyectos={medidor} unidades="kW" />);
+    expect(screen.getByTestId("total-dona")).toHaveTextContent("122,0 kW");
+    fireEvent.click(screen.getByRole("button", { name: "Ver como tabla" }));
+    expect(screen.getAllByRole("columnheader").map((h) => h.textContent)).toEqual(["Tecnología", "Potencia [kW]", "Participación [%]"]);
+    expect(screen.getAllByRole("row")[1]).toHaveTextContent("LFP122,0100,0");
+  });
+
+  test("con unidades=\"MW\" queda como hoy", () => {
+    render(<GraficaTecnologia proyectos={proyectos} unidades="MW" />);
+    expect(screen.getByTestId("total-dona")).toHaveTextContent("185,2 MW");
+  });
+});

@@ -1,0 +1,21 @@
+{
+  "tipo": "Proyecto nuevo",
+  "agente": "carga-008",
+  "descripcion": "Carga inicial 008 (detrás del medidor): Casa Alto de las Palmas. Punto en la cabecera municipal (DIVIPOLA, DANE); ubicación aproximada.",
+  "fuente": "Información de Azimut Energía (2026-10)",
+  "datos": {
+    "nombre": "Casa Alto de las Palmas",
+    "operador": "Azimut Energía",
+    "estado": "En operación",
+    "tecnologia": "LFP",
+    "fpo": "2025",
+    "tipo_uso_conexion": "Maximización de autoconsumo PV y respaldo",
+    "departamento": "Antioquia",
+    "municipio": "Medellín",
+    "latitud": 6.246631,
+    "longitud": -75.581775,
+    "potencia_nominal_mw": 0.015,
+    "capacidad_maxima_mwh": 0.04,
+    "fuente": "Información de Azimut Energía (2026-10)"
+  }
+}

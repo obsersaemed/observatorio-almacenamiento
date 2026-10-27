@@ -4,7 +4,7 @@
 // «En operación y en construcción» y «Anunciado (proyectado)». Inactivo no se suma.
 import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { formatoNumero } from "@/lib/formato";
+import { factorDe, formatoNumero, unidadEnergia, type Unidades } from "@/lib/formato";
 import { evolucion, type Medida } from "@/lib/graficas-mapa";
 import { useMovimientoReducido } from "@/lib/movimiento";
 import type { ProyectoMapa } from "@/lib/proyectos-mapa";
@@ -12,10 +12,14 @@ import { colorDe } from "../mapa/leyenda";
 import { cifra } from "./grafica-estados";
 import { TarjetaGrafica } from "./tarjeta-grafica";
 
-const MEDIDAS = [
-  { id: "mw", texto: "Potencia [MW]", unidad: "MW" },
-  { id: "mwh", texto: "Energía [MWh]", unidad: "MWh" },
-] as const;
+// 008: en «Detrás del medidor» van en kW y kWh.
+const medidasDe = (unidades: Unidades) => {
+  const energia = unidadEnergia(unidades);
+  return [
+    { id: "mw", texto: `Potencia [${unidades}]`, unidad: unidades },
+    { id: "mwh", texto: `Energía [${energia}]`, unidad: energia },
+  ];
+};
 
 const SERIES = [
   { clave: "firme", nombre: "En operación y en construcción", color: colorDe("En operación") },
@@ -29,10 +33,13 @@ function avisoSinAnio(n: number) {
     : `${n} proyectos sin año de FPO no aparecen en esta gráfica`;
 }
 
-export function GraficaEvolucion({ proyectos }: { proyectos: ProyectoMapa[] }) {
+export function GraficaEvolucion({ proyectos, unidades = "MW" }: { proyectos: ProyectoMapa[]; unidades?: Unidades }) {
   const [medida, setMedida] = useState<Medida>("mw");
   const reducido = useMovimientoReducido();
-  const { puntos, sinAnio } = evolucion(proyectos, medida);
+  const MEDIDAS = medidasDe(unidades);
+  const factor = factorDe(unidades);
+  const { puntos: base, sinAnio } = evolucion(proyectos, medida);
+  const puntos = base.map((p) => ({ ...p, firme: p.firme * factor, anunciado: p.anunciado * factor }));
   const m = MEDIDAS.find((x) => x.id === medida)!;
   const datos = puntos.map((p) => ({ ...p, anio: String(p.anio) }));
 

@@ -1,0 +1,21 @@
+{
+  "tipo": "Proyecto nuevo",
+  "agente": "carga-008",
+  "descripcion": "Carga inicial 008 (detrás del medidor): Centro Comercial Ipiales. Punto en la cabecera municipal (DIVIPOLA, DANE); ubicación aproximada.",
+  "fuente": "Información de Azimut Energía (2026-10)",
+  "datos": {
+    "nombre": "Centro Comercial Ipiales",
+    "operador": "Azimut Energía",
+    "estado": "En construcción",
+    "tecnologia": "LFP",
+    "fpo": "2026",
+    "tipo_uso_conexion": "Maximización de autoconsumo PV y respaldo",
+    "departamento": "Nariño",
+    "municipio": "Ipiales",
+    "latitud": 0.827732,
+    "longitud": -77.646367,
+    "potencia_nominal_mw": 0.107,
+    "capacidad_maxima_mwh": 0.241,
+    "fuente": "Información de Azimut Energía (2026-10)"
+  }
+}

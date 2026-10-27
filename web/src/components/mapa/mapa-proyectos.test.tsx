@@ -201,6 +201,20 @@ describe("MapaProyectos", () => {
     expect(screen.getByRole("link", { name: "Proponer corrección" })).toBeInTheDocument();
   });
 
+  test("008 · T06 · con unidades=\"kW\", Enter sobre el punto abre la tarjeta en kW y kWh (CA-04.3, CA-05.2)", async () => {
+    function Controlado() {
+      const [s, setS] = useState<string | null>(null);
+      return <MapaProyectos proyectos={proyectos} seleccionado={s} onSeleccionar={setS} unidades="kW" />;
+    }
+    render(<Controlado />);
+    const punto = await screen.findByRole("button", { name: "Uno · En operación" });
+    punto.focus();
+    fireEvent.click(punto, { detail: 0 });
+    const tarjeta = screen.getByRole("dialog", { name: "Uno" });
+    expect(tarjeta).toHaveTextContent("7.000,0 kW");
+    expect(tarjeta).toHaveTextContent("3.900,0 kWh");
+  });
+
   test("T16 · si el foco pasa del punto a la tarjeta, la tarjeta no se cierra (CA-04.4)", async () => {
     await montar();
     const punto = screen.getByRole("button", { name: "Uno · En operación" });

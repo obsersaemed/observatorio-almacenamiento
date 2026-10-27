@@ -23,7 +23,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from supabase_rest import ErrorRest, cliente_de_entorno  # noqa: E402
-from validar_datos import RAIZ, validar_valor  # noqa: E402
+from validar_datos import RAIZ, columna_sql, segmento_de_fila, validar_valor  # noqa: E402
+
+
+def segmento_del_proyecto(datos, esquemas):
+    """Segmento (008) del proyecto propuesto, deducido de sus servicios."""
+    cols = esquemas["proyectos"]["columnas"]
+    reg = {c["nombre"]: str(datos.get(columna_sql(c["nombre"])) or "") for c in cols}
+    return segmento_de_fila(cols, reg)
 
 
 def proponer(propuesta, cliente, esquemas):
@@ -41,9 +48,12 @@ def proponer(propuesta, cliente, esquemas):
 
     # Mismas reglas que el formulario y la base; el correo (privado) no aplica a agentes.
     errores = []
+    segmento = segmento_del_proyecto(fila["datos"], esquemas) if isinstance(fila["datos"], dict) else None
     for c in esquemas["aportes"]["columnas"]:
         if c.get("privado") or c["nombre"] not in fila:
             continue
+        if fila[c["nombre"]] and c.get("texto_si_segmento") and c["texto_si_segmento"] == segmento:
+            continue  # 008 · RF-09: referencia textual sin URL
         problema = validar_valor(c, fila[c["nombre"]] or "", esquemas["_mensajes"])
         if problema:
             errores.append(problema)
