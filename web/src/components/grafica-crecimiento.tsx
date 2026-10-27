@@ -27,7 +27,8 @@ export function GraficaCrecimiento({ barras, sinAnio }: { barras: BarraCrecimien
   const final = (mw: number) => `${maximo ? (mw / maximo) * 100 : 0}%`;
 
   return (
-    <section className="rounded-[var(--radius-lg)] border border-border border-t-4 border-t-accent bg-card p-5 shadow-[var(--shadow-card)]">
+    // Tarjeta de ancho acotado y centrada: a todo el ancho las barras quedaban muy separadas.
+    <section className="mx-auto w-full max-w-3xl rounded-[var(--radius-lg)] border border-border border-t-4 border-t-accent bg-card p-5 shadow-[var(--shadow-card)]">
       <h2 className="font-bold text-[var(--text-heading)]">{TITULO}</h2>
 
       <div aria-hidden="true" className="mt-4 flex h-52 items-end gap-2 sm:gap-3">
@@ -37,7 +38,7 @@ export function GraficaCrecimiento({ barras, sinAnio }: { barras: BarraCrecimien
             <div className="flex w-full flex-1 items-end justify-center pt-1">
               <div
                 data-testid="columna"
-                className="w-full max-w-12 rounded-t-sm"
+                className="w-full max-w-14 rounded-t-sm"
                 style={{
                   backgroundColor: b.proyeccion ? "var(--accent)" : "var(--brand-ink)",
                   height: reducido || crecido ? final(b.mw) : "0%",
