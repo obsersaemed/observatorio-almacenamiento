@@ -22,4 +22,5 @@ documento aprobado por el usuario.
 | 004 | [Evolución normativa](004-normativa/) | Terminada | 22/22 tareas; E2E limpio 24/26 y repetición 27/27 (2026-10-25) |
 | 005 | [Noticias](005-noticias/) | Terminada | 11/11 tareas; E2E limpio 11/13 y repetición 14/14 (2026-10-26) |
 | 006 | [Gráficas de implementación](006-graficas-implementacion/) | Terminada | 8/8 tareas; E2E limpio 12/12 (2026-10-22) |
-| 007 | [Rediseño de la interfaz](007-rediseno-ui/) | Terminada | 25/25 tareas; E2E limpio 42/42 (2026-10-27); aprobada, sin publicar (rama `rediseno-ui`) |
+| 007 | [Rediseño de la interfaz](007-rediseno-ui/) | Terminada | 25/25 tareas; E2E limpio 42/42 (2026-10-27); publicada en main el 2026-10-27 |
+| 008 | [Almacenamiento detrás del medidor](008-detras-del-medidor/) | Spec | Brainstorm aprobado (2026-10-27) |
