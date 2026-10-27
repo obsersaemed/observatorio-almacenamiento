@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { MenuPrincipal } from "./menu-principal";
+import { Suspense } from "react";
+import { MenuLista, MenuPrincipal } from "./menu-principal";
 
 // Encabezado común (RNF-03, RF-02): enlace para saltar al contenido, nombre con barra de acento
 // y menú principal con la página actual marcada.
@@ -17,7 +18,9 @@ export function EncabezadoSitio() {
           <span aria-hidden="true" className="block h-9 w-1.5 shrink-0 bg-accent" />
           Observatorio de Almacenamiento de Energía
         </Link>
-        <MenuPrincipal />
+        <Suspense fallback={<MenuLista actual={null} />}>
+          <MenuPrincipal />
+        </Suspense>
       </div>
     </header>
   );

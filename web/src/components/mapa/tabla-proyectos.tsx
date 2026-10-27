@@ -59,7 +59,8 @@ export function TablaProyectos({
     col.accessor("fpo", { header: "Año de FPO" }),
   ];
 
-  const tabla = useReactTable({
+  // Tipo explícito: el chequeo de `next build` no lo infiere de las columnas (TableOptions<unknown>).
+  const tabla = useReactTable<ProyectoMapa>({
     data: proyectos,
     columns: columnas,
     state: { sorting: orden },

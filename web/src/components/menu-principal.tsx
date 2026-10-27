@@ -20,7 +20,12 @@ function esActual(ruta: string, actual: string | null) {
 
 // Menú principal (RF-02): la página actual lleva aria-current y un subrayado de acento de 3 px.
 export function MenuPrincipal() {
-  const actual = usePathname();
+  return <MenuLista actual={usePathname()} />;
+}
+
+// Lista del menú sin leer la ruta: es también el respaldo del <Suspense> del encabezado, porque
+// con Cache Components `usePathname()` no puede prerenderizarse fuera de un <Suspense>.
+export function MenuLista({ actual }: { actual: string | null }) {
   return (
     <nav aria-label="Principal">
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold">
